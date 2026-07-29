@@ -8,20 +8,20 @@ icon: MessageCircle
 
 <Accordion title="Is Qeet ID open source?">
 Yes — the core is MIT-licensed and fully [self-hostable](/docs/architecture/self-hosting).
-A managed cloud tier adds support, SLAs, BYOK and data residency, but the
-identity engine itself is free forever.
+The reference architecture and the production configuration boundary are
+documented publicly.
 </Accordion>
 
-<Accordion title="What does “no SSO tax” mean?">
-[SAML SSO](/docs/authentication/enterprise-sso), [SCIM](/docs/provisioning/scim),
-LDAP and [RBAC](/docs/authorization/rbac) are part of the core product, never an
-enterprise upsell. You're not charged a premium to connect an enterprise
-identity provider.
+<Accordion title="Which SDK can I install today?">
+The Go module is available from GitHub. The Node and React clients are source
+previews and are not present in the public npm registry yet. See
+[SDK release status](/docs/sdks).
 </Accordion>
 
-<Accordion title="How is it priced?">
-There is no per-monthly-active-user fee. The open-source core is free; the
-managed cloud uses flat-rate plans, so you scale users without watching a meter.
+<Accordion title="Are organization and tenant different objects?">
+No. **Organization** is the SDK-facing product term; **tenant** is the API,
+token and storage term for the same isolation boundary. A session token carries
+one active organization scope.
 </Accordion>
 
 <Accordion title="Which authorization model should I use?">
@@ -44,14 +44,21 @@ improvement. See [data isolation](/docs/security/data-isolation).
 </Accordion>
 
 <Accordion title="Where is the API reference?">
-The complete OpenAPI reference is served separately in Scalar and linked from the
-top navigation. This portal is the conceptual and how-to documentation.
+The generated OpenAPI reference is served separately in Scalar and linked from
+the top navigation. This portal owns concepts, architecture, guides and SDK
+release status rather than duplicating endpoint schemas.
 </Accordion>
 
 <Accordion title="Is Qeet ID production-ready?">
-It's in active **developer preview**. The architecture, SDKs and console are
-usable now; external pentest, OpenID conformance and KMS BYOK go-live are tracked
-on the [roadmap](/docs/roadmap). Evaluate accordingly.
+It's in active **developer preview**, not general availability. The roadmap
+tracks database RLS hardening, public Node/React releases, an external
+penetration test and OpenID conformance. Evaluate accordingly.
+</Accordion>
+
+<Accordion title="What compliance claims does Qeet ID make?">
+The platform produces internal control evidence, but does not currently claim a
+SOC 2 or ISO 27001 attestation, FIPS validation or HIPAA BAA. See the
+[current compliance posture](/docs/security/compliance).
 </Accordion>
 
 <Accordion title="How does it relate to the other Qeet products?">

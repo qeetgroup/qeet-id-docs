@@ -4,8 +4,9 @@ description: Where Qeet ID is today and what's coming next.
 icon: Map
 ---
 
-Qeet ID is in **active developer preview**. The architecture, SDKs and console
-are usable today; this page tracks the path toward general availability.
+Qeet ID is in **active developer preview**. The Go module and documented server
+capabilities are available for evaluation; Node and React remain source previews.
+This page tracks the path toward general availability.
 
 <Callout type="warn">
   Dates and scope are indicative and will change. Treat the preview as
@@ -18,7 +19,8 @@ are usable today; this page tracks the path toward general availability.
 
 <Step>
 ### Core identity engine
-OIDC provider, users, sessions, organizations and multi-tenancy.
+OIDC provider, users, sessions, organizations, multi-tenancy and passkey-first
+signup.
 </Step>
 
 <Step>
@@ -32,8 +34,9 @@ SHA-256 hash-chained events with a public verification endpoint.
 </Step>
 
 <Step>
-### SDKs
-Typed clients for Node, React and Go (pre-1.0).
+### Go SDK
+The pre-1.0 Go module is available from GitHub. Node and React are source
+previews pending public npm releases.
 </Step>
 
 </Steps>
@@ -41,7 +44,7 @@ Typed clients for Node, React and Go (pre-1.0).
 ## On the horizon
 
 - Database-level tenant isolation (Postgres RLS) graduating from pilot.
-- Passkey-first, password-optional signup.
+- Public npm releases for the Node and React clients.
 - A `qeetid` CLI (`init` / `dev` / `doctor`).
 - Release assurance: external pentest and OpenID conformance run.
 - Managed cloud general availability.

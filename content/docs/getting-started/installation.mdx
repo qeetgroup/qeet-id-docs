@@ -3,28 +3,20 @@ title: Installation
 description: Install a Qeet ID SDK and configure your environment.
 ---
 
-Qeet ID ships typed SDKs for the most common stacks. Install the one that
-matches your runtime, then set the environment variables the client reads.
+Qeet ID is publishing its SDKs in stages. The Go module is available now. The
+Node and React clients are source previews while their first registry releases
+are prepared.
+
+<Callout type="warn" title="Preview package status">
+  `@qeet-id/node` and `@qeet-id/react` are not published to npm yet. Their pages
+  document the intended `0.1` API for review, but do not present an install
+  command that would fail. Use the Go module for an executable integration
+  today.
+</Callout>
 
 ## Install
 
-<Tabs items={["Node", "React", "Go"]}>
-
-<Tab value="Node">
-
-```bash title="Terminal"
-bun add @qeet-id/node
-```
-
-</Tab>
-
-<Tab value="React">
-
-```bash title="Terminal"
-bun add @qeet-id/react
-```
-
-</Tab>
+<Tabs items={["Go", "Node source", "React source"]}>
 
 <Tab value="Go">
 
@@ -34,21 +26,37 @@ go get github.com/qeetgroup/qeet-id-go
 
 </Tab>
 
+<Tab value="Node source">
+
+Review the [Node SDK source](https://github.com/qeetgroup/qeet-id-node) and its
+[documented surface](/docs/sdks/node). The npm package will be added here when
+the first registry release is available.
+
+</Tab>
+
+<Tab value="React source">
+
+Review the [React SDK source](https://github.com/qeetgroup/qeet-id-react) and its
+[documented surface](/docs/sdks/react). The npm package will be added here when
+the first registry release is available.
+
+</Tab>
+
 </Tabs>
 
 ## Configure the environment
 
-The server SDKs read configuration from the environment. At minimum, set your
-API key; the issuer URL is discovered automatically.
+Your application reads configuration from its environment and passes it to the
+SDK. The SDKs do not read these variables implicitly.
 
 ```bash title=".env"
 QEETID_API_KEY=qk_live_xxxxxxxxxxxxxxxxxxxx
-QEETID_URL=https://id.example.com
+QEETID_BASE_URL=https://api.id.qeet.in
 ```
 
 <Callout type="info">
   API keys are prefixed `qk_` and sent as `Authorization: ApiKey qk_…`. The SDKs
-  add this header for you — you only set `QEETID_API_KEY`.
+  add this header after your application passes the key into the client.
 </Callout>
 
 <TypeTable
@@ -58,10 +66,10 @@ QEETID_URL=https://id.example.com
       type: "string",
       required: true,
     },
-    QEETID_URL: {
-      description: "Issuer base URL. Used for zero-config OIDC discovery.",
+    QEETID_BASE_URL: {
+      description: "Management API and issuer base URL. Override it for a self-hosted deployment.",
       type: "string",
-      default: "https://id.qeet.in",
+      default: "https://api.id.qeet.in",
     },
   }}
 />
@@ -71,12 +79,24 @@ QEETID_URL=https://id.example.com
   version control — load it from a secret manager in production.
 </Callout>
 
+## Initialize the Go client
+
+```go title="qeetid.go"
+client := qeetid.New(qeetid.Config{
+  APIKey:  os.Getenv("QEETID_API_KEY"),
+  BaseURL: os.Getenv("QEETID_BASE_URL"),
+})
+```
+
+For the Node source preview, the equivalent configuration is
+`new QeetID({ apiKey, baseUrl })`.
+
 ## Verify your setup
 
 A successful install can reach the discovery document:
 
 ```bash title="Terminal"
-curl "$QEETID_URL/.well-known/openid-configuration"
+curl "$QEETID_BASE_URL/.well-known/openid-configuration"
 ```
 
 If that returns JSON with an `issuer` and `jwks_uri`, you're ready for the

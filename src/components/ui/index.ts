@@ -31,13 +31,7 @@ export {
 } from "@qeetrix/ui";
 
 // Local, docs-specific helpers
-export { type CodeTab, CodeTabs } from "./code-tabs";
 export { CodeWindow } from "./code-window";
 export { Container, type ContainerProps } from "./container";
 export { CopyButton } from "./copy-button";
-export { FeatureCard, type FeatureCardProps } from "./feature-card";
-export { GradientText } from "./gradient-text";
-export { Reveal, type RevealProps } from "./reveal";
-export { Section, SectionHeading } from "./section";
-export { Terminal, type TerminalLine } from "./terminal";
 export { WindowChrome } from "./window-chrome";

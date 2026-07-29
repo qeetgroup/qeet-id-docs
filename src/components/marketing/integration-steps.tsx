@@ -1,54 +1,50 @@
 import { Container } from "@/components/ui/container";
-import { GradientText } from "@/components/ui/gradient-text";
-import { Reveal } from "@/components/ui/reveal";
-import { SectionHeading } from "@/components/ui/section";
 import { integrationSteps } from "@/config/marketing";
 
 /**
- * IntegrationSteps — the "how it works" walkthrough: four numbered steps with a
- * connecting rail on large screens. Composed from primitives (marketing layout,
- * so kept custom rather than forcing the interactive Qeetrix Stepper).
+ * The actual enterprise adoption sequence, from architecture review to
+ * operated evidence. The order is meaningful, so a numbered timeline is used.
  */
 export function IntegrationSteps() {
   return (
     <section
-      id="how-it-works"
-      className="border-t border-border/60 bg-card/30 py-20 sm:py-28"
+      id="rollout"
+      className="border-y border-border/70 bg-muted/20 py-18 sm:py-24"
     >
       <Container size="wide">
-        <SectionHeading
-          eyebrow="How it works"
-          title={
-            <>
-              Integrated in <GradientText>four steps</GradientText>
-            </>
-          }
-          description="From install to authorized request — the whole path, no detours."
-        />
+        <div className="max-w-3xl">
+          <h2 className="text-balance font-display text-3xl font-semibold tracking-tight sm:text-5xl">
+            From evaluation to operated identity.
+          </h2>
+          <p className="mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
+            Enterprise identity is not complete at first login. Treat rollout as
+            a sequence of boundaries, controls and evidence.
+          </p>
+        </div>
 
-        <ol className="relative mt-14 grid gap-8 lg:grid-cols-4">
-          {/* Connecting rail (lg+) */}
-          <div
-            aria-hidden
-            className="absolute top-5 right-0 left-0 hidden h-px bg-linear-to-r from-transparent via-border to-transparent lg:block"
-          />
+        <ol className="relative mt-12 grid gap-px overflow-hidden rounded-lg border border-border bg-border lg:grid-cols-4">
           {integrationSteps.map((step, i) => (
-            <Reveal
+            <li
               key={step.title}
-              delay={i * 0.08}
-              as="li"
-              className="relative"
+              className="relative min-h-60 bg-card p-6 sm:p-7"
             >
-              <span className="flex size-10 items-center justify-center rounded-full border border-brand-500/30 bg-brand-500/10 font-mono text-sm font-semibold text-brand-text">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <h3 className="mt-4 font-semibold tracking-tight">
-                {step.title}
-              </h3>
-              <p className="mt-1.5 text-sm text-muted-foreground">
-                {step.description}
-              </p>
-            </Reveal>
+              <div className="flex items-center justify-between gap-4">
+                <span className="font-mono text-xs font-semibold text-brand-text">
+                  PHASE {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="font-mono text-xs text-muted-foreground">
+                  {i + 1}/4
+                </span>
+              </div>
+              <div className="mt-16">
+                <h3 className="text-lg font-semibold tracking-tight">
+                  {step.title}
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  {step.description}
+                </p>
+              </div>
+            </li>
           ))}
         </ol>
       </Container>

@@ -2,11 +2,16 @@
   "name": "qeet-id-docs",
   "version": "0.0.9",
   "private": true,
+  "packageManager": "bun@1.3.14",
+  "overrides": {
+    "postcss": "8.5.25",
+    "sharp": "0.35.3"
+  },
   "scripts": {
     "build": "next build",
     "dev": "next dev",
     "start": "next start",
-    "types:check": "next typegen && node scripts/generate-source.mjs && tsc --noEmit",
+    "types:check": "node scripts/clean-generated-types.mjs && next typegen && node scripts/generate-source.mjs && tsc --noEmit",
     "postinstall": "fumadocs-mdx",
     "lint": "biome check",
     "format": "biome format --write",
@@ -19,7 +24,7 @@
     "fumadocs-mdx": "15.2.0",
     "fumadocs-ui": "npm:@fumadocs/base-ui@16.13.0",
     "lucide-react": "^1.25.0",
-    "next": "16.2.11",
+    "next": "16.2.12",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "shiki": "^4.3.1"

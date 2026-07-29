@@ -12,14 +12,14 @@ parties using ordinary OIDC.
 Everything is discoverable from the issuer, so SDKs need almost no configuration:
 
 ```bash title="Terminal"
-curl "$QEETID_URL/.well-known/openid-configuration"
+curl "$QEETID_BASE_URL/.well-known/openid-configuration"
 ```
 
 Public signing keys are published as a JWKS, which lets relying parties verify
 tokens locally with no call back to Qeet ID:
 
 ```bash title="Terminal"
-curl "$QEETID_URL/.well-known/jwks.json"
+curl "$QEETID_BASE_URL/.well-known/jwks.json"
 ```
 
 ## Endpoints

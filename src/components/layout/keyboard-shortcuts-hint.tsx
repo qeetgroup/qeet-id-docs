@@ -15,7 +15,7 @@ export function KeyboardShortcutsHint() {
       onClick={() =>
         window.dispatchEvent(new KeyboardEvent("keydown", { key: "?" }))
       }
-      className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-fd-muted-foreground transition-colors hover:bg-fd-accent hover:text-fd-foreground"
+      className="flex min-h-11 w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-fd-muted-foreground transition-colors hover:bg-fd-accent hover:text-fd-foreground"
     >
       <Command className="size-4" />
       <span className="flex-1 text-left">Shortcuts</span>

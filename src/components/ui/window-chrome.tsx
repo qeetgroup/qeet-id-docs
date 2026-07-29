@@ -4,8 +4,7 @@ import { cn } from "@/lib/cn";
 /**
  * WindowChrome — the shared "app window" frame (traffic-light dots + a title
  * bar with an optional actions slot). Pure presentational and import-light, so
- * it is safe to use from both the server `CodeWindow` and the client
- * `CodeTabs` without dragging Shiki into the client bundle.
+ * server-rendered code examples do not drag Shiki into the client bundle.
  */
 export function WindowChrome({
   title,
@@ -21,7 +20,7 @@ export function WindowChrome({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-xl border border-border bg-card/80 shadow-xl shadow-black/5 backdrop-blur supports-[backdrop-filter]:bg-card/60",
+        "overflow-hidden rounded-xl border border-border bg-card/80 shadow-xl shadow-black/5 backdrop-blur supports-backdrop-filter:bg-card/60",
         className,
       )}
     >

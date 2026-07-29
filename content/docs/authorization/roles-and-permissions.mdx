@@ -49,11 +49,14 @@ Users can be granted roles two ways:
 
 ```ts title="server.ts"
 // Grant a role to a user.
-await qeetid.roles.assign({ tenant: tenantId, user: userId, role: "admin" });
+await qeetid.roles.assignToUser(userId, tenantId, adminRoleId);
 
 // Or grant a role to a group so all members inherit it.
-await qeetid.groups.assignRole({ tenant: tenantId, group: groupId, role: "member" });
+await qeetid.groups.grantRole(tenantId, groupId, memberRoleId);
 ```
+
+Both methods take role IDs. Resolve a named role with
+`await qeetid.roles.list(tenantId)` before assigning it.
 
 <Callout type="warn">
   There is intentionally no client-side "what can I do?" endpoint — permission

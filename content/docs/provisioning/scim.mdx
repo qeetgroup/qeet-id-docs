@@ -34,8 +34,8 @@ short prefix are stored — the raw token is shown once — and it can be rotate
 revoked from the admin API at any time.
 
 ```ts title="server.ts"
-// Issue a SCIM token for a tenant (returned once, store it securely).
-const { token } = await qeetid.scim.createToken({ tenant: tenantId });
+// Rotate the tenant's SCIM token (returned once, store it securely).
+const { token } = await qeetid.scim.rotateToken(tenantId);
 ```
 
 ## Wiring up an IdP

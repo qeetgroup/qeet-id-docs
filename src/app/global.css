@@ -115,24 +115,7 @@
   --color-brand-600: var(--brand-600);
   --color-brand-700: var(--brand-700);
 
-  --animate-fade-up: fade-up 0.7s cubic-bezier(0.21, 0.47, 0.32, 0.98) both;
   --animate-fade-in: fade-in 0.7s cubic-bezier(0.21, 0.47, 0.32, 0.98) both;
-  --animate-scale-in: scale-in 0.6s cubic-bezier(0.21, 0.47, 0.32, 0.98) both;
-  --animate-aurora: aurora 18s ease-in-out infinite;
-  --animate-shimmer: shimmer 2.8s linear infinite;
-  --animate-grid-pan: grid-pan 22s linear infinite;
-  --animate-float: float 6s ease-in-out infinite;
-}
-
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(1rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 @keyframes fade-in {
@@ -141,57 +124,6 @@
   }
   to {
     opacity: 1;
-  }
-}
-
-@keyframes scale-in {
-  from {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes aurora {
-  0%,
-  100% {
-    transform: translate3d(-4%, -2%, 0) scale(1);
-    opacity: 0.7;
-  }
-  50% {
-    transform: translate3d(4%, 3%, 0) scale(1.1);
-    opacity: 1;
-  }
-}
-
-@keyframes shimmer {
-  from {
-    background-position: -200% 0;
-  }
-  to {
-    background-position: 200% 0;
-  }
-}
-
-@keyframes grid-pan {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: 40px 40px;
-  }
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
   }
 }
 
@@ -237,32 +169,6 @@ html > body[data-scroll-locked] {
 /* --------------------------------------------------------------------------
  * 5. Reusable decorative utilities (marketing + docs surfaces)
  * ------------------------------------------------------------------------ */
-@utility text-gradient-brand {
-  background-image: var(--brand-gradient);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-@utility bg-grid {
-  background-image:
-    linear-gradient(
-      to right,
-      color-mix(in oklab, var(--foreground) 6%, transparent) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      to bottom,
-      color-mix(in oklab, var(--foreground) 6%, transparent) 1px,
-      transparent 1px
-    );
-  background-size: 40px 40px;
-}
-
-@utility bg-brand-glow {
-  background-image: var(--brand-glow);
-}
-
 /* --------------------------------------------------------------------------
  * 6. Marketing code windows (Shiki, dual-theme)
  *
@@ -298,4 +204,164 @@ html > body[data-scroll-locked] {
   font-style: var(--shiki-dark-font-style) !important;
   font-weight: var(--shiki-dark-font-weight) !important;
   text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+/* --------------------------------------------------------------------------
+ * 7. Enterprise documentation surfaces
+ * ------------------------------------------------------------------------ */
+
+body {
+  background-color: var(--background);
+}
+
+.qid-skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 50;
+  min-height: 2.75rem;
+  transform: translateY(-160%);
+  border-radius: 0.375rem;
+  background: var(--foreground);
+  color: var(--background);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.qid-skip-link:focus {
+  transform: translateY(0);
+}
+
+#main-content:focus {
+  outline: none;
+}
+
+button[aria-label="Open Search"],
+button[aria-label="Toggle Menu"],
+button[aria-label="Open Sidebar"],
+button[aria-label="Collapse Sidebar"],
+button[aria-label="Light"],
+button[aria-label="Dark"],
+button[aria-label="System"],
+button[aria-label="Copy Markdown"],
+button[aria-label="Copy Anchor Link"],
+button[aria-label="Copy Text"] {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+}
+
+button:has(kbd),
+button[aria-haspopup="menu"] {
+  min-height: 2.75rem;
+}
+
+@media (max-width: 63.99rem) {
+  aside button,
+  article button {
+    min-height: 2.75rem;
+  }
+}
+
+.qid-hero {
+  background-color: var(--background);
+}
+
+.qid-hero-grid,
+.qid-cta-grid {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in oklab, var(--foreground) 5%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--foreground) 5%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, black, transparent 92%);
+}
+
+.qid-cta-grid {
+  opacity: 0.55;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 18%,
+    black 82%,
+    transparent
+  );
+}
+
+.qid-trace {
+  box-shadow: 0 24px 80px -48px
+    color-mix(in oklab, var(--foreground) 38%, transparent);
+}
+
+.qid-trace-signal {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--brand-500),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: qid-trace-signal 3.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@keyframes qid-trace-signal {
+  0%,
+  38% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  52% {
+    opacity: 1;
+  }
+  78%,
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* The docs reader is deliberately denser than the marketing surface while
+ * preserving a comfortable 65–75 character line and strong heading anchors. */
+.prose :where(h2, h3) {
+  scroll-margin-top: 6rem;
+  text-wrap: balance;
+}
+
+.prose :where(h2) {
+  border-top: 1px solid var(--color-fd-border);
+  padding-top: 2rem;
+}
+
+.prose :where(p, li) {
+  line-height: 1.75;
+}
+
+.prose :where(a) {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.prose :where(table) {
+  font-size: 0.875rem;
+}
+
+.prose :where(th) {
+  font-size: 0.75rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qid-trace-signal {
+    animation: none;
+    opacity: 0;
+  }
 }

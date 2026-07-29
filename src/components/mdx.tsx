@@ -7,6 +7,7 @@ import { TypeTable } from "fumadocs-ui/components/type-table";
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import type { MDXComponents } from "mdx/types";
 import type { ComponentProps } from "react";
+import { IdentityModel } from "@/components/docs/identity-model";
 
 /**
  * MDX component registry.
@@ -34,6 +35,7 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     File,
     Folder,
     TypeTable,
+    IdentityModel,
     img: (props) => (
       <ImageZoom {...(props as ComponentProps<typeof ImageZoom>)} />
     ),

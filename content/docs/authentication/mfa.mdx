@@ -46,11 +46,28 @@ Two additive signals can automatically trigger step-up or force MFA. Both are
 
 ## In the browser (React)
 
-```tsx title="MfaEnrollment.tsx"
+The React source preview exposes standalone MFA verification for embedded mode.
+It verifies a challenge that has already produced an `mfaToken`; TOTP enrollment
+uses the hosted flow or the underlying API contract.
+
+<Callout type="warn" title="React source preview">
+  `@qeet-id/react` is not published to npm yet. Embedded hooks also require
+  `apiUrl` on `<QeetIDProvider>`.
+</Callout>
+
+```tsx title="MfaChallenge.tsx"
 import { useMFA } from "@qeet-id/react";
 
-export function MfaEnrollment() {
-  const { enrollTotp, recoveryCodes } = useMFA();
-  return <button onClick={() => enrollTotp()}>Set up authenticator</button>;
+export function MfaChallenge({ mfaToken }: { mfaToken: string }) {
+  const { status, verify } = useMFA();
+
+  return (
+    <button
+      disabled={status.step === "loading"}
+      onClick={() => verify({ mfaToken, code: "123456" })}
+    >
+      Verify code
+    </button>
+  );
 }
 ```

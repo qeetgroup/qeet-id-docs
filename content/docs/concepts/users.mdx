@@ -3,9 +3,10 @@ title: Users
 description: The user model — identity, lifecycle and metadata.
 ---
 
-A **user** is a human (or, occasionally, a service) identity that belongs to
-exactly one [tenant](/docs/concepts/tenancy). Users are the subjects that
-authenticate and that authorization decisions are made about.
+A **user record** is a human identity represented inside one
+[organization boundary](/docs/concepts/tenancy). The same human may be known to
+more than one organization, while each active token and authorization decision
+remains scoped to one organization.
 
 ## The model
 
@@ -52,9 +53,9 @@ follows the same path — see [security & compliance](/docs/security/compliance)
 
 ```ts title="server.ts"
 const user = await qeetid.users.create({
-  tenant: tenantId,
+  tenant_id: tenantId,
   email: "ada@example.com",
-  metadata: { plan: "pro" },
+  name: "Ada Lovelace",
 });
 ```
 

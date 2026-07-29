@@ -15,7 +15,8 @@ go get github.com/qeetgroup/qeet-id-go
 
 ```go title="qeetid.go"
 client := qeetid.New(qeetid.Config{
-	APIKey: os.Getenv("QEETID_API_KEY"),
+	APIKey:  os.Getenv("QEETID_API_KEY"),
+	BaseURL: os.Getenv("QEETID_BASE_URL"),
 })
 ```
 

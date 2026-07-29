@@ -7,35 +7,37 @@ import {
   Hero,
   IntegrationSteps,
   QuickstartShowcase,
+  ReadinessSection,
   SdkSection,
   SecuritySection,
-  Testimonials,
   TrustBar,
 } from "@/components/marketing";
 import { JsonLd, softwareApplicationSchema } from "@/components/seo/json-ld";
 import { buildMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = buildMetadata({ path: "/" });
+export const metadata: Metadata = buildMetadata({
+  title: "Developer Documentation",
+  path: "/",
+});
 
 /**
- * Landing page (Phase 2). Composed entirely from the marketing section
- * components, which are in turn built on Qeetrix primitives + the local
- * design-system helpers. Order tells the story: what → proof → capabilities →
- * security → DX → SDKs → how → social proof → FAQ → final CTA.
+ * Enterprise documentation home. The sequence moves from product thesis and
+ * executable proof through platform domains, role-based reading paths,
+ * assurance, release status, rollout and explicit readiness.
  */
 export default function HomePage() {
   return (
     <>
       <JsonLd schema={softwareApplicationSchema} />
       <Hero />
-      <QuickstartShowcase />
       <TrustBar />
+      <QuickstartShowcase />
       <FeaturesGrid />
-      <SecuritySection />
       <DxSection />
+      <SecuritySection />
       <SdkSection />
       <IntegrationSteps />
-      <Testimonials />
+      <ReadinessSection />
       <Faq />
       <CtaBand />
     </>

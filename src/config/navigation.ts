@@ -109,6 +109,8 @@ export const footerNav: NavGroup[] = [
 
 /** Legal / meta links rendered on the footer baseline. */
 export const footerMeta: NavItem[] = [
+  { label: "Privacy", href: links.privacy, external: true },
+  { label: "Terms", href: links.terms, external: true },
+  { label: "Security", href: links.security, external: true },
   { label: "Support", href: links.support, external: true },
-  { label: "GitHub", href: links.githubOrg, external: true },
 ];

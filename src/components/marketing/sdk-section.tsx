@@ -1,77 +1,115 @@
-import { Badge, Card } from "@qeetrix/ui";
-import { ArrowRight } from "lucide-react";
+import { Badge } from "@qeetrix/ui";
+import { ArrowRight, ArrowUpRight, CheckCircle2, Clock3 } from "lucide-react";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { CopyButton } from "@/components/ui/copy-button";
-import { GradientText } from "@/components/ui/gradient-text";
-import { Reveal } from "@/components/ui/reveal";
-import { SectionHeading } from "@/components/ui/section";
-import { sdks } from "@/config/marketing";
-import { highlight } from "@/lib/highlight";
+import { sdkReleases } from "@/config/marketing";
 
 /**
- * SdkSection — one card per official SDK (Node, React, Go) with a copyable
- * install command and a Shiki-highlighted usage snippet. Server component:
- * snippets are highlighted at build time.
+ * SDK release matrix: the available Go path receives the primary surface;
+ * source previews link to code without presenting invalid install commands.
  */
-export async function SdkSection() {
-  const rendered = await Promise.all(
-    sdks.map(async (sdk) => ({
-      ...sdk,
-      html: await highlight(sdk.snippet, sdk.lang),
-    })),
-  );
+export function SdkSection() {
+  const [available, ...previews] = sdkReleases;
+  if (!available?.install) return null;
 
   return (
-    <section id="sdks" className="py-20 sm:py-28">
+    <section id="sdks" className="py-18 sm:py-24">
       <Container size="wide">
-        <SectionHeading
-          eyebrow="SDKs"
-          title={
-            <>
-              Drop in the <GradientText>SDK</GradientText> for your stack
-            </>
-          }
-          description="Typed, ergonomic clients that wrap the API — install, configure, and you're authenticating."
-        />
+        <div className="max-w-3xl">
+          <h2 className="text-balance font-display text-3xl font-semibold tracking-tight sm:text-5xl">
+            Release status before installation.
+          </h2>
+          <p className="mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
+            Every client has documentation and source. Only packages with a
+            verifiable release receive an install command.
+          </p>
+        </div>
 
-        <div className="mt-14 grid gap-4 lg:grid-cols-3">
-          {rendered.map((sdk, i) => (
-            <Reveal key={sdk.pkg} delay={i * 0.06}>
-              <Card className="flex h-full flex-col p-6 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-brand-500/40 hover:shadow-md">
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="font-semibold tracking-tight">{sdk.name}</h3>
-                  <Badge variant="muted" className="font-mono text-[0.65rem]">
-                    {sdk.pkg}
-                  </Badge>
+        <div className="mt-12 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+          <article className="relative flex min-h-80 flex-col overflow-hidden rounded-lg border border-brand-600/30 bg-brand-500 p-6 text-primary-foreground sm:p-8">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 text-xs font-semibold">
+                  <CheckCircle2 className="size-4" aria-hidden />
+                  AVAILABLE NOW
                 </div>
+                <h3 className="mt-5 font-display text-3xl font-semibold tracking-tight">
+                  {available.name}
+                </h3>
+                <p className="mt-2 font-mono text-sm opacity-75">
+                  {available.pkg}
+                </p>
+              </div>
+              <Badge className="rounded-md bg-primary-foreground/10 text-primary-foreground">
+                0.1 preview
+              </Badge>
+            </div>
 
-                <div className="mt-3 flex items-center gap-2 rounded-md border border-border bg-muted/40 py-1 pr-1 pl-3">
-                  <code className="flex-1 truncate font-mono text-xs text-muted-foreground">
-                    {sdk.install}
-                  </code>
-                  <CopyButton
-                    value={sdk.install}
-                    label={`Copy install command for ${sdk.name}`}
-                  />
+            <p className="mt-7 max-w-lg text-sm leading-relaxed opacity-80">
+              The executable backend path for local JWT verification,
+              tenant-scoped resources and authorization checks.
+            </p>
+
+            <div className="mt-auto flex items-center gap-2 rounded-md border border-black/10 bg-black/10 py-2 pr-2 pl-3">
+              <code className="min-w-0 flex-1 truncate font-mono text-xs">
+                {available.install}
+              </code>
+              <CopyButton
+                value={available.install}
+                label="Copy Go install command"
+                className="text-primary-foreground hover:bg-black/10 hover:text-primary-foreground"
+              />
+            </div>
+
+            <Link
+              href={available.href}
+              className="mt-5 inline-flex min-h-11 w-fit items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline"
+            >
+              Read the Go SDK guide
+              <ArrowRight className="size-4" aria-hidden />
+            </Link>
+          </article>
+
+          <div className="grid gap-4">
+            {previews.map((sdk) => (
+              <article
+                key={sdk.pkg}
+                className="flex min-h-38 flex-col rounded-lg border border-border bg-card p-6"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                      <Clock3 className="size-3.5" aria-hidden />
+                      SOURCE PREVIEW
+                    </div>
+                    <h3 className="mt-3 text-lg font-semibold tracking-tight">
+                      {sdk.name}
+                    </h3>
+                    <p className="mt-1 font-mono text-xs text-muted-foreground">
+                      {sdk.pkg}
+                    </p>
+                  </div>
+                  <a
+                    href={sdk.repository}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    aria-label={`Open ${sdk.name} source repository`}
+                    className="flex size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  >
+                    <ArrowUpRight className="size-4" aria-hidden />
+                  </a>
                 </div>
-
-                <div
-                  className="qid-shiki mt-4 flex-1 overflow-hidden rounded-lg border border-border bg-muted/30 text-left"
-                  // biome-ignore lint/security/noDangerouslySetInnerHtml: build-time Shiki output from trusted strings.
-                  dangerouslySetInnerHTML={{ __html: sdk.html }}
-                />
-
                 <Link
                   href={sdk.href}
-                  className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand-text hover:underline"
+                  className="mt-auto inline-flex min-h-11 items-center gap-2 text-sm font-medium text-brand-text underline-offset-4 hover:underline"
                 >
-                  Read the {sdk.name} docs
-                  <ArrowRight className="size-3.5" />
+                  Review the intended 0.1 surface
+                  <ArrowRight className="size-3.5" aria-hidden />
                 </Link>
-              </Card>
-            </Reveal>
-          ))}
+              </article>
+            ))}
+          </div>
         </div>
       </Container>
     </section>

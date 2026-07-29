@@ -1,9 +1,7 @@
 import { buttonVariants } from "@qeetrix/ui";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { GithubIcon } from "@/components/brand/icons";
 import { Container } from "@/components/ui/container";
-import { GradientText } from "@/components/ui/gradient-text";
 import { marketingLinks } from "@/config/marketing";
 import { cn } from "@/lib/cn";
 
@@ -13,43 +11,40 @@ import { cn } from "@/lib/cn";
  */
 export function CtaBand() {
   return (
-    <section className="pb-24 sm:pb-32">
+    <section className="relative isolate overflow-hidden border-y border-border bg-muted/25 py-18 sm:py-24">
+      <div aria-hidden className="qid-cta-grid absolute inset-0 -z-10" />
       <Container size="wide">
-        <div className="relative isolate overflow-hidden rounded-3xl border border-border bg-card px-6 py-16 text-center sm:px-16">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-40"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 -top-1/2 -z-10 h-full bg-brand-glow"
-          />
-          <h2 className="mx-auto max-w-2xl text-balance font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-            Start building on <GradientText>Qeet ID</GradientText>
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-pretty text-muted-foreground">
-            Read the quickstart, wire up an SDK, and authenticate your first
-            user today. Open source, self-hostable, and free to start.
-          </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16">
+          <div>
+            <h2 className="max-w-3xl text-balance font-display text-3xl font-semibold tracking-tight sm:text-5xl">
+              Begin with the path that works today.
+            </h2>
+            <p className="mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
+              Install the Go module, verify a session, and enforce a
+              tenant-scoped permission before expanding the identity surface.
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
             <Link
               href={marketingLinks.getStarted}
               className={cn(
                 buttonVariants({ variant: "default", size: "lg" }),
-                "text-white",
+                "min-h-11 rounded-md px-5 text-primary-foreground active:scale-[0.98]",
               )}
             >
-              Get started
-              <ArrowRight className="size-4" />
+              Open the Go quickstart
+              <ArrowRight className="size-4" aria-hidden />
             </Link>
             <a
-              href={marketingLinks.github}
+              href={marketingLinks.apiReference}
               target="_blank"
               rel="noreferrer noopener"
-              className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
+              className={cn(
+                buttonVariants({ variant: "outline", size: "lg" }),
+                "min-h-11 rounded-md px-5 active:scale-[0.98]",
+              )}
             >
-              <GithubIcon className="size-4" />
-              View on GitHub
+              Open the API reference
             </a>
           </div>
         </div>

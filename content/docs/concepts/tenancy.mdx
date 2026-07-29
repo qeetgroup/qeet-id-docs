@@ -1,17 +1,21 @@
 ---
-title: Multi-tenancy
-description: How Qeet ID isolates data between tenants.
+title: Organizations & Multi-tenancy
+description: How Qeet ID names and isolates each organization boundary.
 ---
 
-A **tenant** is the top-level isolation boundary in Qeet ID. Every user,
-organization, session and audit entry belongs to exactly one tenant, and a
-request can only ever see data within its own tenant.
+An **organization** is the top-level isolation boundary in Qeet ID. The API,
+database and token claims call the same boundary a **tenant**. These are two
+names for one object, not nested resources.
+
+Every user record, group, role, session and audit entry is scoped to an
+organization ID, and a request can only operate inside the organization carried
+by its credential.
 
 ## Why it matters
 
-Modelling tenancy from the start means you never have to re-architect to serve
-a second customer. A solo app and a multi-customer SaaS use the same primitives
-— the difference is just how many tenants exist.
+Modelling organizations from the start means you never have to re-architect to
+serve a second customer. A solo app and a multi-customer SaaS use the same
+primitives — the difference is how many organization boundaries exist.
 
 <Callout type="info">
   Isolation is enforced in the application layer today, with a Postgres
@@ -21,13 +25,14 @@ a second customer. A solo app and a multi-customer SaaS use the same primitives
 
 ## Scoping requests
 
-Server SDK calls are scoped by the tenant embedded in the verified session, so
-you rarely pass a tenant id explicitly — it comes from the token:
+Authorization calls are scoped with the tenant ID embedded in the verified
+session. Management operations still accept explicit tenant IDs where their
+SDK signatures require them:
 
 ```ts title="server.ts"
 const claims = await qeetid.sessions.verify(token);
 
-// claims.tenantId scopes every subsequent call.
+// Use the verified tenant, never a tenant supplied by the browser.
 const members = await qeetid.users.list({ tenant: claims.tenantId! });
 ```
 
