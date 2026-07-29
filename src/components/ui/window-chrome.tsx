@@ -20,7 +20,7 @@ export function WindowChrome({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-xl border border-border bg-card/80 shadow-xl shadow-black/5 backdrop-blur supports-backdrop-filter:bg-card/60",
+        "qid-card overflow-hidden rounded-lg border backdrop-blur supports-backdrop-filter:bg-card/60",
         className,
       )}
     >

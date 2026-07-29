@@ -29,11 +29,13 @@ export function CtaBand() {
               href={marketingLinks.getStarted}
               className={cn(
                 buttonVariants({ variant: "default", size: "lg" }),
-                "min-h-11 rounded-md px-5 text-primary-foreground active:scale-[0.98]",
+                "qid-button-primary group min-h-11 rounded-md px-5",
               )}
             >
               Open the Go quickstart
-              <ArrowRight className="size-4" aria-hidden />
+              <span className="qid-button-icon flex size-7 items-center justify-center rounded-sm transition-transform duration-300 group-hover:translate-x-0.5">
+                <ArrowRight className="size-4" aria-hidden />
+              </span>
             </Link>
             <a
               href={marketingLinks.apiReference}
@@ -41,7 +43,7 @@ export function CtaBand() {
               rel="noreferrer noopener"
               className={cn(
                 buttonVariants({ variant: "outline", size: "lg" }),
-                "min-h-11 rounded-md px-5 active:scale-[0.98]",
+                "qid-button-secondary min-h-11 rounded-md px-5",
               )}
             >
               Open the API reference

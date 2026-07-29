@@ -32,7 +32,7 @@ export default function NotFound() {
                 href="/docs"
                 className={cn(
                   buttonVariants({ variant: "default", size: "lg" }),
-                  "min-h-11 rounded-md text-primary-foreground",
+                  "qid-button-primary min-h-11 rounded-md",
                 )}
               >
                 <BookOpen className="size-4" aria-hidden />
@@ -42,7 +42,7 @@ export default function NotFound() {
                 href="/"
                 className={cn(
                   buttonVariants({ variant: "outline", size: "lg" }),
-                  "min-h-11 rounded-md",
+                  "qid-button-secondary min-h-11 rounded-md",
                 )}
               >
                 <ArrowLeft className="size-4" aria-hidden />

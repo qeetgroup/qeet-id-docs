@@ -26,7 +26,7 @@ export function IntegrationSteps() {
           {integrationSteps.map((step, i) => (
             <li
               key={step.title}
-              className="relative min-h-60 bg-card p-6 sm:p-7"
+              className="qid-card relative min-h-60 p-6 sm:p-7"
             >
               <div className="flex items-center justify-between gap-4">
                 <span className="font-mono text-xs font-semibold text-brand-text">

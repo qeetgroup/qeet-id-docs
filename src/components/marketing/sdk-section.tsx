@@ -27,7 +27,7 @@ export function SdkSection() {
         </div>
 
         <div className="mt-12 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-          <article className="relative flex min-h-80 flex-col overflow-hidden rounded-lg border border-brand-600/30 bg-brand-500 p-6 text-primary-foreground sm:p-8">
+          <article className="qid-featured-card relative flex min-h-80 flex-col overflow-hidden rounded-lg border p-6 sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2 text-xs font-semibold">
@@ -37,28 +37,28 @@ export function SdkSection() {
                 <h3 className="mt-5 font-display text-3xl font-semibold tracking-tight">
                   {available.name}
                 </h3>
-                <p className="mt-2 font-mono text-sm opacity-75">
+                <p className="qid-featured-muted mt-2 font-mono text-sm">
                   {available.pkg}
                 </p>
               </div>
-              <Badge className="rounded-md bg-primary-foreground/10 text-primary-foreground">
+              <Badge className="qid-featured-badge rounded-md">
                 0.1 preview
               </Badge>
             </div>
 
-            <p className="mt-7 max-w-lg text-sm leading-relaxed opacity-80">
+            <p className="qid-featured-muted mt-7 max-w-lg text-sm leading-relaxed">
               The executable backend path for local JWT verification,
               tenant-scoped resources and authorization checks.
             </p>
 
-            <div className="mt-auto flex items-center gap-2 rounded-md border border-black/10 bg-black/10 py-2 pr-2 pl-3">
+            <div className="mt-auto flex items-center gap-2 rounded-md border border-white/10 bg-white/6 py-2 pr-2 pl-3">
               <code className="min-w-0 flex-1 truncate font-mono text-xs">
                 {available.install}
               </code>
               <CopyButton
                 value={available.install}
                 label="Copy Go install command"
-                className="text-primary-foreground hover:bg-black/10 hover:text-primary-foreground"
+                className="text-white hover:bg-white/10 hover:text-white"
               />
             </div>
 
@@ -75,7 +75,7 @@ export function SdkSection() {
             {previews.map((sdk) => (
               <article
                 key={sdk.pkg}
-                className="flex min-h-38 flex-col rounded-lg border border-border bg-card p-6"
+                className="qid-card flex min-h-38 flex-col rounded-lg border p-6"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>

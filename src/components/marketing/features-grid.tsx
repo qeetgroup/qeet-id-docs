@@ -31,11 +31,11 @@ export function FeaturesGrid() {
               key={capability.title}
               href={capability.href}
               className={cn(
-                "group relative flex min-h-72 flex-col overflow-hidden rounded-lg border border-border bg-card p-6 transition-[transform,border-color,background-color] duration-300 ease-out hover:-translate-y-1 hover:border-brand-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 sm:p-7",
+                "qid-card qid-card-interactive group relative flex min-h-72 flex-col overflow-hidden rounded-lg border p-6 transition-[transform,border-color,background-color,box-shadow] duration-300 ease-out hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 sm:p-7",
                 index === 0 && "lg:col-span-7 lg:min-h-80",
-                index === 1 && "bg-brand-500/5 lg:col-span-5 lg:min-h-80",
+                index === 1 && "qid-card-warm lg:col-span-5 lg:min-h-80",
                 index === 2 && "lg:col-span-5",
-                index === 3 && "bg-muted/30 lg:col-span-7",
+                index === 3 && "lg:col-span-7",
                 index === 4 &&
                   "lg:col-span-12 lg:min-h-0 lg:flex-row lg:items-end lg:gap-12",
               )}

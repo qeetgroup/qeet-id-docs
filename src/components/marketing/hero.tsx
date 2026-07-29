@@ -83,11 +83,11 @@ export function Hero() {
                 href={marketingLinks.getStarted}
                 className={cn(
                   buttonVariants({ variant: "default", size: "lg" }),
-                  "group min-h-11 rounded-md px-5 text-primary-foreground active:scale-[0.98]",
+                  "qid-button-primary group min-h-11 rounded-md px-5",
                 )}
               >
                 Start with Go
-                <span className="flex size-7 items-center justify-center rounded-sm bg-primary-foreground/10 transition-transform duration-300 group-hover:translate-x-0.5">
+                <span className="qid-button-icon flex size-7 items-center justify-center rounded-sm transition-transform duration-300 group-hover:translate-x-0.5">
                   <ArrowRight className="size-4" aria-hidden />
                 </span>
               </Link>
@@ -95,7 +95,7 @@ export function Hero() {
                 href="/docs/architecture"
                 className={cn(
                   buttonVariants({ variant: "outline", size: "lg" }),
-                  "min-h-11 rounded-md px-5 active:scale-[0.98]",
+                  "qid-button-secondary min-h-11 rounded-md px-5",
                 )}
               >
                 Review the architecture
@@ -128,7 +128,7 @@ export function Hero() {
 function DecisionTrace() {
   return (
     <figure
-      className="qid-trace relative min-w-0 overflow-hidden rounded-lg border border-border bg-background/90 p-1.5"
+      className="qid-card qid-trace relative min-w-0 overflow-hidden rounded-lg border p-1.5"
       aria-labelledby="decision-trace-title"
     >
       <div className="rounded-[calc(var(--radius)-2px)] border border-border/70 bg-card">

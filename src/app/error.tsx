@@ -27,7 +27,7 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
             onClick={reset}
             className={cn(
               buttonVariants({ variant: "default", size: "lg" }),
-              "min-h-11 rounded-md text-primary-foreground",
+              "qid-button-primary min-h-11 rounded-md",
             )}
           >
             <RefreshCw className="size-4" aria-hidden />
@@ -37,7 +37,7 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
             href="/docs"
             className={cn(
               buttonVariants({ variant: "outline", size: "lg" }),
-              "min-h-11 rounded-md",
+              "qid-button-secondary min-h-11 rounded-md",
             )}
           >
             Documentation index

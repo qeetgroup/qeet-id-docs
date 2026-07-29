@@ -28,7 +28,7 @@ const domainNodes = [
 /** A semantic, responsive domain diagram for the core concepts page. */
 export function IdentityModel() {
   return (
-    <figure className="not-prose my-8 overflow-hidden rounded-lg border border-fd-border bg-fd-card">
+    <figure className="qid-card not-prose my-8 overflow-hidden rounded-lg border">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-fd-border px-5 py-4">
         <div>
           <p className="text-sm font-semibold text-fd-foreground">
