@@ -1,0 +1,54 @@
+---
+title: LDAP / Active Directory
+description: Authenticate and provision users against an LDAP or Active Directory server.
+---
+
+For customers who run an on-premises directory, Qeet ID can authenticate and
+just-in-time provision users against **LDAP / Active Directory**, per tenant.
+
+## How it works
+
+Each tenant configures an LDAP connection: the server URL (`ldaps://` or
+`ldap://` with StartTLS), a bind DN and password for the service account, a base
+DN, a user filter (for example `(uid=%s)`), and the attributes that map to email
+and name.
+
+At login, Qeet ID:
+
+<Steps>
+
+<Step>
+### Binds as the service account
+Using the configured bind DN to search the directory.
+</Step>
+
+<Step>
+### Finds the user
+By applying the user filter within the base DN.
+</Step>
+
+<Step>
+### Re-binds as the user
+Attempting a bind with the supplied password to verify the credential.
+</Step>
+
+<Step>
+### Provisions on success
+A matching Qeet ID user is just-in-time created (or matched) and issued a
+session.
+</Step>
+
+</Steps>
+
+<Callout type="warn">
+  LDAP bind requires the service-account password to be usable at connect time,
+  so it is stored to allow binding — protect the connection configuration
+  accordingly. The `skip_tls_verify` option exists only for lab environments;
+  never enable it against a real directory.
+</Callout>
+
+<Callout type="info">
+  Prefer SCIM where the directory supports it — it's push-based and covers the
+  full lifecycle. LDAP is the right choice when you must authenticate directly
+  against an existing on-prem directory.
+</Callout>

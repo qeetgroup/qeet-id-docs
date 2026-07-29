@@ -1,0 +1,50 @@
+---
+title: Compliance
+description: Compliance evidence, GDPR, data residency and current posture — stated honestly.
+---
+
+Qeet ID is built to make compliance work easier and to be honest about what it
+does and doesn't provide.
+
+## Compliance evidence
+
+Qeet ID includes a **compliance evidence engine** that runs a catalogue of live
+control checks against a tenant's *actual* system state — MFA and password
+policy, audit hash-chain integrity, retention, KMS/secrets, RBAC, IP rules, SIEM
+— each mapped to SOC 2 / ISO 27001 criteria codes (CC6.1, A.9.4, …) and returned
+as pass / fail / n/a with a human-readable reason. Runs are stored as immutable,
+timestamped snapshots and can be exported.
+
+<Callout type="warn">
+  This is **internal control reconciliation**, not a third-party attestation. It
+  produces evidence you can hand to an auditor — it does **not** constitute or
+  imply an issued SOC 2 or ISO 27001 report. Qeet ID does not claim to be
+  certified.
+</Callout>
+
+## GDPR
+
+- **Right to erasure** with a grace-period purge and tombstone.
+- **Data export** — an async job assembling a user's profile, sessions,
+  passkeys, roles and MFA state.
+- **Retention** policies that auto-purge data past its window.
+
+## Data residency
+
+Each organization records a `region`, and strict-residency customers can be
+placed on a dedicated database. Managed multi-region residency is partial and on
+the roadmap rather than fully shipped.
+
+## Current posture — what is *not* claimed
+
+<Callout type="info">
+  Being explicit so you can plan: Qeet ID has **not** completed an external
+  penetration test, an OpenID conformance run, or FIPS validation, and offers no
+  HIPAA BAA. These are tracked as pre-GA hardening on the
+  [roadmap](/docs/roadmap). Evaluate the developer preview accordingly.
+</Callout>
+
+## Reporting issues
+
+Security contact: **security@qeet.in** (`[SECURITY]` subject), or a GitHub
+Security Advisory — see [Security](/docs/security).

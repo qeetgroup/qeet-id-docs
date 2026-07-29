@@ -1,0 +1,63 @@
+---
+title: Provision Users with SCIM
+description: Automate the joiner / mover / leaver lifecycle from a customer's directory.
+---
+
+This guide connects a customer's identity provider to Qeet ID over **SCIM 2.0**,
+so users and groups stay in sync automatically — no manual account management.
+
+## Steps
+
+<Steps>
+
+<Step>
+### Issue a SCIM token
+Generate a per-tenant bearer token. It's shown once; only a hash is stored.
+
+```ts title="server.ts"
+const { token } = await qeetid.scim.createToken({ tenant: tenantId });
+// Hand `token` to the customer's IdP admin securely.
+```
+</Step>
+
+<Step>
+### Configure the IdP
+In Okta / Entra, add a provisioning app pointing at your SCIM base URL with the
+bearer token:
+
+```text
+Base URL:  https://api.example.com/scim/v2
+Auth:      Bearer <token>
+```
+</Step>
+
+<Step>
+### Map attributes and enable push
+Map the IdP's user and group attributes to SCIM, then enable Create / Update /
+Deactivate and group push.
+</Step>
+
+<Step>
+### Map groups to roles
+Directory groups arrive as Qeet ID [groups](/docs/concepts/organizations). Grant
+each group a role so membership drives access:
+
+```ts title="server.ts"
+await qeetid.groups.assignRole({ tenant: tenantId, group: groupId, role: "member" });
+```
+</Step>
+
+</Steps>
+
+## The result
+
+- **Joiner:** created in the directory → provisioned in Qeet ID, with roles from
+  their groups.
+- **Mover:** group change in the directory → roles update automatically.
+- **Leaver:** deactivated in the directory → suspended in Qeet ID immediately,
+  and their sessions can't outlive the suspension.
+
+<Callout type="info">
+  SCIM handles the lifecycle; [SAML SSO](/docs/guides/add-enterprise-sso) handles
+  sign-in. Most enterprise rollouts configure both.
+</Callout>

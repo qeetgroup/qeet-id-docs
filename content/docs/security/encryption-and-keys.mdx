@@ -1,0 +1,49 @@
+---
+title: Encryption & Keys
+description: Password hashing, token signing, secret encryption and bring-your-own-key.
+---
+
+Qeet ID uses well-understood, modern cryptography throughout, and all randomness
+comes from a cryptographically secure source.
+
+## Password hashing
+
+Passwords are hashed with **Argon2id** at OWASP baseline parameters
+(m = 19 MiB, t = 2, p = 1), PHC-encoded. Legacy **bcrypt** hashes are still
+_verified_ for older accounts and transparently upgraded to Argon2id on the next
+successful login. The same hashing helper protects client secrets, API keys and
+MFA recovery codes.
+
+## Token signing
+
+Access and ID tokens are signed with **ES256** (ECDSA P-256) — asymmetric, so
+relying parties verify with the public JWKS and Qeet ID never shares a secret.
+The key id (`kid`) is an RFC 7638 JWK thumbprint, which makes rotation
+transparent: a new key joins the JWKS, and the old one is retained through a
+grace window before removal.
+
+## Secrets at rest
+
+Per-tenant secrets are encrypted with **AES-256-GCM** using a random nonce;
+plaintext is never persisted, and every reveal is audited. The
+[Token Vault](/docs/agents) reuses the same key provider to protect third-party
+OAuth tokens.
+
+## Bring your own key (BYOK)
+
+The key provider supports both a static environment key and **AWS KMS envelope
+encryption**, where KMS is called only for key operations. BYOK lets you hold the
+root key.
+
+<Callout type="warn">
+  The KMS BYOK provider is implemented, wired and tested, but going live is a
+  provisioning step — you supply a live customer-managed key (CMK). Until then,
+  the static-key provider is used. See the [roadmap](/docs/roadmap).
+</Callout>
+
+## Transport & CSRF
+
+TLS is terminated at the deployment edge (a reverse proxy), so the application
+server itself never handles certificates — see
+[self-hosting](/docs/architecture/self-hosting). Browser flows are protected by a
+double-submit HMAC CSRF scheme, which production refuses to run without.

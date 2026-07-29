@@ -1,0 +1,12 @@
+{
+  "title": "Guides",
+  "description": "Task-focused walkthroughs",
+  "icon": "Sparkles",
+  "root": true,
+  "pages": [
+    "index",
+    "add-enterprise-sso",
+    "provision-users-with-scim",
+    "verify-sessions-in-go"
+  ]
+}

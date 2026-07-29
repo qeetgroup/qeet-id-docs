@@ -1,0 +1,49 @@
+---
+title: React SDK
+description: Components and hooks for the browser — @qeet-id/react.
+---
+
+`@qeet-id/react` provides a provider, guard components and hooks for building
+authenticated React apps. It talks to your own backend routes, which hold the
+API key — no secrets ship to the browser.
+
+## Install
+
+```bash title="Terminal"
+bun add @qeet-id/react
+```
+
+## Wrap your app
+
+```tsx title="App.tsx"
+import { QeetIDProvider, SignedIn, SignedOut, SignInButton } from "@qeet-id/react";
+
+export function App() {
+  return (
+    <QeetIDProvider loginUrl="/api/auth/login" logoutUrl="/api/auth/logout">
+      <SignedIn>
+        <Dashboard />
+      </SignedIn>
+      <SignedOut>
+        <SignInButton />
+      </SignedOut>
+    </QeetIDProvider>
+  );
+}
+```
+
+## Read the current user
+
+```tsx title="Profile.tsx"
+import { useUser } from "@qeet-id/react";
+
+export function Profile() {
+  const { user } = useUser();
+  return <span>{user?.email}</span>;
+}
+```
+
+<Callout type="info">
+  A companion `@qeet-id/nextjs` package for App Router route handlers in redirect
+  mode is referenced by the React SDK — check the roadmap for availability.
+</Callout>

@@ -1,0 +1,5 @@
+{
+  "title": "Provisioning",
+  "icon": "RefreshCw",
+  "pages": ["index", "scim", "ldap"]
+}

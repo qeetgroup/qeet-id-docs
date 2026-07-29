@@ -1,0 +1,83 @@
+---
+title: Installation
+description: Install a Qeet ID SDK and configure your environment.
+---
+
+Qeet ID ships typed SDKs for the most common stacks. Install the one that
+matches your runtime, then set the environment variables the client reads.
+
+## Install
+
+<Tabs items={["Node", "React", "Go"]}>
+
+<Tab value="Node">
+
+```bash title="Terminal"
+bun add @qeet-id/node
+```
+
+</Tab>
+
+<Tab value="React">
+
+```bash title="Terminal"
+bun add @qeet-id/react
+```
+
+</Tab>
+
+<Tab value="Go">
+
+```bash title="Terminal"
+go get github.com/qeetgroup/qeet-id-go
+```
+
+</Tab>
+
+</Tabs>
+
+## Configure the environment
+
+The server SDKs read configuration from the environment. At minimum, set your
+API key; the issuer URL is discovered automatically.
+
+```bash title=".env"
+QEETID_API_KEY=qk_live_xxxxxxxxxxxxxxxxxxxx
+QEETID_URL=https://id.example.com
+```
+
+<Callout type="info">
+  API keys are prefixed `qk_` and sent as `Authorization: ApiKey qk_…`. The SDKs
+  add this header for you — you only set `QEETID_API_KEY`.
+</Callout>
+
+<TypeTable
+  type={{
+    QEETID_API_KEY: {
+      description: "Secret API key for your application. Server-side only.",
+      type: "string",
+      required: true,
+    },
+    QEETID_URL: {
+      description: "Issuer base URL. Used for zero-config OIDC discovery.",
+      type: "string",
+      default: "https://id.qeet.in",
+    },
+  }}
+/>
+
+<Callout type="warn">
+  Treat `QEETID_API_KEY` like a password. Keep it out of client bundles and
+  version control — load it from a secret manager in production.
+</Callout>
+
+## Verify your setup
+
+A successful install can reach the discovery document:
+
+```bash title="Terminal"
+curl "$QEETID_URL/.well-known/openid-configuration"
+```
+
+If that returns JSON with an `issuer` and `jwks_uri`, you're ready for the
+[quickstart](/docs/getting-started/quickstart).

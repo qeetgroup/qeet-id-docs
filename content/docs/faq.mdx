@@ -1,0 +1,63 @@
+---
+title: FAQ
+description: Frequently asked questions about Qeet ID.
+icon: MessageCircle
+---
+
+<Accordions>
+
+<Accordion title="Is Qeet ID open source?">
+Yes — the core is MIT-licensed and fully [self-hostable](/docs/architecture/self-hosting).
+A managed cloud tier adds support, SLAs, BYOK and data residency, but the
+identity engine itself is free forever.
+</Accordion>
+
+<Accordion title="What does “no SSO tax” mean?">
+[SAML SSO](/docs/authentication/enterprise-sso), [SCIM](/docs/provisioning/scim),
+LDAP and [RBAC](/docs/authorization/rbac) are part of the core product, never an
+enterprise upsell. You're not charged a premium to connect an enterprise
+identity provider.
+</Accordion>
+
+<Accordion title="How is it priced?">
+There is no per-monthly-active-user fee. The open-source core is free; the
+managed cloud uses flat-rate plans, so you scale users without watching a meter.
+</Accordion>
+
+<Accordion title="Which authorization model should I use?">
+Start with [RBAC](/docs/authorization/rbac) (roles and permissions). Reach for
+[ReBAC](/docs/authorization/rebac) when access depends on a relationship to a
+specific object, and [ABAC](/docs/authorization/abac) for contextual policies.
+All three are built in and all are explainable.
+</Accordion>
+
+<Accordion title="Do I have to store passwords?">
+No. A [passkey](/docs/authentication/passkeys) alone can create and access an
+account. When passwords are used they're hashed with Argon2id — but passwordless
+is a first-class path.
+</Accordion>
+
+<Accordion title="Does it use PostgreSQL row-level security?">
+Not today. Tenant isolation is enforced in the application layer (per-query
+scoping plus a router guard); database-level RLS is a planned defense-in-depth
+improvement. See [data isolation](/docs/security/data-isolation).
+</Accordion>
+
+<Accordion title="Where is the API reference?">
+The complete OpenAPI reference is served separately in Scalar and linked from the
+top navigation. This portal is the conceptual and how-to documentation.
+</Accordion>
+
+<Accordion title="Is Qeet ID production-ready?">
+It's in active **developer preview**. The architecture, SDKs and console are
+usable now; external pentest, OpenID conformance and KMS BYOK go-live are tracked
+on the [roadmap](/docs/roadmap). Evaluate accordingly.
+</Accordion>
+
+<Accordion title="How does it relate to the other Qeet products?">
+Qeet ID is the identity hub of the Qeet Group suite — every product authenticates
+through it as an OIDC relying party. It emits events that Qeet Notify delivers and
+Qeet Logs analyzes. See [architecture](/docs/architecture).
+</Accordion>
+
+</Accordions>

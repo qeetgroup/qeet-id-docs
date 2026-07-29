@@ -1,0 +1,67 @@
+---
+title: SCIM Provisioning
+description: SCIM 2.0 inbound user and group provisioning from customer identity providers.
+---
+
+Qeet ID implements **SCIM 2.0** (RFC 7643 / 7644) so your customers' identity
+providers (Okta, Microsoft Entra, and others) can automatically create, update,
+deactivate and group users in your application.
+
+## What's supported
+
+- **Users and Groups**, with `PatchOp` for incremental updates.
+- The standard discovery resources: `ServiceProviderConfig`, `ResourceTypes` and
+  `Schemas`.
+- Full CRUD under the SCIM base path.
+
+The SCIM protocol surface is served under:
+
+```text
+/scim/v2/ServiceProviderConfig
+/scim/v2/ResourceTypes
+/scim/v2/Schemas
+/scim/v2/Users
+/scim/v2/Groups
+```
+
+SCIM groups reuse Qeet ID [groups](/docs/concepts/organizations), carrying an
+`external_id` so directory groups map cleanly onto your teams and their roles.
+
+## Authentication
+
+Each tenant provisions its own SCIM **bearer token**. Only a SHA-256 hash and a
+short prefix are stored — the raw token is shown once — and it can be rotated or
+revoked from the admin API at any time.
+
+```ts title="server.ts"
+// Issue a SCIM token for a tenant (returned once, store it securely).
+const { token } = await qeetid.scim.createToken({ tenant: tenantId });
+```
+
+## Wiring up an IdP
+
+<Steps>
+
+<Step>
+### Generate a SCIM token
+Create one per tenant and hand it to the customer's IdP admin.
+</Step>
+
+<Step>
+### Configure the IdP
+In Okta/Entra, add Qeet ID's SCIM base URL and the bearer token as a
+provisioning app.
+</Step>
+
+<Step>
+### Map attributes & push
+The IdP pushes Users and Groups; Qeet ID provisions them, and group membership
+drives [role inheritance](/docs/authorization/roles-and-permissions).
+</Step>
+
+</Steps>
+
+<Callout type="info">
+  Deactivating a user in the source directory flows through as a suspension in
+  Qeet ID, so offboarding is immediate and auditable.
+</Callout>

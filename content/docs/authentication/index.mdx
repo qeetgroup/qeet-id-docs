@@ -1,0 +1,45 @@
+---
+title: Authentication
+description: Passkeys, MFA, OAuth/OIDC, social and enterprise SSO — how users prove who they are.
+---
+
+Authentication is how a user proves their identity. Qeet ID is
+**passkeys-first** — WebAuthn is a primary credential, not a bolt-on — and ships
+the full range of factors and federation protocols enterprises expect, none of
+them behind a paywall.
+
+## Methods
+
+<Cards>
+  <Card title="Passkeys & WebAuthn" href="/docs/authentication/passkeys" description="Phishing-resistant credentials — and passwordless signup." />
+  <Card title="Multi-factor auth" href="/docs/authentication/mfa" description="TOTP, recovery codes, step-up and adaptive risk." />
+  <Card title="OAuth & OIDC" href="/docs/authentication/oauth-and-oidc" description="A full OpenID Provider: PKCE, device flow, CIBA, token exchange." />
+  <Card title="Enterprise SSO (SAML)" href="/docs/authentication/enterprise-sso" description="SAML 2.0 — as both a service provider and an identity provider." />
+  <Card title="Social logins" href="/docs/authentication/social-logins" description="Google, Microsoft, Apple, GitHub and custom OIDC." />
+  <Card title="Hosted login" href="/docs/authentication/hosted-login" description="The managed, themeable login experience." />
+</Cards>
+
+<Callout type="info">
+  Every Qeet Group product authenticates through Qeet ID as an OIDC relying
+  party — the flows you'll use are the ones the whole suite runs on.
+</Callout>
+
+## Passwords, when you use them
+
+Passwords are optional — a passkey alone can create and access an account. When a
+password _is_ used, it's hashed with **Argon2id** (OWASP baseline parameters),
+with per-account lockout and an optional [Have I Been Pwned](https://haveibeenpwned.com)
+breach check. Legacy bcrypt hashes are verified and transparently upgraded on
+next login.
+
+<Callout type="warn">
+  Never handle raw credentials yourself. Use the SDKs or hosted login — Qeet ID
+  owns hashing, lockout, MFA and risk evaluation so you don't have to.
+</Callout>
+
+## Hosted vs. embedded
+
+You can send users to a [hosted login](/docs/authentication/hosted-login) page
+(fastest, fully managed and themeable) or **embed** the flow in your own UI with
+the SDKs. Both use the same endpoints, so you can start hosted and move in-app
+later without changing your backend.

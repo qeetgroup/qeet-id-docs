@@ -1,0 +1,72 @@
+---
+title: Passkeys & WebAuthn
+description: Phishing-resistant passkeys as a primary credential — including passwordless signup.
+---
+
+Qeet ID treats **passkeys** (WebAuthn / FIDO2) as a first-class credential. A
+passkey is a device-bound key pair that never leaves the authenticator, so
+there's no shared secret to phish, leak or reuse.
+
+## What's supported
+
+- **Passwordless signup.** A passkey can create a brand-new account — no password
+  required at any point.
+- **Discoverable (resident) credentials**, so users can authenticate without
+  first typing a username.
+- **Cross-device passkeys** synced through the platform authenticator (iCloud
+  Keychain, Google Password Manager, etc.).
+- **Passkeys as a second factor** alongside a password, when you prefer that.
+
+<Callout type="info">
+  Passkeys are the recommended default for new applications: they're both
+  stronger and lower-friction than passwords.
+</Callout>
+
+## The ceremonies
+
+WebAuthn uses a two-step "begin / complete" handshake for both registration and
+login. The SDKs and hosted login handle these for you; the underlying endpoints
+are:
+
+| Purpose | Begin | Complete |
+| --- | --- | --- |
+| Register a passkey | `POST /v1/passkeys/register/begin` | `POST /v1/passkeys/register/complete` |
+| Sign in | `POST /v1/passkeys/login/begin` | `POST /v1/passkeys/login/complete` |
+| Passwordless signup | `POST /signup/passkey/begin` | `POST /signup/passkey/complete` |
+
+Each challenge issued by a `begin` call is valid for **5 minutes** and single-use,
+which defeats replay attacks.
+
+## In the browser (React)
+
+The React SDK exposes a `usePasskeys` hook and a capability check:
+
+```tsx title="PasskeySetup.tsx"
+import { usePasskeys, isWebAuthnSupported } from "@qeet-id/react";
+
+export function PasskeySetup() {
+  const { register, credentials } = usePasskeys();
+
+  if (!isWebAuthnSupported()) {
+    return <p>This browser doesn't support passkeys.</p>;
+  }
+
+  return (
+    <div>
+      <button onClick={() => register()}>Add a passkey</button>
+      <p>{credentials.length} passkey(s) registered</p>
+    </div>
+  );
+}
+```
+
+<Callout type="warn">
+  Passkeys are bound to an **origin** (your domain). In development, make sure
+  the server's `WEBAUTHN_RP_ID` / `WEBAUTHN_RP_ORIGINS` match the origin your app
+  runs on, or ceremonies will fail.
+</Callout>
+
+## Next
+
+- Layer on [multi-factor auth](/docs/authentication/mfa) for step-up scenarios.
+- Understand how the resulting [sessions and tokens](/docs/concepts/sessions-and-tokens) work.

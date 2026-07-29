@@ -1,0 +1,65 @@
+---
+title: Users
+description: The user model — identity, lifecycle and metadata.
+---
+
+A **user** is a human (or, occasionally, a service) identity that belongs to
+exactly one [tenant](/docs/concepts/tenancy). Users are the subjects that
+authenticate and that authorization decisions are made about.
+
+## The model
+
+- **Tenant-scoped & email-unique.** A user is unique on
+  `(tenant_id, lower(email))` — the same email can exist in different tenants,
+  but not twice in one.
+- **Status:** `active`, `invited`, `suspended`, or `deleted` (soft delete).
+- **Metadata:** an open JSONB bag for your own attributes.
+- **Provisioning provenance:** SCIM-provisioned users carry an `external_id` and
+  a `provisioned_via` marker, so directory-managed accounts are distinguishable
+  from self-signups.
+
+## Lifecycle
+
+<Steps>
+
+<Step>
+### Created
+By self-signup (passkey or password), invitation acceptance, JIT provisioning
+from SSO/social, or SCIM.
+</Step>
+
+<Step>
+### Active
+The user can authenticate and hold roles. Profile and credentials are managed
+via the SDKs or hosted UI.
+</Step>
+
+<Step>
+### Suspended
+Access is blocked immediately — a suspended user's still-valid refresh token is
+rejected, so sessions don't outlive the suspension.
+</Step>
+
+<Step>
+### Deleted
+Soft-deleted first (tombstoned), then purged after a grace period. GDPR erasure
+follows the same path — see [security & compliance](/docs/security/compliance).
+</Step>
+
+</Steps>
+
+## Creating a user (Node)
+
+```ts title="server.ts"
+const user = await qeetid.users.create({
+  tenant: tenantId,
+  email: "ada@example.com",
+  metadata: { plan: "pro" },
+});
+```
+
+<Callout type="info">
+  Grouping users into teams and granting them roles is an
+  [organization](/docs/concepts/organizations) concern — see there for
+  memberships, groups and invitations.
+</Callout>

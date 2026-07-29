@@ -1,0 +1,134 @@
+---
+title: Quickstart
+description: Install an SDK, authenticate a user, and authorize a request — end to end.
+---
+
+This quickstart takes you from an empty project to a verified session and an
+authorization check. It should take about five minutes.
+
+<Callout type="info">
+  You'll need a Qeet ID application and an API key. Create one in the console,
+  then set `QEETID_API_KEY` in your environment before you begin.
+</Callout>
+
+## 1. Install the SDK
+
+Pick the client for your stack:
+
+<Tabs items={["Node", "React", "Go"]}>
+
+<Tab value="Node">
+
+```bash title="Terminal"
+bun add @qeet-id/node
+```
+
+</Tab>
+
+<Tab value="React">
+
+```bash title="Terminal"
+bun add @qeet-id/react
+```
+
+</Tab>
+
+<Tab value="Go">
+
+```bash title="Terminal"
+go get github.com/qeetgroup/qeet-id-go
+```
+
+</Tab>
+
+</Tabs>
+
+## 2. Initialize the client
+
+Create a single client instance and reuse it across requests.
+
+<Tabs items={["Node", "Go"]}>
+
+<Tab value="Node">
+
+```ts title="lib/qeetid.ts"
+import { QeetID } from "@qeet-id/node";
+
+export const qeetid = new QeetID({
+  apiKey: process.env.QEETID_API_KEY!,
+});
+```
+
+</Tab>
+
+<Tab value="Go">
+
+```go title="qeetid.go"
+client := qeetid.New(qeetid.Config{
+	APIKey: os.Getenv("QEETID_API_KEY"),
+})
+```
+
+</Tab>
+
+</Tabs>
+
+## 3. Authenticate a user
+
+The fastest path is hosted login: send the user to Qeet ID, and they return
+with a session. In React, the provider wires this up for you.
+
+```tsx title="App.tsx"
+import { QeetIDProvider, SignedIn, SignedOut, SignInButton } from "@qeet-id/react";
+
+export function App() {
+  return (
+    <QeetIDProvider loginUrl="/api/auth/login" logoutUrl="/api/auth/logout">
+      <SignedIn>
+        <Dashboard />
+      </SignedIn>
+      <SignedOut>
+        <SignInButton />
+      </SignedOut>
+    </QeetIDProvider>
+  );
+}
+```
+
+<Callout type="warn">
+  Never expose your API key in client code. The React SDK talks to your own
+  backend routes, which hold the key server-side.
+</Callout>
+
+## 4. Verify the session and authorize
+
+On the server, verify the session token locally (against cached JWKS — no
+network round-trip) and ask an explainable authorization question.
+
+```ts title="server.ts"
+// Verify the session token.
+const claims = await qeetid.sessions.verify(token);
+
+// Check a permission — add ?explain=true to get the full grant path.
+const allowed = await qeetid.permissions.check({
+  user: claims.userId!,
+  tenant: claims.tenantId!,
+  permission: "billing:write",
+});
+
+if (!allowed) throw new Response("Forbidden", { status: 403 });
+```
+
+<Callout type="success">
+  That's the full loop: install, authenticate, verify, authorize. Everything
+  else in these docs builds on these four steps.
+</Callout>
+
+## Next steps
+
+<Cards>
+  <Card title="Core concepts" href="/docs/concepts" description="Understand tenants, sessions and tokens." />
+  <Card title="Authentication" href="/docs/authentication" description="Passkeys, MFA and enterprise SSO." />
+  <Card title="Authorization" href="/docs/authorization" description="RBAC and explainable permission checks." />
+  <Card title="SDKs" href="/docs/sdks" description="Full reference for each client." />
+</Cards>

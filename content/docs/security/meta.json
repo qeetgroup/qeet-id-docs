@@ -1,0 +1,5 @@
+{
+  "title": "Security",
+  "icon": "Lock",
+  "pages": ["index", "data-isolation", "encryption-and-keys", "compliance"]
+}

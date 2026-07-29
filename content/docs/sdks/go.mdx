@@ -1,0 +1,45 @@
+---
+title: Go SDK
+description: The backend client for Go services — qeet-id-go.
+---
+
+`qeet-id-go` is the backend client for Go services. It mirrors the Node client's
+resource model with idiomatic Go signatures and `context.Context` throughout.
+
+## Install
+
+```bash title="Terminal"
+go get github.com/qeetgroup/qeet-id-go
+```
+
+## Initialize
+
+```go title="qeetid.go"
+client := qeetid.New(qeetid.Config{
+	APIKey: os.Getenv("QEETID_API_KEY"),
+})
+```
+
+## Common operations
+
+```go title="main.go"
+// Create a user.
+user, err := client.Users.Create(ctx, qeetid.CreateUserInput{
+	Email: "ada@example.com",
+})
+
+// Verify a session token.
+claims, err := client.Sessions.Verify(ctx, token)
+
+// Check a permission.
+allowed, err := client.Permissions.Check(ctx, qeetid.PermissionCheck{
+	User:       claims.UserID,
+	Tenant:     claims.TenantID,
+	Permission: "billing:write",
+})
+```
+
+<Callout type="info">
+  Every method takes a `context.Context` and returns a typed result plus an
+  error, following standard Go conventions.
+</Callout>

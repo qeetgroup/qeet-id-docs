@@ -1,0 +1,39 @@
+---
+title: Data Isolation
+description: How Qeet ID keeps tenant data apart.
+---
+
+Every record in Qeet ID belongs to exactly one [tenant](/docs/concepts/tenancy),
+and a request can only ever reach data within its own tenant. Isolation is
+enforced in the **application layer** today.
+
+## The enforcement layers
+
+- **Every tenant-scoped query carries `WHERE tenant_id = $1`.** This is the
+  primary boundary.
+- **A router-level guard rejects tenant mismatches.** Any request whose URL
+  `{tenantID}` doesn't match the caller's token tenant is refused before it
+  reaches a handler — closing the door on cross-tenant access via a swapped path
+  parameter.
+- **The `tid` claim is the source of truth.** Switching tenants goes through an
+  endpoint that re-verifies membership.
+- **Six logical schemas** (`tenant`, `user`, `auth`, `rbac`, `audit`,
+  `platform`) namespace the data model; there are no cross-schema joins.
+
+Per-tenant secrets are encrypted with a key **derived per tenant** (HKDF from a
+master key salted with the tenant id), so one tenant's data can't be decrypted
+with another's derived key.
+
+<Callout type="warn">
+  Isolation is currently enforced by application code and a router guard, **not**
+  by PostgreSQL row-level security (RLS). Database-level RLS as a defense-in-depth
+  layer is a planned improvement, not a shipped feature — track it on the
+  [roadmap](/docs/roadmap). For the strictest requirements, a dedicated
+  single-tenant database deployment is available.
+</Callout>
+
+## What this means for you
+
+If you build on the SDKs, isolation is automatic — the tenant comes from the
+verified session, and you rarely pass a tenant id explicitly. If you call the API
+directly, always derive the tenant from the token, never from client input.

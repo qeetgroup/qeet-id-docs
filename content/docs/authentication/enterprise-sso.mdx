@@ -1,0 +1,61 @@
+---
+title: Enterprise SSO (SAML)
+description: SAML 2.0 single sign-on — Qeet ID as both a service provider and an identity provider.
+---
+
+Qeet ID speaks **SAML 2.0** in both directions, per tenant, as part of the core
+product — there is no "SSO tax."
+
+- **As a Service Provider (SP):** let a customer's enterprise IdP (Okta, Entra,
+  Ping, …) sign users into your app.
+- **As an Identity Provider (IdP):** make Qeet ID the SSO source for downstream
+  applications.
+
+<Callout type="info">
+  Supporting both SP **and** IdP modes is unusual — many CIAM vendors offer SP
+  only. It means Qeet ID can sit on either side of a federation.
+</Callout>
+
+## Connecting a customer's IdP (SP mode)
+
+Each connection is a per-tenant record binding your tenant to one external IdP.
+
+<Steps>
+
+<Step>
+### Create the connection
+Register the IdP's EntityID, SSO URL and signing certificate, and map the
+assertion attributes (email, name) onto the Qeet ID user profile. Connections
+start in `draft`.
+</Step>
+
+<Step>
+### Verify and activate
+Run a test assertion; once it validates against the IdP certificate, flip the
+connection to `active`.
+</Step>
+
+<Step>
+### Users sign in
+On login, Qeet ID redirects to the IdP, validates the returned assertion at its
+ACS endpoint, and **just-in-time provisions** the user if they're new.
+</Step>
+
+</Steps>
+
+<Callout type="info">
+  The browser never sees tokens in a URL. After a valid assertion, Qeet ID issues
+  a one-time login code that the app exchanges server-side for the session token
+  pair.
+</Callout>
+
+## Qeet ID as the IdP
+
+To make Qeet ID the SSO source for a downstream SP, register that SP's EntityID
+/ audience, its ACS URL, the NameID format and attribute, and (optionally) its
+certificate. Qeet ID then issues signed assertions to it.
+
+## Related
+
+- Automate the user lifecycle with [SCIM provisioning](/docs/provisioning/scim).
+- Bind SSO to a verified [custom domain](/docs/concepts/organizations).

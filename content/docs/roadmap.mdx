@@ -1,0 +1,52 @@
+---
+title: Roadmap
+description: Where Qeet ID is today and what's coming next.
+icon: Map
+---
+
+Qeet ID is in **active developer preview**. The architecture, SDKs and console
+are usable today; this page tracks the path toward general availability.
+
+<Callout type="warn">
+  Dates and scope are indicative and will change. Treat the preview as
+  production-capable for evaluation, not yet for regulated production workloads.
+</Callout>
+
+## Available now
+
+<Steps>
+
+<Step>
+### Core identity engine
+OIDC provider, users, sessions, organizations and multi-tenancy.
+</Step>
+
+<Step>
+### Authorization with explainability
+RBAC with grant-path explanations via `?explain=true`.
+</Step>
+
+<Step>
+### Provable audit log
+SHA-256 hash-chained events with a public verification endpoint.
+</Step>
+
+<Step>
+### SDKs
+Typed clients for Node, React and Go (pre-1.0).
+</Step>
+
+</Steps>
+
+## On the horizon
+
+- Database-level tenant isolation (Postgres RLS) graduating from pilot.
+- Passkey-first, password-optional signup.
+- A `qeetid` CLI (`init` / `dev` / `doctor`).
+- Release assurance: external pentest and OpenID conformance run.
+- Managed cloud general availability.
+
+<Callout type="info">
+  Following along or self-hosting? Watch the repositories on
+  [GitHub](https://github.com/qeetgroup) for release notes.
+</Callout>

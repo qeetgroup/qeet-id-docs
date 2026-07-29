@@ -1,0 +1,76 @@
+---
+title: Machine & Agent Identity
+description: First-class identity for services and AI agents — ephemeral tokens, delegation and a kill-switch.
+icon: Bot
+---
+
+Qeet ID treats non-human principals — services and AI agents — as first-class
+identities, not an afterthought bolted onto user auth. Agents self-describe in
+their tokens (`actor_type=agent`, `agent_id`), so downstream systems can gate
+them specifically.
+
+## Ephemeral agent tokens
+
+An agent authenticates with a secret (prefixed `agt_`) and receives a
+**short-lived** JWT — re-minted per task, never refreshed:
+
+```bash title="Terminal"
+curl -X POST "$QEETID_URL/v1/agents/token" \
+  -H "Authorization: Bearer $AGENT_SECRET" \
+  -d '{ "scope": ["billing:read"], "ttl": "5m" }'
+```
+
+The issued token's scope is the **intersection** of what was requested and what
+the agent is allowed, and its lifetime is `min(requested, max_ttl)` — typically
+seconds to an hour.
+
+## Lifecycle & sponsors
+
+Every agent has a lifecycle state — `active`, `suspended`, `decommissioned` —
+and a named human **sponsor** (a real tenant member accountable for it). Because
+a request-time check enforces agent status on every call, suspending an agent
+takes effect immediately even though its tokens are stateless. Offboarding a
+sponsor can transfer all their agents in one operation.
+
+## The kill-switch
+
+When something goes wrong, one call suspends **every** active agent in a tenant:
+
+```bash title="Terminal"
+curl -X POST "$QEETID_URL/v1/tenants/$TENANT_ID/agents/kill-all" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+It emits an `agent.kill_switch` event and writes an audit row.
+
+<Callout type="warn">
+  The kill-switch is a blunt, tenant-wide instrument for incident response. It
+  suspends all agents at once — use it when you'd rather stop everything than
+  reason about which agent misbehaved.
+</Callout>
+
+## Delegation (on-behalf-of)
+
+Using OIDC **token exchange** (RFC 8693), a service can exchange a user's token
+for a downscoped token that carries an `act` claim identifying the acting
+service — the basis for agents acting on a user's behalf without impersonating
+them. Token introspection (`/oauth/introspect`) exposes `actor_type`, `agent_id`
+and `act`, so an MCP gateway or API can make agent-aware decisions.
+
+## Token Vault
+
+For agents that call third-party APIs, the **Token Vault** stores encrypted
+third-party OAuth tokens per tenant and auto-refreshes them, never exposing raw
+refresh tokens. A delegated agent token can reach the delegating user's connected
+accounts.
+
+<Callout type="info">
+  Token Vault and CIBA are governed by the same primitives as the rest of agent
+  identity but are currently **API-only** — no console UI yet.
+</Callout>
+
+## On the roadmap
+
+Device-bound agent credentials (mTLS / hardware-attested keys), a SCIM extension
+for agents, and a Rust machine-identity SDK are planned — see the
+[roadmap](/docs/roadmap).

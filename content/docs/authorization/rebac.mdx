@@ -1,0 +1,50 @@
+---
+title: ReBAC
+description: Relationship-based access control, Zanzibar-style, for per-object permissions.
+---
+
+Relationship-based access control (ReBAC) answers a different question from RBAC:
+not "does this user have permission `X`?" but "is this user **related** to _this
+specific object_ in a way that grants access?" It's the model behind Google
+Zanzibar and OpenFGA — ideal for sharing, hierarchies and per-document access.
+
+## Relation tuples
+
+Access is expressed as **relation tuples**: `object#relation@subject`. For
+example:
+
+```text
+document:readme#viewer@user:ada
+document:readme#editor@user:grace
+folder:handbook#parent@document:readme
+```
+
+A **userset** lets a relation reference a set of subjects
+(`type:id#relation`), so you can say "everyone who can edit the parent folder can
+view this document."
+
+## Checking a relationship
+
+Qeet ID's `Check` walks the relationship graph recursively — following usersets
+and inherited relations — with a cycle guard and a maximum depth:
+
+```ts title="server.ts"
+const allowed = await qeetid.relationships.check({
+  tenant: tenantId,
+  object: "document:readme",
+  relation: "viewer",
+  subject: "user:ada",
+});
+```
+
+<Callout type="info">
+  Reach for ReBAC when permissions depend on _which_ object is involved —
+  document sharing, nested folders, org hierarchies — where a flat role can't
+  capture "…but only for the things they own."
+</Callout>
+
+## Explanations
+
+Like RBAC, ReBAC checks accept `?explain=true` and return the **root-to-leaf
+chain** of relation tuples that produced the decision — invaluable for debugging
+"why can this user see this?" See [checking access](/docs/authorization/checking-access).

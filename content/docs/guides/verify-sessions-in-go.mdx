@@ -1,0 +1,72 @@
+---
+title: Verify Sessions in a Go Service
+description: Validate Qeet ID session tokens locally in a backend API — no network round-trip.
+---
+
+This guide adds Qeet ID session verification to a Go HTTP service. Verification
+is **local**: the SDK caches the JWKS and checks the token's ES256 signature
+in-process, so the hot path makes no call back to Qeet ID.
+
+## Install & construct
+
+```bash title="Terminal"
+go get github.com/qeetgroup/qeet-id-go
+```
+
+```go title="qeetid.go"
+client := qeetid.New(qeetid.Config{
+	APIKey: os.Getenv("QEETID_API_KEY"),
+})
+```
+
+## Middleware
+
+Wrap protected routes with middleware that verifies the bearer token and puts
+the claims on the request context:
+
+```go title="middleware.go"
+func Authenticated(client *qeetid.Client) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+
+			claims, err := client.Sessions.Verify(r.Context(), token, qeetid.VerifyOptions{})
+			if err != nil {
+				http.Error(w, "unauthorized", http.StatusUnauthorized)
+				return
+			}
+
+			ctx := context.WithValue(r.Context(), userKey{}, claims)
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
+}
+```
+
+## Authorize the request
+
+With verified claims in hand, make an authorization decision before doing work:
+
+```go title="handler.go"
+claims := r.Context().Value(userKey{}).(*qeetid.Claims)
+
+allowed, err := client.Permissions.Check(r.Context(), qeetid.PermissionCheck{
+	User:       claims.UserID,
+	Tenant:     claims.TenantID,
+	Permission: "billing:write",
+})
+if err != nil || !allowed {
+	http.Error(w, "forbidden", http.StatusForbidden)
+	return
+}
+```
+
+<Callout type="info">
+  The JWKS is cached and refreshed automatically on key rotation, and the SDK
+  guards against algorithm-confusion attacks. You never manage keys yourself.
+</Callout>
+
+<Callout type="warn">
+  Verify tenant scoping from the **token**, not from client input — always use
+  `claims.TenantID` in the permission check.
+</Callout>

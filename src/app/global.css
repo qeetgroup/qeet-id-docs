@@ -1,12 +1,301 @@
-@import 'tailwindcss';
-@import 'fumadocs-ui/css/neutral.css';
-@import 'fumadocs-ui/css/preset.css';
+/* ==========================================================================
+ * Qeet ID Docs — global stylesheet & design system
+ *
+ * This portal is built on the shared Qeetrix design system (`@qeetrix/ui`) so
+ * it is visually identical to the Qeet ID console, login flow and marketing
+ * site — same tokens, same fonts (Qeet Display / Qeet Text / Fira Code), same
+ * components. Fumadocs powers the docs engine; its surface tokens are bridged
+ * onto the Qeetrix semantic tokens below so both systems share one palette.
+ *
+ * Import order (Tailwind v4):
+ *   1. @qeetrix/ui/styles.css  → Tailwind core + shadcn base + Qeetrix tokens,
+ *                                fonts (@font-face) and component styles.
+ *   2. Fumadocs neutral + preset → defines the `--color-fd-*` docs tokens.
+ *   3. Bridge + brand layer     → re-point `--color-fd-*` at Qeetrix tokens,
+ *                                 add the warm brand ramp used for flourishes.
+ *
+ * NOTE: do NOT `@import 'tailwindcss'` here — `@qeetrix/ui/styles.css` already
+ * imports it; importing twice breaks the Tailwind build.
+ * ======================================================================== */
 
-html {
-  scrollbar-gutter: stable;
+@import "@qeetrix/ui/styles.css";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+
+/* --------------------------------------------------------------------------
+ * 1. Bridge — Fumadocs docs surfaces adopt the Qeetrix semantic palette.
+ *
+ * These `var()` mappings reference the live Qeetrix tokens, which themselves
+ * flip between light and `.dark`, so a single declaration themes both modes.
+ * ------------------------------------------------------------------------ */
+:root,
+.dark {
+  --color-fd-background: var(--background);
+  --color-fd-foreground: var(--foreground);
+  --color-fd-card: var(--card);
+  --color-fd-card-foreground: var(--card-foreground);
+  --color-fd-popover: var(--popover);
+  --color-fd-popover-foreground: var(--popover-foreground);
+  --color-fd-muted: var(--muted);
+  --color-fd-muted-foreground: var(--muted-foreground);
+  --color-fd-secondary: var(--secondary);
+  --color-fd-secondary-foreground: var(--secondary-foreground);
+  --color-fd-accent: var(--accent);
+  --color-fd-accent-foreground: var(--accent-foreground);
+  --color-fd-border: var(--border);
+  --color-fd-ring: var(--ring);
+
+  /* Semantic state colours → Qeetrix equivalents (callouts, admonitions). */
+  --color-fd-info: var(--info);
+  --color-fd-warning: var(--warning);
+  --color-fd-error: var(--destructive);
+  --color-fd-success: var(--success);
 }
 
+/* Fumadocs `--color-fd-primary` doubles as link / active-nav / TOC *text*, so
+ * it must clear WCAG AA. Qeetrix's raw `--primary` (#f26d0e, ~3:1 on white) is
+ * for fills only; use the AA-safe brand shades for docs text instead. */
+:root {
+  --color-fd-primary: var(--brand-700); /* #c2410c ≈ 5.2:1 on white */
+  --color-fd-primary-foreground: #ffffff;
+}
+
+.dark {
+  --color-fd-primary: var(--brand-400); /* #fb923c reads AA on dark */
+  --color-fd-primary-foreground: #1a1207;
+}
+
+/* --------------------------------------------------------------------------
+ * 2. Brand ramp + flourishes
+ *
+ * Qeetrix core exposes only a semantic `--primary`; the docs marketing
+ * surfaces also need the full warm ramp + gradient (hero glow, gradient text,
+ * progress). Values are the canonical Qeet ID brand ramp.
+ * ------------------------------------------------------------------------ */
+:root {
+  --brand-50: #fff7ed;
+  --brand-100: #ffedd5;
+  --brand-200: #fed7aa;
+  --brand-300: #fdba74;
+  --brand-400: #fb923c;
+  --brand-500: #f26d0e; /* core brand — matches Qeetrix --primary */
+  --brand-600: #ea580c;
+  --brand-700: #c2410c;
+
+  --brand-text: var(--brand-700); /* AA link / small-text on light */
+  --brand-gradient: linear-gradient(
+    135deg,
+    #f59e0b 0%,
+    #f26d0e 45%,
+    #ea580c 100%
+  );
+  --brand-glow: radial-gradient(
+    60% 60% at 50% 0%,
+    color-mix(in oklab, var(--brand-500) 22%, transparent) 0%,
+    transparent 70%
+  );
+}
+
+.dark {
+  --brand-text: var(--brand-400); /* lighter orange reads AA on dark */
+}
+
+/* --------------------------------------------------------------------------
+ * 3. Tailwind theme extensions — brand utilities + decorative animations
+ * ------------------------------------------------------------------------ */
+@theme inline {
+  --color-brand: var(--brand-500);
+  --color-brand-text: var(--brand-text);
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+
+  --animate-fade-up: fade-up 0.7s cubic-bezier(0.21, 0.47, 0.32, 0.98) both;
+  --animate-fade-in: fade-in 0.7s cubic-bezier(0.21, 0.47, 0.32, 0.98) both;
+  --animate-scale-in: scale-in 0.6s cubic-bezier(0.21, 0.47, 0.32, 0.98) both;
+  --animate-aurora: aurora 18s ease-in-out infinite;
+  --animate-shimmer: shimmer 2.8s linear infinite;
+  --animate-grid-pan: grid-pan 22s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes aurora {
+  0%,
+  100% {
+    transform: translate3d(-4%, -2%, 0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate3d(4%, 3%, 0) scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes grid-pan {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 40px 40px;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * 4. Base element tweaks
+ * ------------------------------------------------------------------------ */
+html {
+  scrollbar-gutter: stable;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+/* Prevent the layout shift that scroll-lock (dialogs, mobile nav) causes. */
 html > body[data-scroll-locked] {
   margin-right: 0px !important;
   --removed-body-scroll-bar-size: 0px !important;
+}
+
+::selection {
+  background-color: color-mix(in oklab, var(--brand-500) 28%, transparent);
+  color: var(--foreground);
+}
+
+/* Brand-tinted focus ring for keyboard users, honoured everywhere. */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+  border-radius: calc(var(--radius) - 4px);
+}
+
+/* Respect reduced-motion: neutralise the decorative animations globally. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * 5. Reusable decorative utilities (marketing + docs surfaces)
+ * ------------------------------------------------------------------------ */
+@utility text-gradient-brand {
+  background-image: var(--brand-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+@utility bg-grid {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in oklab, var(--foreground) 6%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--foreground) 6%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 40px 40px;
+}
+
+@utility bg-brand-glow {
+  background-image: var(--brand-glow);
+}
+
+/* --------------------------------------------------------------------------
+ * 6. Marketing code windows (Shiki, dual-theme)
+ *
+ * Snippets are highlighted server-side by `@/lib/highlight` with light colours
+ * inline and dark colours in `--shiki-dark`. The window chrome supplies the
+ * surface, so Shiki's own background is stripped and only the token colours
+ * flip under `.dark`.
+ * ------------------------------------------------------------------------ */
+.qid-shiki {
+  overflow-x: auto;
+  font-size: 0.8125rem;
+  line-height: 1.65;
+}
+
+.qid-shiki pre.shiki {
+  margin: 0;
+  padding: 1rem;
+  background-color: transparent !important;
+  font-family: var(--font-mono);
+  tab-size: 2;
+  /* Let long lines set the scroll width so the copy button never overlaps. */
+  width: max-content;
+  min-width: 100%;
+}
+
+.qid-shiki code {
+  font-family: inherit;
+}
+
+.dark .qid-shiki .shiki,
+.dark .qid-shiki .shiki span {
+  color: var(--shiki-dark) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
 }

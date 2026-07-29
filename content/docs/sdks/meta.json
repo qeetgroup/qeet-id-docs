@@ -1,0 +1,7 @@
+{
+  "title": "SDKs",
+  "description": "Client libraries",
+  "icon": "Code",
+  "root": true,
+  "pages": ["index", "node", "react", "go"]
+}

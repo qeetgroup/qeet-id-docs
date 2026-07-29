@@ -1,0 +1,48 @@
+---
+title: Node SDK
+description: The server-side TypeScript client — @qeet-id/node.
+---
+
+`@qeet-id/node` is the server-side client for Node and TypeScript runtimes. It
+exposes typed resources and verifies sessions locally.
+
+## Install
+
+```bash title="Terminal"
+bun add @qeet-id/node
+```
+
+## Initialize
+
+```ts title="lib/qeetid.ts"
+import { QeetID } from "@qeet-id/node";
+
+export const qeetid = new QeetID({
+  apiKey: process.env.QEETID_API_KEY!,
+});
+```
+
+## Common operations
+
+```ts title="server.ts"
+// Create a user in a tenant.
+const user = await qeetid.users.create({
+  tenant: tenantId,
+  email: "ada@example.com",
+});
+
+// Verify a session token (local, cached JWKS).
+const claims = await qeetid.sessions.verify(token);
+
+// Check a permission.
+const allowed = await qeetid.permissions.check({
+  user: claims.userId!,
+  tenant: claims.tenantId!,
+  permission: "billing:write",
+});
+```
+
+<Callout type="info">
+  The Node client currently leads on a couple of resources (token vault, audit
+  anomalies). See the SDK changelog for the exact surface in your version.
+</Callout>

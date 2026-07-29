@@ -1,0 +1,75 @@
+---
+title: Checking Access
+description: The check APIs, explainable decisions, and the AuthZEN PDP endpoint.
+---
+
+However you model access — [RBAC](/docs/authorization/rbac),
+[ReBAC](/docs/authorization/rebac) or [ABAC](/docs/authorization/abac) — the
+enforcement pattern is the same: **check on the server before you act**, and ask
+for an **explanation** when you need to understand a decision.
+
+## The basic check
+
+```ts title="server.ts"
+const claims = await qeetid.sessions.verify(token);
+
+const allowed = await qeetid.permissions.check({
+  user: claims.userId!,
+  tenant: claims.tenantId!,
+  permission: "billing:write",
+});
+
+if (!allowed) throw new Response("Forbidden", { status: 403 });
+```
+
+By default a check returns just `{ "allowed": true | false }`.
+
+## Explainable decisions
+
+Add `explain=true` and the response includes the **grant path** — every role
+(direct or group-derived) that produced the answer:
+
+```bash title="Terminal"
+curl "$QEETID_URL/v1/permissions/check?explain=true" \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{ "user": "usr_123", "permission": "billing:write" }'
+```
+
+```json title="Response"
+{
+  "allowed": true,
+  "paths": [
+    { "role": "admin", "via": "group:finance", "permission": "billing:write" }
+  ]
+}
+```
+
+- **RBAC** returns the roles/bindings that grant the permission (plus a `reason`
+  on denial).
+- **ReBAC** returns the root-to-leaf chain of relation tuples.
+- **ABAC** returns which conditions passed and failed.
+
+<Callout type="success">
+  Explanations make access reviews auditable and debugging trivial: instead of
+  reasoning about a policy in your head, you ask the engine and it shows its
+  work.
+</Callout>
+
+## AuthZEN (standard PDP)
+
+For policy-enforcement points that prefer a standard over a vendor API, Qeet ID
+implements the OpenID **AuthZEN** evaluation endpoint:
+
+```http
+POST /tenants/{tenantID}/access/v1/evaluation
+```
+
+It routes by `resource.type` (a `permission` resource hits RBAC; anything else
+is treated as a ReBAC `type:id` + relation), returns `{ "decision": true|false }`,
+and honours `context.explain` for the same grant-path trace.
+
+<Callout type="warn">
+  Always enforce authorization **server-side**. There is no browser-facing
+  "what can I do?" endpoint by design — drive UI affordances from your own state
+  and let the server be the source of truth.
+</Callout>

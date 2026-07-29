@@ -1,0 +1,13 @@
+{
+  "title": "Authentication",
+  "icon": "ShieldCheck",
+  "pages": [
+    "index",
+    "passkeys",
+    "mfa",
+    "oauth-and-oidc",
+    "enterprise-sso",
+    "social-logins",
+    "hosted-login"
+  ]
+}

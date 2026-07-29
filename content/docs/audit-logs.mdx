@@ -1,0 +1,35 @@
+---
+title: Audit Logs
+description: The SHA-256 hash-chained, publicly verifiable audit trail.
+icon: ScrollText
+---
+
+Every security-relevant event in Qeet ID is written to an **append-only audit
+log**. What makes it unusual is that the log is _provable_: entries are linked
+into a SHA-256 hash chain, so any tampering breaks the chain and is detectable
+by anyone.
+
+## Verifying integrity
+
+A public, unauthenticated endpoint lets anyone confirm the chain is intact:
+
+```bash title="Terminal"
+curl "$QEETID_URL/v1/audit/verify"
+```
+
+<Callout type="success">
+  Because verification needs no credentials, auditors and customers can confirm
+  the log's integrity independently — you don't have to be trusted, you can be
+  checked.
+</Callout>
+
+## Streaming to a SIEM
+
+Beyond its own store, Qeet ID can stream events to external sinks (Splunk,
+Datadog, or a generic HTTP endpoint) so audit data lands in your existing
+security tooling.
+
+<Callout type="info">
+  Qeet ID also emits identity events to the wider Qeet Group suite: Qeet Notify
+  consumes them for delivery, and Qeet Logs as an org-wide analytics sink.
+</Callout>

@@ -1,0 +1,65 @@
+---
+title: OAuth & OIDC
+description: Qeet ID is a full OpenID Provider — discovery, PKCE, device flow, CIBA and token exchange.
+---
+
+Qeet ID is a standards-based **OpenID Provider (OP)** and OAuth 2.0 authorization
+server. Your applications — and every Qeet Group product — integrate as relying
+parties using ordinary OIDC.
+
+## Discovery
+
+Everything is discoverable from the issuer, so SDKs need almost no configuration:
+
+```bash title="Terminal"
+curl "$QEETID_URL/.well-known/openid-configuration"
+```
+
+Public signing keys are published as a JWKS, which lets relying parties verify
+tokens locally with no call back to Qeet ID:
+
+```bash title="Terminal"
+curl "$QEETID_URL/.well-known/jwks.json"
+```
+
+## Endpoints
+
+| Endpoint | Purpose |
+| --- | --- |
+| `/v1/oauth/authorize` | Authorization (auth-code flow) |
+| `/v1/oauth/token-code` | Token exchange for the code |
+| `/v1/oauth/userinfo` | UserInfo |
+| `/oauth/introspect` | Token introspection (RFC 7662) |
+| `/oauth/revoke` | Token revocation (RFC 7009) |
+| `/v1/oauth/logout` | RP-initiated logout |
+| `/oauth/device_authorization` | Device authorization grant (RFC 8628) |
+| `/v1/oauth/bc-authorize` | CIBA backchannel auth (poll mode) |
+
+## Flows and grants
+
+- **Authorization Code + PKCE** is the primary flow. Only the `S256` PKCE method
+  is accepted — `plain` is rejected — and only `response_type=code` is supported
+  (no implicit flow).
+- **Grant types:** `authorization_code`, `refresh_token`, `client_credentials`,
+  the **device code** grant, **CIBA**, and **token exchange**
+  (`urn:ietf:params:oauth:grant-type:token-exchange`, RFC 8693).
+- Authorize responses carry the RFC 9207 `iss` parameter, and RFC 8707 resource
+  indicators bind tokens to a specific audience.
+
+<Callout type="info">
+  Token exchange is the foundation for delegation and on-behalf-of flows — see
+  [machine & agent identity](/docs/agents).
+</Callout>
+
+## Tokens
+
+Access and ID tokens are signed with **ES256** (ECDSA P-256) and carry standard
+claims plus `uid`, `tid` (tenant), `sid`, `scp` and actor claims. See
+[sessions & tokens](/docs/concepts/sessions-and-tokens) for lifetimes and
+verification.
+
+<Callout type="warn">
+  Qeet ID implements these flows to specification, and OpenID conformance
+  certification is a stated goal — but a formal conformance run has not yet been
+  completed. Track it on the [roadmap](/docs/roadmap).
+</Callout>

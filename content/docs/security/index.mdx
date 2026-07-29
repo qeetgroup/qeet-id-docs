@@ -1,0 +1,37 @@
+---
+title: Security
+description: How Qeet ID protects data — isolation, encryption, compliance and disclosure.
+---
+
+Security is the product, not a feature of it. This section documents how Qeet ID
+protects tenant data and what you can verify for yourself.
+
+<Cards>
+  <Card title="Data isolation" href="/docs/security/data-isolation" description="How tenants are kept apart." />
+  <Card title="Encryption & keys" href="/docs/security/encryption-and-keys" description="Hashing, signing, secrets and BYOK." />
+  <Card title="Compliance" href="/docs/security/compliance" description="Evidence, GDPR, residency and current posture." />
+  <Card title="Audit logs" href="/docs/audit-logs" description="The tamper-evident, publicly verifiable trail." />
+</Cards>
+
+## Principles
+
+- **Verifiable, not just asserted.** The [audit log](/docs/audit-logs) is
+  hash-chained with a public verification endpoint, and every authorization
+  decision is [explainable](/docs/authorization/checking-access). You don't have
+  to trust the platform — you can check it.
+- **Fail closed.** Authorization denies on error; production refuses to boot with
+  unsafe configuration.
+- **Least privilege.** Agent tokens are short-lived and scope-intersected;
+  permissions are fine-grained.
+
+## Reporting a vulnerability
+
+Please report security issues responsibly via a GitHub Security Advisory
+(preferred) or by email to **security@qeet.in** with the subject prefix
+`[SECURITY]`. Qeet ID follows a 90-day coordinated-disclosure window and offers
+safe harbour for good-faith research.
+
+<Callout type="info">
+  Prefer to run everything yourself? Qeet ID is MIT-licensed and self-hostable —
+  see [self-hosting](/docs/architecture/self-hosting).
+</Callout>

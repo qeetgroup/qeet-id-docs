@@ -1,0 +1,63 @@
+---
+title: Roles & Permissions
+description: How to model roles, permissions and group-derived access.
+---
+
+This page covers how to design your RBAC model. For the conceptual overview, see
+[RBAC](/docs/authorization/rbac).
+
+## Permissions
+
+Name permissions with a `resource:action` convention. Keep them fine-grained and
+action-oriented:
+
+```text
+users:read      users:write     users:delete
+billing:read    billing:write
+audit:read      org:admin
+```
+
+Fine-grained permissions compose well into roles and read clearly in
+[explanations](/docs/authorization/checking-access).
+
+## Roles
+
+A role is a named bundle of permissions, scoped to a tenant. A typical set:
+
+| Role | Permissions (example) |
+| --- | --- |
+| `owner` | everything, including `org:admin` |
+| `admin` | manage users, roles and settings |
+| `member` | day-to-day read/write on app resources |
+| `viewer` | read-only |
+
+## Direct vs. group-derived roles
+
+Users can be granted roles two ways:
+
+1. **Directly** — assign a role to a user.
+2. **Through a group** — grant the role to a group; every member inherits it.
+   Groups can be **nested**, and both group membership and group→role grants can
+   be **synced via SCIM** from a customer's identity provider.
+
+<Callout type="info">
+  Prefer group-derived roles for workforce scenarios: when SCIM adds or removes a
+  user from a directory group, their access follows automatically.
+</Callout>
+
+## Assigning roles (Node)
+
+```ts title="server.ts"
+// Grant a role to a user.
+await qeetid.roles.assign({ tenant: tenantId, user: userId, role: "admin" });
+
+// Or grant a role to a group so all members inherit it.
+await qeetid.groups.assignRole({ tenant: tenantId, group: groupId, role: "member" });
+```
+
+<Callout type="warn">
+  There is intentionally no client-side "what can I do?" endpoint — permission
+  resolution happens server-side. Check permissions on the server before acting,
+  and drive UI from your own feature flags rather than probing RBAC from the
+  browser.
+</Callout>

@@ -1,0 +1,66 @@
+---
+title: Architecture
+description: How Qeet ID is built — a Go modular monolith, Postgres, and an event outbox.
+---
+
+Qeet ID is a single Go service backed by PostgreSQL, deliberately kept simple to
+run and reason about.
+
+## The stack
+
+- **Go 1.25**, HTTP via **chi**, database access via **pgx** with hand-written
+  SQL (no ORM).
+- **PostgreSQL 16**, multi-tenant by `tenant_id` across six logical schemas.
+  Migrations are embedded and auto-applied on startup.
+- Optional **Redis** (cross-replica rate limiting) and **NATS** (cross-product
+  event fan-out); both degrade gracefully to in-process / log-only when absent.
+
+## A modular monolith
+
+All application code lives under `internal/` in five bounded contexts —
+`access`, `identity`, `federation`, `developer`, `operations` — with pure
+infrastructure in `internal/platform` and a single composition root that wires
+everything together. It ships as one binary but is organized like separate
+services, so it stays easy to deploy while keeping clean internal boundaries.
+
+## The identity hub
+
+Qeet ID is a full **OIDC/OAuth provider** (see
+[OAuth & OIDC](/docs/authentication/oauth-and-oidc)) and the identity hub for the
+Qeet Group suite: every other product delegates authentication to it as an OIDC
+relying party, via SAML, or by validating API keys.
+
+## Events & background work
+
+Business writes, their audit entries, and outbound events are committed in a
+single transaction via a **transactional outbox**; a dispatcher then publishes
+them (to NATS when configured, otherwise log-only), with a dead-letter queue for
+failures. Background workers handle webhooks, GDPR jobs, retention, SIEM
+streaming and audit-anomaly detection.
+
+<Callout type="info">
+  Qeet ID *emits* identity and security events; delivering notifications is
+  [Qeet Notify](https://qeet.in)'s job and long-term analytics is
+  [Qeet Logs](https://qeet.in)'s — Qeet ID streams to them (and to external
+  SIEMs) rather than doing delivery itself.
+</Callout>
+
+## Frontends
+
+Three separate apps share the `@qeetrix/ui` design system: the **console**
+(admin control plane, TanStack Start), the **hosted login** app (Next.js), and
+the **marketing site** (Next.js). This documentation portal is a fourth.
+
+## AI Copilot
+
+An optional, admin-facing AI copilot can be enabled in the console. Its defining
+constraint: it **never executes a domain mutation server-side**. Tool calls are
+emitted to the browser and executed under the operator's own token, so RBAC and
+audit are always inherited — the copilot can never do something the operator
+couldn't.
+
+<Callout type="warn">
+  A low-frequency maintenance **scheduler** (audit-chain verification, session
+  and DLQ cleanup) exists in the codebase but is **not deployed** in the current
+  reference infrastructure. See [self-hosting](/docs/architecture/self-hosting).
+</Callout>

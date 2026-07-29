@@ -1,0 +1,12 @@
+{
+  "title": "Authorization",
+  "icon": "KeyRound",
+  "pages": [
+    "index",
+    "rbac",
+    "roles-and-permissions",
+    "rebac",
+    "abac",
+    "checking-access"
+  ]
+}

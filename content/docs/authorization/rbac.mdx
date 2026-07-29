@@ -1,0 +1,46 @@
+---
+title: RBAC
+description: Role-based access control — the everyday authorization model.
+---
+
+Role-based access control (RBAC) is the model most applications reach for first.
+Users hold **roles**; roles bundle **permissions**; a permission is a
+fine-grained capability.
+
+## The model
+
+- **Permissions** are keyed strings using a `resource:action` convention — for
+  example `users:read`, `billing:write`, `audit:read`, `org:admin`.
+- **Roles** are per-tenant bundles of permissions.
+- Users receive roles **directly**, or **through group membership** — groups can
+  be nested, and group roles can be SCIM-synced from a customer's directory.
+
+A user's effective permissions are the union of their direct role grants and all
+grants inherited through their groups.
+
+<Callout type="info">
+  Because roles are per-tenant, one organization's "Admin" is entirely separate
+  from another's — there's no shared global role table to leak across tenants.
+</Callout>
+
+## Checking a permission
+
+A single call answers whether a user has a permission in a tenant:
+
+```ts title="server.ts"
+const allowed = await qeetid.permissions.check({
+  user: claims.userId!,
+  tenant: claims.tenantId!,
+  permission: "billing:write",
+});
+```
+
+The check verifies that the caller's token tenant matches the queried tenant, so
+it can't be used as a cross-tenant permission oracle.
+
+## Next
+
+- Model your [roles and permissions](/docs/authorization/roles-and-permissions).
+- Get the [grant-path explanation](/docs/authorization/checking-access) for any
+  decision.
+- Need per-object access instead of global roles? See [ReBAC](/docs/authorization/rebac).

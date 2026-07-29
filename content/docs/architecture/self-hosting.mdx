@@ -1,0 +1,66 @@
+---
+title: Self-Hosting
+description: Run Qeet ID yourself — the reference deployment and required configuration.
+---
+
+Qeet ID is MIT-licensed and self-hostable. The reference deployment is
+intentionally small and cheap to run.
+
+## Reference deployment
+
+The Terraform in `qeet-id-deploy` provisions a deliberately minimal AWS
+free-tier footprint in **ap-south-2 (Hyderabad)**:
+
+- **1× EC2 `t3.micro`** running the container behind **Caddy** (automatic TLS via
+  Let's Encrypt). The app listens on `:4001`, embeds the background workers, and
+  auto-migrates on start.
+- **RDS PostgreSQL 16 `db.t4g.micro`, single-AZ**, private, 7-day backups + PITR.
+- ECR, an IAM instance role, KMS, SES, and a VPC with public subnets (no NAT).
+- Secrets are generated into **SSM Parameter Store** and rendered to the host at
+  boot.
+
+<Callout type="warn">
+  This is a single-instance, single-AZ, free-tier reference — great for
+  evaluation and small deployments, but there is **no ALB, Kubernetes, or NAT**,
+  and Terraform state is **local by default** (enable the S3 backend before
+  sharing). The maintenance scheduler is not deployed, and email is log-only
+  until you wire SMTP/SES. Size up and add HA for production.
+</Callout>
+
+## Required configuration
+
+Outside development, the server validates its configuration on boot and refuses
+to start if anything essential is missing or unsafe:
+
+<TypeTable
+  type={{
+    DB_URL: { description: "PostgreSQL connection string.", type: "string", required: true },
+    JWT_SECRET: { description: "Signing secret, ≥ 32 chars, non-placeholder.", type: "string", required: true },
+    JWT_SIGNING_KEY: { description: "PEM EC P-256 private key for ES256 token signing.", type: "string", required: true },
+    ALLOWED_ORIGINS: { description: "Explicit, non-wildcard CORS origins.", type: "string", required: true },
+    APP_BASE_URL: { description: "Public base URL (non-localhost in prod).", type: "string", required: true },
+    SECRETS_KEY: { description: "Static secrets key — or use KMS_KEY_ID + SECRETS_WRAPPED_DEK.", type: "string" },
+  }}
+/>
+
+Production also refuses to boot with development escape hatches like
+`CSRF_DISABLED` or `AUTH_DEV_TRUST_HEADERS` set.
+
+## Optional configuration
+
+Common optional groups (all documented in the server's `.env.example`):
+
+- **Ports & tokens:** `HTTP_PORT` (default 4001), `ACCESS_TOKEN_TTL` (10m),
+  `REFRESH_TOKEN_TTL` (720h).
+- **WebAuthn:** `WEBAUTHN_RP_ID`, `WEBAUTHN_RP_ORIGINS` (must match your origin).
+- **Email:** `EMAIL_PROVIDER` (`smtp` | `ses-api`) and the matching `SMTP_*` /
+  `AWS_REGION` settings — until set, email is printed to the log.
+- **Infra:** `REDIS_URL`, `NATS_URL`, `OTEL_EXPORTER_OTLP_ENDPOINT`.
+- **Social login:** `GOOGLE_*`, `MICROSOFT_*`, `GITHUB_*`, `APPLE_*`.
+- **Copilot:** `COPILOT_*` (leave `COPILOT_PROVIDER` empty to disable).
+
+<Callout type="info">
+  The Helm charts, multi-AZ topology and observability stack described in some
+  older architecture docs are aspirational — the Terraform reference above is
+  what actually ships today.
+</Callout>

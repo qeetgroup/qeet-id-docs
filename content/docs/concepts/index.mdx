@@ -1,0 +1,27 @@
+---
+title: Core Concepts
+description: The mental model behind Qeet ID — tenants, users, sessions, tokens and organizations.
+---
+
+A handful of concepts recur throughout Qeet ID. Understanding them makes every
+other page easier to follow.
+
+<Cards>
+  <Card title="Multi-tenancy" href="/docs/concepts/tenancy" description="How data is isolated per tenant." />
+  <Card title="Sessions & tokens" href="/docs/concepts/sessions-and-tokens" description="How authentication state is represented and verified." />
+</Cards>
+
+## The object model at a glance
+
+| Object | What it is |
+| --- | --- |
+| **Tenant** | The top-level isolation boundary. Every record belongs to exactly one tenant. |
+| **User** | A human (or agent) identity within a tenant. |
+| **Organization** | A group of users — teams, companies, workspaces — with their own roles. |
+| **Session** | An authenticated period, represented by a verifiable token. |
+| **Permission** | A fine-grained capability, granted through roles (RBAC). |
+
+<Callout type="info">
+  Qeet ID is multi-tenant by default. Even a single-customer deployment runs
+  inside one tenant, so scaling to many later requires no re-architecture.
+</Callout>

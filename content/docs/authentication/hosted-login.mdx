@@ -1,0 +1,45 @@
+---
+title: Hosted Login
+description: The managed, themeable login experience — and when to embed instead.
+---
+
+The **hosted login** app is the fastest way to add authentication: you redirect
+users to Qeet ID, they complete whichever flow applies (passkey, password, MFA,
+social, SSO), and they return to your app with a session.
+
+## Why hosted
+
+- **Zero auth UI to build or maintain.** Passkeys, MFA, SSO, recovery and consent
+  screens are all handled for you.
+- **Always current.** New factors and security fixes land without you shipping
+  anything.
+- **Themeable.** Match your brand via [branding & custom domains](/docs/concepts/organizations)
+  — logo, colors and custom domain — so it still feels like your product.
+- **Stateless and secrets-free.** The hosted app holds no database and no keys;
+  every action calls the Qeet ID backend.
+
+## Screens
+
+The hosted app covers the full journey: `sign in`, `sign up`,
+`forgot password`, `reset`, OAuth `consent`, the `device` flow approval page, an
+`admin portal` entry point, and a `logged out` page.
+
+## Wiring it up
+
+Point your app's login and logout URLs at the hosted flow. In React, the
+provider does this for you:
+
+```tsx title="App.tsx"
+import { QeetIDProvider } from "@qeet-id/react";
+
+<QeetIDProvider loginUrl="/api/auth/login" logoutUrl="/api/auth/logout">
+  {children}
+</QeetIDProvider>;
+```
+
+## When to embed instead
+
+If you need auth fully inside your own UI, the SDKs expose the same flows as
+components and hooks (`<SignIn />`, `usePasskeys`, `useMFA`, …). Both paths hit
+the same backend endpoints, so you can start hosted and migrate in-app later
+without backend changes. See the [React SDK](/docs/sdks/react).

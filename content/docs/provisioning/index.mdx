@@ -1,0 +1,19 @@
+---
+title: Provisioning
+description: Automate the user and group lifecycle from your customers' directories.
+---
+
+Provisioning keeps user and group data in sync between a customer's identity
+provider and Qeet ID — so when someone joins, moves team or leaves, their access
+follows automatically. It's part of the core product, not an enterprise upsell.
+
+<Cards>
+  <Card title="SCIM 2.0" href="/docs/provisioning/scim" description="Inbound Users & Groups sync from Okta, Entra and others." />
+  <Card title="LDAP / Active Directory" href="/docs/provisioning/ldap" description="Authenticate and provision against a directory server." />
+</Cards>
+
+<Callout type="info">
+  SSO and provisioning are complementary: [SAML SSO](/docs/authentication/enterprise-sso)
+  handles _sign-in_, while SCIM/LDAP handle the _lifecycle_ of the accounts that
+  sign in. Most enterprise deployments use both.
+</Callout>

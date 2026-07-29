@@ -1,0 +1,36 @@
+---
+title: Authorization
+description: Three access models — RBAC, ReBAC and ABAC — all with explainable decisions.
+---
+
+Authorization decides what an authenticated principal is allowed to do. Qeet ID
+bundles **three** access-control models natively — you pick the right one per
+use case, or combine them — and every decision can be **explained**.
+
+<Cards>
+  <Card title="RBAC" href="/docs/authorization/rbac" description="Roles and permissions — the everyday model." />
+  <Card title="ReBAC" href="/docs/authorization/rebac" description="Relationship-based access, Zanzibar-style." />
+  <Card title="ABAC" href="/docs/authorization/abac" description="Attribute conditions over subject, resource and context." />
+  <Card title="Checking access" href="/docs/authorization/checking-access" description="The check APIs, AuthZEN, and explanations." />
+</Cards>
+
+## Which model when?
+
+| Model | Answers | Good for |
+| --- | --- | --- |
+| **RBAC** | "Does this user have permission `X`?" | Roles, admin tiers, most apps |
+| **ReBAC** | "Is this user related to _this specific object_?" | Sharing, hierarchies, per-document access |
+| **ABAC** | "Do these attributes satisfy a policy?" | Contextual rules (region, time, risk) |
+
+<Callout type="info">
+  Having RBAC **and** ReBAC **and** ABAC in one engine is unusual — most
+  platforms give you one. You can start with roles and reach for relationships or
+  attributes only where you actually need them.
+</Callout>
+
+## Explainable by design
+
+Every model can return the **reasoning** behind a decision, not just a boolean —
+the exact grant path (RBAC/ReBAC) or the policy evaluation trace (ABAC). This
+turns access reviews and "why can this user do that?" debugging into a single
+query. See [checking access](/docs/authorization/checking-access).

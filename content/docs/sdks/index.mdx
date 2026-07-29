@@ -1,0 +1,26 @@
+---
+title: SDKs
+description: Typed, ergonomic clients for Node, React and Go.
+---
+
+Qeet ID provides first-party SDKs that wrap the API with types, sensible
+defaults and local session verification. They are pre-1.0 and evolving quickly.
+
+<Cards>
+  <Card title="Node & TypeScript" href="/docs/sdks/node" description="Server-side client — @qeet-id/node" />
+  <Card title="React" href="/docs/sdks/react" description="Components and hooks — @qeet-id/react" />
+  <Card title="Go" href="/docs/sdks/go" description="Backend client — qeet-id-go" />
+</Cards>
+
+<Callout type="info">
+  The SDKs are not yet published to public registries — the snippets here show
+  the intended developer experience. Watch [GitHub](https://github.com/qeetgroup)
+  for releases.
+</Callout>
+
+## What the SDKs handle for you
+
+- Zero-config discovery from the issuer URL.
+- Local session verification against cached JWKS.
+- Typed resources for users, sessions, organizations and permissions.
+- Consistent error handling and pagination.

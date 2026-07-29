@@ -1,0 +1,72 @@
+---
+title: Add Enterprise SSO
+description: Onboard a customer's SAML identity provider, end to end.
+---
+
+This guide onboards a B2B customer whose workforce signs in through their own
+SAML identity provider (Okta, Entra, Ping, …). By the end, their employees sign
+into your app with their corporate credentials and are provisioned automatically.
+
+## Prerequisites
+
+- A tenant (organization) for the customer.
+- The customer's IdP metadata: EntityID, SSO URL and signing certificate.
+
+## Steps
+
+<Steps>
+
+<Step>
+### Verify the customer's domain
+Claim and verify the customer's email domain by DNS TXT record so you can bind
+SSO to it. Only one tenant can hold a verified claim for a domain.
+
+```ts title="server.ts"
+const claim = await qeetid.domains.create({ tenant: tenantId, domain: "customer.com" });
+// Ask the customer to add claim.txtRecord to their DNS, then:
+await qeetid.domains.verify({ tenant: tenantId, domain: "customer.com" });
+```
+</Step>
+
+<Step>
+### Create the SAML connection
+Register the IdP details and map assertion attributes onto the user profile. The
+connection starts in `draft`.
+
+```ts title="server.ts"
+const conn = await qeetid.saml.createConnection({
+  tenant: tenantId,
+  idpEntityId: "https://idp.customer.com/entity",
+  idpSsoUrl: "https://idp.customer.com/sso",
+  idpCertificate: pemCert,
+  attributeMap: { email: "emailAddress", name: "displayName" },
+});
+```
+</Step>
+
+<Step>
+### Test, then activate
+Run a test login. Once an assertion validates against the certificate, activate
+the connection.
+
+```ts title="server.ts"
+await qeetid.saml.updateConnection({ tenant: tenantId, id: conn.id, status: "active" });
+```
+</Step>
+
+<Step>
+### Users sign in
+Employees now authenticate through their IdP; Qeet ID validates the assertion at
+its ACS endpoint and **just-in-time provisions** new users. The browser never
+sees tokens in a URL — a one-time login code is exchanged server-side.
+</Step>
+
+</Steps>
+
+<Callout type="success">
+  Pair this with [SCIM](/docs/guides/provision-users-with-scim) so joiners,
+  movers and leavers sync automatically instead of relying on JIT alone.
+</Callout>
+
+See the [Enterprise SSO reference](/docs/authentication/enterprise-sso) for the
+full model, including using Qeet ID as an IdP.

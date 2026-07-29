@@ -1,0 +1,33 @@
+---
+title: Sessions & Tokens
+description: How authentication state is represented, transported and verified.
+---
+
+When a user authenticates, Qeet ID issues a **session** represented by signed
+tokens. Your application verifies those tokens to establish who is making a
+request and which tenant they belong to.
+
+## Local verification
+
+Session tokens are JWTs signed with keys published at a JWKS endpoint. SDKs
+cache the JWKS and verify tokens **locally**, so the common path adds no network
+round-trip:
+
+```ts title="server.ts"
+// Verified locally against cached JWKS — fast and offline-capable.
+const claims = await qeetid.sessions.verify(token);
+
+console.log(claims.userId, claims.tenantId, claims.expiresAt);
+```
+
+## Refresh and rotation
+
+Long-lived sessions use refresh tokens with rotation: each refresh issues a new
+token and invalidates the previous one, limiting the blast radius of a leaked
+token.
+
+<Callout type="info">
+  For machine-to-machine and AI-agent use cases, Qeet ID can mint short-lived,
+  narrowly-scoped tokens and supports delegation — see
+  [authorization](/docs/authorization).
+</Callout>

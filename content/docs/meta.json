@@ -1,0 +1,22 @@
+{
+  "pages": [
+    "index",
+    "---Getting Started---",
+    "getting-started",
+    "---Core Concepts---",
+    "concepts",
+    "---Authentication & Access---",
+    "authentication",
+    "authorization",
+    "provisioning",
+    "---Platform---",
+    "agents",
+    "audit-logs",
+    "security",
+    "architecture",
+    "---Resources---",
+    "roadmap",
+    "faq",
+    "support"
+  ]
+}

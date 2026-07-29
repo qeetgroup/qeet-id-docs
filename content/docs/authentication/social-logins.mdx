@@ -1,0 +1,39 @@
+---
+title: Social Logins
+description: Google, Microsoft, Apple, GitHub and custom OIDC providers.
+---
+
+Qeet ID can let users sign in with an existing account from a social or
+workforce provider. Each provider is configured per tenant with your own client
+credentials.
+
+## Supported providers
+
+- **Google**, **Microsoft** and **Apple** via generic OIDC discovery.
+- **GitHub** via a purpose-built adapter.
+- **Any custom OIDC provider** you point Qeet ID at.
+
+<Callout type="warn">
+  GitHub OAuth Apps don't support PKCE, so the GitHub adapter uses GitHub's own
+  OAuth exchange rather than the standard OIDC + PKCE path. This is expected —
+  it's a GitHub limitation, not a Qeet ID one.
+</Callout>
+
+## Just-in-time provisioning & account linking
+
+On a first social login, Qeet ID **just-in-time provisions** the user. If an
+account with the same verified email already exists, the social identity is
+**linked** to it rather than creating a duplicate — so a user who signed up with
+a password can later add "Sign in with Google" and reach the same account.
+
+## Configuration
+
+Provider credentials are supplied to the server via environment variables (for
+example `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`), then enabled per tenant.
+See [self-hosting](/docs/architecture/self-hosting) for the full list.
+
+<Callout type="info">
+  Social login is convenience authentication. For workforce identity, prefer
+  [enterprise SSO](/docs/authentication/enterprise-sso), which also carries group
+  and role information.
+</Callout>

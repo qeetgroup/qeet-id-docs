@@ -1,0 +1,56 @@
+---
+title: Multi-factor Authentication
+description: TOTP, recovery codes, step-up elevation and adaptive risk.
+---
+
+Multi-factor authentication (MFA) adds a second proof of identity on top of the
+primary credential. Qeet ID supports authenticator-app codes and recovery codes,
+and can require MFA dynamically based on risk.
+
+## Factors
+
+- **TOTP** (RFC 6238) — time-based codes from any authenticator app (1Password,
+  Authy, Google Authenticator, …).
+- **Recovery codes** — a set of **8** single-use codes issued at enrollment,
+  stored hashed, for when a device is lost.
+- **Passkeys** double as a strong passwordless factor — see
+  [passkeys](/docs/authentication/passkeys).
+
+## Step-up authentication
+
+Sensitive operations can require a **recent** successful MFA challenge rather
+than just an active session. Qeet ID tracks a step-up window; when an operation
+needs elevation and the window has expired, the user is re-challenged before the
+action proceeds.
+
+<Callout type="info">
+  Use step-up for high-value actions — changing billing, rotating API keys,
+  deleting data — instead of forcing MFA on every request.
+</Callout>
+
+## Adaptive risk
+
+Two additive signals can automatically trigger step-up or force MFA. Both are
+**off by default** and configured per tenant:
+
+- **Impossible travel** — a login from a country that couldn't be reached in the
+  time since the last one.
+- **Device reputation** — an unseen browser + OS combination for the user.
+
+<Callout type="warn">
+  The impossible-travel signal derives geography from a trusted upstream proxy
+  header (for example Cloudflare's `CF-IPCountry`). Qeet ID does **not** ship a
+  GeoIP database — self-hosters without such a proxy get the code path but no
+  live geo signal.
+</Callout>
+
+## In the browser (React)
+
+```tsx title="MfaEnrollment.tsx"
+import { useMFA } from "@qeet-id/react";
+
+export function MfaEnrollment() {
+  const { enrollTotp, recoveryCodes } = useMFA();
+  return <button onClick={() => enrollTotp()}>Set up authenticator</button>;
+}
+```

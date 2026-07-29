@@ -1,0 +1,66 @@
+---
+title: Organizations
+description: Organizations, groups, memberships, invitations, branding and domains.
+---
+
+In Qeet ID, an **organization is the tenant** — the top-level container that
+owns users, groups, roles and settings. Teams and workspaces within an
+organization are modelled as **groups**.
+
+## Organization = tenant
+
+Each organization has a `slug`, `name`, `status`, `plan`, `region` and an open
+JSONB metadata bag. Every other object (users, groups, roles, audit entries)
+belongs to exactly one organization, which is how [multi-tenancy](/docs/concepts/tenancy)
+isolation works.
+
+## Groups (teams & workspaces)
+
+Groups partition users within an organization and can be **nested** (a group can
+have a parent), so you can model departments, teams and sub-teams. Groups are
+also the unit of role inheritance and SCIM sync:
+
+- Grant a role to a group and every member inherits it.
+- SCIM keeps group membership in sync with a customer's directory.
+
+## Memberships & roles
+
+Membership is expressed through **role grants** rather than a separate members
+table: a user belongs to an organization by holding one or more of its roles
+(directly or via a group). See
+[roles & permissions](/docs/authorization/roles-and-permissions).
+
+## Invitations
+
+Invite a user by email with a target role. Invitations carry a hashed token and
+a status (`pending`, `accepted`, `revoked`, `expired`) and expire automatically.
+
+```ts title="server.ts"
+await qeetid.invitations.create({
+  tenant: tenantId,
+  email: "grace@example.com",
+  role: "member",
+});
+```
+
+## Branding & custom domains
+
+Each organization can theme its hosted login and emails — logo, primary and
+secondary colors, from-name/address and email templates — and claim a **custom
+domain**:
+
+- Domain claims are verified by **DNS TXT record**, and only one tenant may hold
+  a verified claim for a given domain.
+- A verified domain gates organization SSO and JIT provisioning.
+
+<Callout type="warn">
+  Qeet ID stores and DNS-verifies custom domains, but TLS certificates for them
+  are issued at the deployment edge (the reverse proxy), not by the application.
+  See [self-hosting](/docs/architecture/self-hosting).
+</Callout>
+
+## Switching organizations
+
+A user who belongs to several organizations can switch the active one; the React
+SDK ships an `<OrganizationSwitcher />` and a `useOrganization` hook, and the
+backend verifies membership on every switch.

@@ -1,25 +1,28 @@
 {
-  "name": ".",
+  "name": "qeet-id-docs",
   "version": "0.0.9",
   "private": true,
   "scripts": {
     "build": "next build",
     "dev": "next dev",
     "start": "next start",
-    "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
+    "types:check": "next typegen && node scripts/generate-source.mjs && tsc --noEmit",
     "postinstall": "fumadocs-mdx",
     "lint": "biome check",
-    "format": "biome format --write"
+    "format": "biome format --write",
+    "test": "node scripts/check-links.mjs"
   },
   "dependencies": {
-    "cnfast": "^0.0.8",
+    "@qeetrix/ui": "^1.0.2",
+    "class-variance-authority": "^0.7.1",
     "fumadocs-core": "16.13.0",
     "fumadocs-mdx": "15.2.0",
     "fumadocs-ui": "npm:@fumadocs/base-ui@16.13.0",
     "lucide-react": "^1.25.0",
     "next": "16.2.11",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "shiki": "^4.3.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",

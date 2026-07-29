@@ -1,0 +1,54 @@
+---
+title: ABAC
+description: Attribute-based access control — policy conditions over subject, resource and context.
+---
+
+Attribute-based access control (ABAC) makes decisions from **attributes** rather
+than roles or relationships. A policy is a condition tree evaluated against the
+`subject`, the `resource`, and the request `context`.
+
+## Condition trees
+
+Policies compose with `all` / `any` / `not` over comparisons. Thirteen operators
+are available: `eq`, `ne`, `in`, `nin`, `contains`, `gt`, `gte`, `lt`, `lte`,
+`exists`, `prefix`, `suffix`, `regex`.
+
+```json title="policy.json"
+{
+  "all": [
+    { "eq": ["subject.department", "finance"] },
+    { "in": ["resource.region", ["eu-west", "eu-central"]] },
+    { "gte": ["context.trust_level", 2] }
+  ]
+}
+```
+
+## Evaluating a policy
+
+```ts title="server.ts"
+const decision = await qeetid.decisions.evaluate({
+  tenant: tenantId,
+  subject: { department: "finance" },
+  resource: { region: "eu-west" },
+  context: { trust_level: 3 },
+});
+```
+
+## Deny-wins, fail-closed
+
+ABAC evaluation is **deny-overrides** and **fail-closed**: if any applicable
+policy denies, the result is deny; and if evaluation can't complete, access is
+refused rather than granted. Evaluations are explainable — you get the trace of
+which conditions passed and which failed.
+
+<Callout type="info">
+  Use ABAC for contextual rules that don't fit roles or relationships — region
+  and residency constraints, time-of-day windows, or risk-tier gating.
+</Callout>
+
+## AuthZEN
+
+Qeet ID also exposes an OpenID **AuthZEN** PDP endpoint
+(`POST /tenants/{tenantID}/access/v1/evaluation`) — a standard-shaped facade over
+the same RBAC/ReBAC/ABAC engines, so a policy-enforcement point can integrate
+against a spec rather than a vendor API. See [checking access](/docs/authorization/checking-access).

@@ -1,0 +1,35 @@
+---
+title: Multi-tenancy
+description: How Qeet ID isolates data between tenants.
+---
+
+A **tenant** is the top-level isolation boundary in Qeet ID. Every user,
+organization, session and audit entry belongs to exactly one tenant, and a
+request can only ever see data within its own tenant.
+
+## Why it matters
+
+Modelling tenancy from the start means you never have to re-architect to serve
+a second customer. A solo app and a multi-customer SaaS use the same primitives
+— the difference is just how many tenants exist.
+
+<Callout type="info">
+  Isolation is enforced in the application layer today, with a Postgres
+  row-level-security (RLS) pilot in progress to push isolation into the database
+  itself.
+</Callout>
+
+## Scoping requests
+
+Server SDK calls are scoped by the tenant embedded in the verified session, so
+you rarely pass a tenant id explicitly — it comes from the token:
+
+```ts title="server.ts"
+const claims = await qeetid.sessions.verify(token);
+
+// claims.tenantId scopes every subsequent call.
+const members = await qeetid.users.list({ tenant: claims.tenantId! });
+```
+
+See [sessions and tokens](/docs/concepts/sessions-and-tokens) for how that
+tenant context is carried and verified.
