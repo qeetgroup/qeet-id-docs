@@ -1,45 +1,77 @@
-# .
+# Qeet ID Docs
 
-This is a Next.js application generated with
-[Create Fumadocs](https://github.com/fuma-nama/fumadocs).
+The developer documentation portal for **Qeet ID** — the passkeys-first,
+open-source identity platform. Marketing landing page + full docs, built to
+match the rest of the Qeet ID suite.
 
-Run development server:
+> This portal is the conceptual and how-to documentation. The complete **API
+> reference** is served separately in Scalar and linked from the top navigation.
+
+## Stack
+
+- **Next.js 16** (App Router, React 19) + **TypeScript**
+- **Fumadocs** (`@fumadocs/base-ui`) — docs engine, MDX, search
+- **Tailwind CSS v4** + **[`@qeetrix/ui`](https://www.npmjs.com/package/@qeetrix/ui)** — the shared Qeet design system (tokens, fonts, components)
+- **Shiki** — syntax highlighting (docs + marketing share one theme)
+- **Motion** — animations · **Biome** — lint/format · **Bun** — package manager
+
+## Develop
 
 ```bash
-npm run dev
-# or
-pnpm dev
-# or
-yarn dev
+bun install
+bun run dev          # http://localhost:3000
 ```
 
-Open http://localhost:3000 with your browser to see the result.
+## Scripts
 
-## Explore
+| Script | Purpose |
+| --- | --- |
+| `bun run dev` | Start the dev server |
+| `bun run build` | Production build (also runs the type check) |
+| `bun run types:check` | `next typegen` → generate `.source` → `tsc --noEmit` |
+| `bun run lint` | Biome check (lint + format) |
+| `bun run format` | Biome format-write |
+| `bun run test` | Internal-link integrity check across all docs |
 
-In the project, you can see:
+## Structure
 
-- `lib/source.ts`: Code for content source adapter, [`loader()`](https://fumadocs.dev/docs/headless/source-api) provides the interface to access your content.
-- `lib/layout.shared.tsx`: Shared options for layouts, optional but preferred to keep.
+```
+content/docs/          # all documentation (MDX) + meta.json sidebar config
+src/
+  app/                 # routes: (home) landing, docs, SEO (sitemap/robots/rss/og), search API
+  components/
+    ui/                # design-system primitives (Qeetrix re-exports + docs helpers)
+    marketing/         # landing-page sections
+    layout/ · brand/ · seo/
+  config/              # site.ts, navigation.ts, marketing.ts — content & links
+  lib/                 # source, metadata, fonts, highlight, cn
+scripts/               # generate-source, check-links
+```
 
-| Route                     | Description                                            |
-| ------------------------- | ------------------------------------------------------ |
-| `app/(home)`              | The route group for your landing page and other pages. |
-| `app/docs`                | The documentation layout and pages.                    |
-| `app/api/search/route.ts` | The Route Handler for search.                          |
+## Content
 
-### Fumadocs MDX
+Write pages as MDX under `content/docs/`. Order and group them with `meta.json`
+(`---Label---` separators; `"root": true` promotes a folder to a sidebar tab).
+Available MDX components: `Callout`, `Tabs`/`Tab`, `Steps`/`Step`, `Cards`/`Card`,
+`Accordions`, `Files`, `TypeTable`, and Shiki code blocks (`title=`, line
+highlighting, language tabs).
 
-A `source.config.ts` config file has been included, you can customise different options like frontmatter schema.
+## Configuration
 
-Read the [Introduction](https://fumadocs.dev/docs/mdx) for further details.
+All values are public — this portal has no server secrets. See
+[`.env.example`](./.env.example):
 
-## Learn More
+- `NEXT_PUBLIC_SITE_URL` — canonical origin (canonical URLs, OG, sitemap, RSS).
+- `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` — optional; enables cookieless analytics.
 
-To learn more about Next.js and Fumadocs, take a look at the following
-resources:
+## Deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js
-  features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [Fumadocs](https://fumadocs.dev) - learn about Fumadocs
+Deploys to **Vercel** (zero-config; framework + commands pinned in
+[`vercel.json`](./vercel.json)). Security and caching headers are set in
+[`next.config.mjs`](./next.config.mjs). CI (lint · types · test · build) runs on
+every push and PR via [`.github/workflows/ci.yml`](./.github/workflows/ci.yml).
+
+---
+
+Part of the [Qeet Group](https://github.com/qeetgroup) suite.
+# qeet-id-docs
