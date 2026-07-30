@@ -5,6 +5,8 @@ import {
   AccordionTrigger,
 } from "@qeetrix/ui";
 import { Container } from "@/components/ui/container";
+import { Eyebrow } from "@/components/ui/eyebrow";
+import { Reveal } from "@/components/ui/reveal";
 import { faqs } from "@/config/marketing";
 
 /**
@@ -16,9 +18,10 @@ export function Faq() {
   return (
     <section id="faq" className="border-t border-border/70 py-18 sm:py-24">
       <Container size="wide">
-        <div className="grid gap-10 lg:grid-cols-[0.62fr_1fr] lg:gap-16">
+        <Reveal className="grid gap-10 lg:grid-cols-[0.62fr_1fr] lg:gap-16">
           <div className="max-w-md">
-            <h2 className="text-balance font-display text-3xl font-semibold tracking-tight sm:text-5xl">
+            <Eyebrow>FAQ</Eyebrow>
+            <h2 className="mt-4 text-balance font-display text-3xl font-semibold tracking-tight sm:text-5xl">
               Questions that should be answered before integration.
             </h2>
             <p className="mt-5 text-base leading-relaxed text-muted-foreground">
@@ -44,7 +47,7 @@ export function Faq() {
               ))}
             </Accordion>
           </div>
-        </div>
+        </Reveal>
       </Container>
     </section>
   );

@@ -3,6 +3,8 @@ import { ArrowRight, ArrowUpRight, CheckCircle2, Clock3 } from "lucide-react";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { CopyButton } from "@/components/ui/copy-button";
+import { Eyebrow } from "@/components/ui/eyebrow";
+import { Reveal } from "@/components/ui/reveal";
 import { sdkReleases } from "@/config/marketing";
 
 /**
@@ -16,17 +18,21 @@ export function SdkSection() {
   return (
     <section id="sdks" className="py-18 sm:py-24">
       <Container size="wide">
-        <div className="max-w-3xl">
-          <h2 className="text-balance font-display text-3xl font-semibold tracking-tight sm:text-5xl">
+        <Reveal className="max-w-3xl">
+          <Eyebrow>SDKs &amp; release status</Eyebrow>
+          <h2 className="mt-4 text-balance font-display text-3xl font-semibold tracking-tight sm:text-5xl">
             Release status before installation.
           </h2>
           <p className="mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
             Every client has documentation and source. Only packages with a
             verifiable release receive an install command.
           </p>
-        </div>
+        </Reveal>
 
-        <div className="mt-12 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+        <Reveal
+          className="mt-12 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]"
+          delayMs={80}
+        >
           <article className="qid-featured-card relative flex min-h-80 flex-col overflow-hidden rounded-lg border p-6 sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
@@ -110,7 +116,7 @@ export function SdkSection() {
               </article>
             ))}
           </div>
-        </div>
+        </Reveal>
       </Container>
     </section>
   );

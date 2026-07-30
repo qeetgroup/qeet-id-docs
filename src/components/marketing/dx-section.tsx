@@ -1,6 +1,8 @@
 import { ArrowRight, Braces, Building2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
+import { Eyebrow } from "@/components/ui/eyebrow";
+import { Reveal } from "@/components/ui/reveal";
 
 const journeys = [
   {
@@ -45,17 +47,22 @@ export function DxSection() {
   return (
     <section id="documentation-paths" className="py-18 sm:py-24">
       <Container size="wide">
-        <div className="max-w-3xl">
-          <h2 className="text-balance font-display text-3xl font-semibold tracking-tight sm:text-5xl">
+        <Reveal className="max-w-3xl">
+          <Eyebrow>Choose your path</Eyebrow>
+          <h2 className="mt-4 text-balance font-display text-3xl font-semibold tracking-tight sm:text-5xl">
             Enter the docs from the decision you own.
           </h2>
           <p className="mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
             The same platform reads differently when you are shipping code,
-            defining the trust model, or reviewing operational risk.
+            defining the trust model, or reviewing operational risk. Pick the
+            track that matches your job and follow it end to end.
           </p>
-        </div>
+        </Reveal>
 
-        <div className="mt-12 divide-y divide-border border-y border-border">
+        <Reveal
+          className="mt-12 divide-y divide-border border-y border-border"
+          delayMs={80}
+        >
           {journeys.map((journey) => (
             <article
               key={journey.role}
@@ -88,7 +95,7 @@ export function DxSection() {
               </ul>
             </article>
           ))}
-        </div>
+        </Reveal>
       </Container>
     </section>
   );

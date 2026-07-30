@@ -1,6 +1,8 @@
 import { CheckCircle2, CircleOff, Construction } from "lucide-react";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
+import { Eyebrow } from "@/components/ui/eyebrow";
+import { Reveal } from "@/components/ui/reveal";
 import { readinessGroups } from "@/config/marketing";
 import { cn } from "@/lib/cn";
 
@@ -27,10 +29,13 @@ export function ReadinessSection() {
   return (
     <section id="readiness" className="py-18 sm:py-24">
       <Container size="wide">
-        <div className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-end lg:gap-16">
-          <h2 className="text-balance font-display text-3xl font-semibold tracking-tight sm:text-5xl">
-            Release posture, without euphemisms.
-          </h2>
+        <Reveal className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-end lg:gap-16">
+          <div>
+            <Eyebrow>Release posture</Eyebrow>
+            <h2 className="mt-4 text-balance font-display text-3xl font-semibold tracking-tight sm:text-5xl">
+              Release posture, without euphemisms.
+            </h2>
+          </div>
           <div>
             <p className="max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
               Preview software should make its boundaries inspectable. This
@@ -52,9 +57,9 @@ export function ReadinessSection() {
               </Link>
             </div>
           </div>
-        </div>
+        </Reveal>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <Reveal className="mt-12 grid gap-6 md:grid-cols-3" delayMs={80}>
           {readinessGroups.map((group) => {
             const style = tone[group.tone];
             const Icon = style.icon;
@@ -90,7 +95,7 @@ export function ReadinessSection() {
               </article>
             );
           })}
-        </div>
+        </Reveal>
       </Container>
     </section>
   );

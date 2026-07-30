@@ -1,6 +1,8 @@
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
+import { Eyebrow } from "@/components/ui/eyebrow";
+import { Reveal } from "@/components/ui/reveal";
 import { capabilityGroups } from "@/config/marketing";
 import { cn } from "@/lib/cn";
 
@@ -15,17 +17,18 @@ export function FeaturesGrid() {
       className="border-y border-border/70 bg-muted/15 py-18 sm:py-24"
     >
       <Container size="wide">
-        <div className="max-w-3xl">
-          <h2 className="text-balance font-display text-3xl font-semibold tracking-tight sm:text-5xl">
+        <Reveal className="max-w-3xl">
+          <Eyebrow>The platform</Eyebrow>
+          <h2 className="mt-4 text-balance font-display text-3xl font-semibold tracking-tight sm:text-5xl">
             One identity plane, five operational domains.
           </h2>
           <p className="mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
             Follow the domain you own. Each path connects its mental model,
             implementation guidance, security posture and live API contract.
           </p>
-        </div>
+        </Reveal>
 
-        <div className="mt-12 grid gap-4 lg:grid-cols-12">
+        <Reveal className="mt-12 grid gap-4 lg:grid-cols-12" delayMs={80}>
           {capabilityGroups.map((capability, index) => (
             <Link
               key={capability.title}
@@ -86,7 +89,7 @@ export function FeaturesGrid() {
               </ul>
             </Link>
           ))}
-        </div>
+        </Reveal>
       </Container>
     </section>
   );

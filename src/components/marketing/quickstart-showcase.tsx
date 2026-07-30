@@ -2,6 +2,8 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { CodeWindow } from "@/components/ui/code-window";
 import { Container } from "@/components/ui/container";
+import { Eyebrow } from "@/components/ui/eyebrow";
+import { Reveal } from "@/components/ui/reveal";
 
 const quickstartCode = `client := qeetid.New(qeetid.Config{
   APIKey:  os.Getenv("QEETID_API_KEY"),
@@ -25,11 +27,9 @@ export async function QuickstartShowcase() {
   return (
     <section id="quickstart" className="py-18 sm:py-24">
       <Container size="wide">
-        <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:items-center lg:gap-16">
+        <Reveal className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:items-center lg:gap-16">
           <div className="max-w-xl">
-            <p className="text-xs font-semibold text-brand-text">
-              AVAILABLE NOW · GO
-            </p>
+            <Eyebrow>Available now · Go</Eyebrow>
             <h2 className="mt-4 text-balance font-display text-3xl font-semibold tracking-tight sm:text-5xl">
               From bearer token to decision in one handler.
             </h2>
@@ -61,7 +61,7 @@ export async function QuickstartShowcase() {
             />
             <CodeWindow code={quickstartCode} lang="go" filename="handler.go" />
           </div>
-        </div>
+        </Reveal>
       </Container>
     </section>
   );

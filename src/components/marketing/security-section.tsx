@@ -2,6 +2,8 @@ import { BadgeCheck, CircleAlert, Fingerprint, Link2 } from "lucide-react";
 import Link from "next/link";
 import { CodeWindow } from "@/components/ui/code-window";
 import { Container } from "@/components/ui/container";
+import { Eyebrow } from "@/components/ui/eyebrow";
+import { Reveal } from "@/components/ui/reveal";
 
 const securityCode = `# Ask for the decision and the complete grant path.
 curl --get "$QEETID_BASE_URL/v1/check" \
@@ -51,11 +53,9 @@ export async function SecuritySection() {
       className="border-y border-border/70 bg-card/40 py-18 sm:py-24"
     >
       <Container size="wide">
-        <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-end lg:gap-16">
+        <Reveal className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-end lg:gap-16">
           <div className="max-w-xl">
-            <p className="text-xs font-semibold text-brand-text">
-              ASSURANCE, NOT ADJECTIVES
-            </p>
+            <Eyebrow>Assurance, not adjectives</Eyebrow>
             <h2 className="mt-4 text-balance font-display text-3xl font-semibold tracking-tight sm:text-5xl">
               Evidence over assurances.
             </h2>
@@ -83,9 +83,12 @@ export async function SecuritySection() {
           <div className="min-w-0">
             <CodeWindow code={securityCode} lang="bash" filename="verify.sh" />
           </div>
-        </div>
+        </Reveal>
 
-        <div className="mt-12 grid border-t border-border md:grid-cols-2">
+        <Reveal
+          className="mt-12 grid border-t border-border md:grid-cols-2"
+          delayMs={80}
+        >
           {assuranceItems.map((item, index) => (
             <article
               key={item.title}
@@ -104,7 +107,7 @@ export async function SecuritySection() {
               </div>
             </article>
           ))}
-        </div>
+        </Reveal>
       </Container>
     </section>
   );

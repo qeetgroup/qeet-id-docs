@@ -50,6 +50,7 @@ export function Hero() {
       tabIndex={-1}
       className="qid-hero relative isolate overflow-hidden border-b border-border/70"
     >
+      <div aria-hidden className="qid-aurora -z-20" />
       <div aria-hidden className="qid-hero-grid absolute inset-0 -z-10" />
       <Container size="full" className="relative pt-10 pb-4 sm:py-18 lg:py-22">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,0.82fr)_minmax(34rem,1.18fr)] lg:items-end lg:gap-14">
@@ -112,7 +113,13 @@ export function Hero() {
             </p>
           </div>
 
-          <DecisionTrace />
+          <div className="relative min-w-0">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -inset-8 -z-10 opacity-70 blur-2xl [background:radial-gradient(60%_55%_at_62%_12%,color-mix(in_oklab,var(--brand-500)_18%,transparent),transparent_70%)]"
+            />
+            <DecisionTrace />
+          </div>
         </div>
 
         <div className="mt-9 grid grid-cols-3 border-y border-border/70 bg-background/65 sm:mt-12 lg:mt-16">

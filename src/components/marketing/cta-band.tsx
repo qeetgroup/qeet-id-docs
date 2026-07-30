@@ -2,6 +2,8 @@ import { buttonVariants } from "@qeetrix/ui";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
+import { Eyebrow } from "@/components/ui/eyebrow";
+import { Reveal } from "@/components/ui/reveal";
 import { marketingLinks } from "@/config/marketing";
 import { cn } from "@/lib/cn";
 
@@ -12,11 +14,13 @@ import { cn } from "@/lib/cn";
 export function CtaBand() {
   return (
     <section className="relative isolate overflow-hidden border-y border-border bg-muted/25 py-18 sm:py-24">
+      <div aria-hidden className="qid-aurora -z-20" />
       <div aria-hidden className="qid-cta-grid absolute inset-0 -z-10" />
       <Container size="wide">
-        <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16">
+        <Reveal className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16">
           <div>
-            <h2 className="max-w-3xl text-balance font-display text-3xl font-semibold tracking-tight sm:text-5xl">
+            <Eyebrow>Get started</Eyebrow>
+            <h2 className="mt-4 max-w-3xl text-balance font-display text-3xl font-semibold tracking-tight sm:text-5xl">
               Begin with the path that works today.
             </h2>
             <p className="mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
@@ -49,7 +53,7 @@ export function CtaBand() {
               Open the API reference
             </a>
           </div>
-        </div>
+        </Reveal>
       </Container>
     </section>
   );
