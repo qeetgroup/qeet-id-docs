@@ -1,21 +1,27 @@
 ---
 title: SDKs
-description: Typed, ergonomic clients for Node, React and Go.
+description: Release status and documentation for the Go, Node and React clients.
 ---
 
-Qeet ID provides first-party SDKs that wrap the API with types, sensible
-defaults and local session verification. They are pre-1.0 and evolving quickly.
+Qeet ID's first-party SDKs wrap the API with types, sensible defaults and local
+session verification. They are pre-1.0 and release independently.
+
+| SDK | Status | Installation |
+| --- | --- | --- |
+| Go | **Available** | `go get github.com/qeetgroup/qeet-id-go` |
+| Node & TypeScript | **Source preview** | npm release pending |
+| React | **Source preview** | npm release pending |
 
 <Cards>
-  <Card title="Node & TypeScript" href="/docs/sdks/node" description="Server-side client — @qeet-id/node" />
-  <Card title="React" href="/docs/sdks/react" description="Components and hooks — @qeet-id/react" />
-  <Card title="Go" href="/docs/sdks/go" description="Backend client — qeet-id-go" />
+  <Card title="Go · available" href="/docs/sdks/go" description="Executable backend integration using qeet-id-go." />
+  <Card title="Node · source preview" href="/docs/sdks/node" description="Review the intended @qeet-id/node 0.1 surface." />
+  <Card title="React · source preview" href="/docs/sdks/react" description="Review the intended @qeet-id/react 0.1 surface." />
 </Cards>
 
-<Callout type="info">
-  The SDKs are not yet published to public registries — the snippets here show
-  the intended developer experience. Watch [GitHub](https://github.com/qeetgroup)
-  for releases.
+<Callout type="warn" title="Do not install the npm packages yet">
+  `@qeet-id/node` and `@qeet-id/react` are not present in the public npm
+  registry. Their pages are source-preview documentation, not install guides.
+  Release status will change here only after a registry package is verifiable.
 </Callout>
 
 ## What the SDKs handle for you

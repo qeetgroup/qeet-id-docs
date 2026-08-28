@@ -26,7 +26,7 @@ export const organizationSchema: Schema = {
   sameAs: [links.githubOrg, links.x],
 };
 
-/** The documentation website, with a search action for the sitelinks searchbox. */
+/** The documentation website. Search is exposed through the in-product command palette. */
 export const websiteSchema: Schema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
@@ -34,14 +34,6 @@ export const websiteSchema: Schema = {
   url: siteUrl,
   description: site.description,
   publisher: { "@type": "Organization", name: site.company },
-  potentialAction: {
-    "@type": "SearchAction",
-    target: {
-      "@type": "EntryPoint",
-      urlTemplate: `${siteUrl}/docs?q={search_term_string}`,
-    },
-    "query-input": "required name=search_term_string",
-  },
 };
 
 /** Qeet ID as a software product. */
@@ -52,7 +44,7 @@ export const softwareApplicationSchema: Schema = {
   applicationCategory: "SecurityApplication",
   operatingSystem: "Web, Self-hosted",
   description: site.description,
-  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  license: "https://opensource.org/license/mit",
   url: links.website,
 };
 

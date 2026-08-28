@@ -111,6 +111,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     // by `@qeetrix/ui/styles.css`, so no `next/font` loader is needed.
     <html lang="en" data-qx-brand="qeet-id" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col font-sans antialiased">
+        <a href="#main-content" className="qid-skip-link">
+          Skip to main content
+        </a>
         <JsonLd schema={[organizationSchema, websiteSchema]} />
         <RootProvider search={{ links: searchLinks }}>
           {children}

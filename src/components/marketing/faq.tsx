@@ -5,7 +5,8 @@ import {
   AccordionTrigger,
 } from "@qeetrix/ui";
 import { Container } from "@/components/ui/container";
-import { SectionHeading } from "@/components/ui/section";
+import { Eyebrow } from "@/components/ui/eyebrow";
+import { Reveal } from "@/components/ui/reveal";
 import { faqs } from "@/config/marketing";
 
 /**
@@ -15,27 +16,38 @@ import { faqs } from "@/config/marketing";
  */
 export function Faq() {
   return (
-    <section id="faq" className="py-20 sm:py-28">
-      <Container size="content">
-        <SectionHeading eyebrow="FAQ" title="Frequently asked questions" />
-        <div className="mx-auto mt-12 max-w-3xl">
-          <Accordion className="divide-y divide-border border-y border-border">
-            {faqs.map((faq, i) => (
-              <AccordionItem
-                key={faq.question}
-                value={String(i)}
-                className="py-1"
-              >
-                <AccordionTrigger className="py-4 text-left font-medium">
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent className="pb-4 text-muted-foreground">
-                  {faq.answer}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
+    <section id="faq" className="border-t border-border/70 py-18 sm:py-24">
+      <Container size="wide">
+        <Reveal className="grid gap-10 lg:grid-cols-[0.62fr_1fr] lg:gap-16">
+          <div className="max-w-md">
+            <Eyebrow>FAQ</Eyebrow>
+            <h2 className="mt-4 text-balance font-display text-3xl font-semibold tracking-tight sm:text-5xl">
+              Questions that should be answered before integration.
+            </h2>
+            <p className="mt-5 text-base leading-relaxed text-muted-foreground">
+              Package status, release posture and terminology are part of the
+              technical contract, not fine print.
+            </p>
+          </div>
+          <div>
+            <Accordion className="divide-y divide-border border-y border-border">
+              {faqs.map((faq, i) => (
+                <AccordionItem
+                  key={faq.question}
+                  value={String(i)}
+                  className="py-1"
+                >
+                  <AccordionTrigger className="py-4 text-left font-medium">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-4 text-muted-foreground">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </Reveal>
       </Container>
     </section>
   );

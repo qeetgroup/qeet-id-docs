@@ -1,13 +1,13 @@
 ---
 title: Core Concepts
-description: The mental model behind Qeet ID — tenants, users, sessions, tokens and organizations.
+description: The mental model behind Qeet ID — organizations, users, groups, roles, sessions and tokens.
 ---
 
 A handful of concepts recur throughout Qeet ID. Understanding them makes every
 other page easier to follow.
 
 <Cards>
-  <Card title="Multi-tenancy" href="/docs/concepts/tenancy" description="How data is isolated per tenant." />
+  <Card title="Organizations & tenancy" href="/docs/concepts/tenancy" description="One isolation boundary, two context-specific names." />
   <Card title="Sessions & tokens" href="/docs/concepts/sessions-and-tokens" description="How authentication state is represented and verified." />
 </Cards>
 
@@ -15,13 +15,16 @@ other page easier to follow.
 
 | Object | What it is |
 | --- | --- |
-| **Tenant** | The top-level isolation boundary. Every record belongs to exactly one tenant. |
-| **User** | A human (or agent) identity within a tenant. |
-| **Organization** | A group of users — teams, companies, workspaces — with their own roles. |
-| **Session** | An authenticated period, represented by a verifiable token. |
+| **Organization / tenant** | The top-level isolation boundary. Organization is the SDK-facing term; tenant is the API and storage term. |
+| **User record** | A human identity represented inside an organization. |
+| **Group** | A team, department or directory group within the organization. |
+| **Session** | An authenticated period whose token carries one active organization scope. |
 | **Permission** | A fine-grained capability, granted through roles (RBAC). |
+
+<IdentityModel />
 
 <Callout type="info">
   Qeet ID is multi-tenant by default. Even a single-customer deployment runs
-  inside one tenant, so scaling to many later requires no re-architecture.
+  inside one organization boundary, so adding more organizations later does not
+  require a different storage or authorization model.
 </Callout>

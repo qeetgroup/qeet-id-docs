@@ -13,7 +13,7 @@ match the rest of the Qeet ID suite.
 - **Fumadocs** (`@fumadocs/base-ui`) — docs engine, MDX, search
 - **Tailwind CSS v4** + **[`@qeetrix/ui`](https://www.npmjs.com/package/@qeetrix/ui)** — the shared Qeet design system (tokens, fonts, components)
 - **Shiki** — syntax highlighting (docs + marketing share one theme)
-- **Motion** — animations · **Biome** — lint/format · **Bun** — package manager
+- **Native CSS motion** + focused client interactions · **Biome** — lint/format · **Bun** — package manager
 
 ## Develop
 

@@ -25,14 +25,12 @@ are available: `eq`, `ne`, `in`, `nin`, `contains`, `gt`, `gte`, `lt`, `lte`,
 
 ## Evaluating a policy
 
-```ts title="server.ts"
-const decision = await qeetid.decisions.evaluate({
-  tenant: tenantId,
-  subject: { department: "finance" },
-  resource: { region: "eu-west" },
-  context: { trust_level: 3 },
-});
-```
+<Callout type="warn" title="SDK status">
+  The current Node SDK does not expose arbitrary ABAC condition-tree evaluation.
+  Use the live Scalar reference for the current HTTP contract rather than
+  copying an aspirational SDK call. The `qeetid.decisions` service implements
+  AuthZEN over RBAC and ReBAC; it is not the ABAC evaluator.
+</Callout>
 
 ## Deny-wins, fail-closed
 
@@ -49,6 +47,6 @@ which conditions passed and which failed.
 ## AuthZEN
 
 Qeet ID also exposes an OpenID **AuthZEN** PDP endpoint
-(`POST /tenants/{tenantID}/access/v1/evaluation`) — a standard-shaped facade over
-the same RBAC/ReBAC/ABAC engines, so a policy-enforcement point can integrate
-against a spec rather than a vendor API. See [checking access](/docs/authorization/checking-access).
+(`POST /v1/tenants/{tenantID}/access/v1/evaluation`) — a standard-shaped facade
+over RBAC and ReBAC, so a policy-enforcement point can integrate against a spec
+rather than a vendor API. See [checking access](/docs/authorization/checking-access).

@@ -17,7 +17,7 @@ export function Logo({
       className={cn("inline-flex items-center gap-2", className)}
       {...props}
     >
-      <QeetLogoMark className="size-6 shrink-0" />
+      <QeetLogoMark aria-hidden="true" className="size-6 shrink-0" />
       {showWordmark ? (
         <span className="text-[0.95rem] font-semibold tracking-tight text-foreground">
           Qeet <span className="text-brand-text">ID</span>

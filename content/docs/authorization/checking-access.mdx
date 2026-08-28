@@ -26,20 +26,38 @@ By default a check returns just `{ "allowed": true | false }`.
 
 ## Explainable decisions
 
-Add `explain=true` and the response includes the **grant path** — every role
-(direct or group-derived) that produced the answer:
+Use the SDK's dedicated `explain` method, or add `explain=true` to the HTTP
+request. The response includes the **grant path** — every role, direct or
+group-derived, that produced the answer:
+
+```ts title="server.ts"
+const explanation = await qeetid.permissions.explain({
+  user: claims.userId!,
+  tenant: claims.tenantId!,
+  permission: "billing:write",
+});
+```
 
 ```bash title="Terminal"
-curl "$QEETID_URL/v1/permissions/check?explain=true" \
-  -H "Authorization: Bearer $TOKEN" \
-  -d '{ "user": "usr_123", "permission": "billing:write" }'
+curl --get "$QEETID_BASE_URL/v1/check" \
+  -H "Authorization: ApiKey $QEETID_API_KEY" \
+  --data-urlencode "user_id=$USER_ID" \
+  --data-urlencode "tenant_id=$TENANT_ID" \
+  --data-urlencode "permission=billing:write" \
+  --data-urlencode "explain=true"
 ```
 
 ```json title="Response"
 {
   "allowed": true,
   "paths": [
-    { "role": "admin", "via": "group:finance", "permission": "billing:write" }
+    {
+      "permission": "billing:write",
+      "granted_by": "role:admin",
+      "via": "group:finance",
+      "group_id": "3ca8c334-4537-4aa4-a6ea-a26e58d24a19",
+      "role_id": "81b4e12c-2fa0-43e9-860b-12c77408f21e"
+    }
   ]
 }
 ```
@@ -64,9 +82,10 @@ implements the OpenID **AuthZEN** evaluation endpoint:
 POST /tenants/{tenantID}/access/v1/evaluation
 ```
 
-It routes by `resource.type` (a `permission` resource hits RBAC; anything else
-is treated as a ReBAC `type:id` + relation), returns `{ "decision": true|false }`,
-and honours `context.explain` for the same grant-path trace.
+The SDK calls the versioned route under `/v1`. It routes by `resource.type` (a
+`permission` resource hits RBAC; anything else is treated as a ReBAC `type:id`
++ relation), returns `{ "decision": true|false }`, and honours
+`context.explain` for the same grant-path trace.
 
 <Callout type="warn">
   Always enforce authorization **server-side**. There is no browser-facing

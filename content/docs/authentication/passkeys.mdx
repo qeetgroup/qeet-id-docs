@@ -32,20 +32,26 @@ are:
 | --- | --- | --- |
 | Register a passkey | `POST /v1/passkeys/register/begin` | `POST /v1/passkeys/register/complete` |
 | Sign in | `POST /v1/passkeys/login/begin` | `POST /v1/passkeys/login/complete` |
-| Passwordless signup | `POST /signup/passkey/begin` | `POST /signup/passkey/complete` |
+| Passwordless signup | `POST /v1/signup/passkey/begin` | `POST /v1/signup/passkey/finish` |
 
 Each challenge issued by a `begin` call is valid for **5 minutes** and single-use,
 which defeats replay attacks.
 
 ## In the browser (React)
 
-The React SDK exposes a `usePasskeys` hook and a capability check:
+The React source preview exposes a `usePasskeys` hook and a capability check.
+The hook manages passkeys for an authenticated user and requires embedded mode:
+
+<Callout type="warn" title="React source preview">
+  `@qeet-id/react` is not published to npm yet. `usePasskeys` requires `apiUrl`
+  on `<QeetIDProvider>`.
+</Callout>
 
 ```tsx title="PasskeySetup.tsx"
 import { usePasskeys, isWebAuthnSupported } from "@qeet-id/react";
 
 export function PasskeySetup() {
-  const { register, credentials } = usePasskeys();
+  const { register, passkeys } = usePasskeys();
 
   if (!isWebAuthnSupported()) {
     return <p>This browser doesn't support passkeys.</p>;
@@ -54,7 +60,7 @@ export function PasskeySetup() {
   return (
     <div>
       <button onClick={() => register()}>Add a passkey</button>
-      <p>{credentials.length} passkey(s) registered</p>
+      <p>{passkeys.length} passkey(s) registered</p>
     </div>
   );
 }

@@ -100,7 +100,7 @@ function SidebarFooterLink({
       href={href}
       target="_blank"
       rel="noreferrer noopener"
-      className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-fd-muted-foreground transition-colors hover:bg-fd-accent hover:text-fd-foreground"
+      className="flex min-h-11 items-center gap-2 rounded-md px-2 py-1.5 text-sm text-fd-muted-foreground transition-colors hover:bg-fd-accent hover:text-fd-foreground"
     >
       {icon}
       <span className="flex-1">{children}</span>

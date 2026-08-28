@@ -1,0 +1,56 @@
+# qeet-id-docs — repository context metadata (Level 2).
+schema_version: 1
+context: {type: repository, level: L2, canonical: true, last_verified: "2026-08-28"}
+inheritance:
+  organization: {repository: qeetgroup/qeet-context, level: L0}
+  product:      {repository: qeetgroup/qeet-id-context, level: L1}
+repository:
+  name: qeet-id-docs
+  product: qeet-id
+  type: documentation
+  role: documentation
+  status: active
+  visibility: public
+  default_branch: main
+  working_branch: develop
+  host: docs.qeet.in
+runtime:
+  language: TypeScript
+  framework: Next.js 16.2.12        # newer than login/website (16.2.6)
+  docs_engine: "fumadocs 16.13.0"   # fumadocs-ui aliased to @fumadocs/base-ui
+  react: "^19.2.8"
+  package_manager: bun@1.3.14
+  design_system: "@qeetrix/ui ^1.0.2"
+  dev_port: 3000
+architecture:
+  style: static-docs-site
+  backend_calls: none               # VERIFIED — no API client
+  content_root: content/docs
+  sections: [architecture, authentication, authorization, concepts, getting-started, guides, provisioning, sdks, security]
+  ai_surfaces: [/llms.txt, /llms-full.txt, /llms.mdx/docs, /api/search, /og]
+  content_negotiation: src/proxy.ts # serves Markdown when Accept prefers it
+contracts:
+  consumes: {}
+  documents: qeet-id-server         # the API it describes
+commands:
+  dev:   bun run dev
+  build: bun run build
+  lint:  bun run lint               # biome check
+  types: bun run types:check        # NOTE: not "typecheck"
+  test:  bun run test               # node scripts/check-links.mjs — internal link integrity
+ci:
+  workflows: [ci.yml]               # the ONLY frontend repo with CI
+  job: verify                       # lint -> types:check -> test -> build
+  runner: bby-ubuntu
+security:
+  posture: strongest-of-the-frontends
+  headers: [CSP, X-Content-Type-Options, Referrer-Policy, HSTS-preload, Permissions-Policy]
+  poweredByHeader: false
+  no_secrets: true
+llm_context:
+  primary_instructions: AGENTS.md
+  canonical: docs/llm/context.md
+  boundaries: docs/llm/boundaries.md
+  workflows: docs/llm/workflows.md
+  architecture_map: docs/llm/architecture-map.md
+  adapters: [CLAUDE.md, GEMINI.md, .github/copilot-instructions.md]

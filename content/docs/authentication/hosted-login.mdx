@@ -27,19 +27,29 @@ The hosted app covers the full journey: `sign in`, `sign up`,
 ## Wiring it up
 
 Point your app's login and logout URLs at the hosted flow. In React, the
-provider does this for you:
+source preview is designed to provide redirect controls for these routes:
+
+<Callout type="warn" title="React source preview">
+  `@qeet-id/react` is not published to npm yet. This example documents the
+  intended `0.1` API for review, not an installable package.
+</Callout>
 
 ```tsx title="App.tsx"
 import { QeetIDProvider } from "@qeet-id/react";
 
-<QeetIDProvider loginUrl="/api/auth/login" logoutUrl="/api/auth/logout">
+<QeetIDProvider
+  loginUrl="/api/auth/login"
+  logoutUrl="/api/auth/logout"
+  signUpUrl="/api/auth/sign-up"
+>
   {children}
 </QeetIDProvider>;
 ```
 
 ## When to embed instead
 
-If you need auth fully inside your own UI, the SDKs expose the same flows as
-components and hooks (`<SignIn />`, `usePasskeys`, `useMFA`, …). Both paths hit
-the same backend endpoints, so you can start hosted and migrate in-app later
-without backend changes. See the [React SDK](/docs/sdks/react).
+If you need auth fully inside your own UI, the React source preview exposes the
+same flows as components and hooks (`<SignIn />`, `usePasskeys`, `useMFA`, …).
+Embedded mode requires `apiUrl` on `<QeetIDProvider>`. Both paths hit the same
+backend endpoints, so the backend contract stays stable. See the
+[React SDK status](/docs/sdks/react).

@@ -16,18 +16,14 @@ go get github.com/qeetgroup/qeet-id-go
 
 ```go title="qeetid.go"
 client := qeetid.New(qeetid.Config{
-	APIKey: os.Getenv("QEETID_API_KEY"),
+	APIKey:  os.Getenv("QEETID_API_KEY"),
+	BaseURL: os.Getenv("QEETID_BASE_URL"),
 })
 ```
 
 ## Common operations
 
 ```go title="main.go"
-// Create a user.
-user, err := client.Users.Create(ctx, qeetid.CreateUserInput{
-	Email: "ada@example.com",
-})
-
 // Verify a session token.
 claims, err := client.Sessions.Verify(ctx, token)
 
@@ -38,6 +34,13 @@ allowed, err := client.Permissions.Check(ctx, qeetid.PermissionCheck{
 	Permission: "billing:write",
 })
 ```
+
+<Callout type="warn" title="User creation contract">
+	The current Go `CreateUserInput` does not expose the server-required
+	`tenant_id`. Until the SDK adds that field, create users through the Scalar API
+	reference or use a provisioning flow instead of constructing an invalid SDK
+	request.
+</Callout>
 
 <Callout type="info">
   Every method takes a `context.Context` and returns a typed result plus an

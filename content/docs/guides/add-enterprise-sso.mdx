@@ -22,9 +22,11 @@ Claim and verify the customer's email domain by DNS TXT record so you can bind
 SSO to it. Only one tenant can hold a verified claim for a domain.
 
 ```ts title="server.ts"
-const claim = await qeetid.domains.create({ tenant: tenantId, domain: "customer.com" });
-// Ask the customer to add claim.txtRecord to their DNS, then:
-await qeetid.domains.verify({ tenant: tenantId, domain: "customer.com" });
+const claim = await qeetid.domains.create(tenantId, {
+  domain: "customer.com",
+});
+// Ask the customer to publish claim.dns_record_value, then:
+await qeetid.domains.verify(tenantId, claim.id);
 ```
 </Step>
 
@@ -34,12 +36,12 @@ Register the IdP details and map assertion attributes onto the user profile. The
 connection starts in `draft`.
 
 ```ts title="server.ts"
-const conn = await qeetid.saml.createConnection({
-  tenant: tenantId,
-  idpEntityId: "https://idp.customer.com/entity",
-  idpSsoUrl: "https://idp.customer.com/sso",
-  idpCertificate: pemCert,
-  attributeMap: { email: "emailAddress", name: "displayName" },
+const conn = await qeetid.saml.create(tenantId, {
+  name: "Customer workforce",
+  idp_entity_id: "https://idp.customer.com/entity",
+  idp_sso_url: "https://idp.customer.com/sso",
+  idp_certificate: pemCert,
+  attribute_mapping: { email: "emailAddress", name: "displayName" },
 });
 ```
 </Step>
@@ -50,7 +52,10 @@ Run a test login. Once an assertion validates against the certificate, activate
 the connection.
 
 ```ts title="server.ts"
-await qeetid.saml.updateConnection({ tenant: tenantId, id: conn.id, status: "active" });
+const test = await qeetid.saml.test(tenantId, conn.id);
+if (!test.success) throw new Error(test.error ?? "SAML test failed");
+
+await qeetid.saml.update(tenantId, conn.id, { enabled: true });
 ```
 </Step>
 

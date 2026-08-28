@@ -15,7 +15,7 @@ An agent authenticates with a secret (prefixed `agt_`) and receives a
 **short-lived** JWT — re-minted per task, never refreshed:
 
 ```bash title="Terminal"
-curl -X POST "$QEETID_URL/v1/agents/token" \
+curl -X POST "$QEETID_BASE_URL/v1/agents/token" \
   -H "Authorization: Bearer $AGENT_SECRET" \
   -d '{ "scope": ["billing:read"], "ttl": "5m" }'
 ```
@@ -37,7 +37,7 @@ sponsor can transfer all their agents in one operation.
 When something goes wrong, one call suspends **every** active agent in a tenant:
 
 ```bash title="Terminal"
-curl -X POST "$QEETID_URL/v1/tenants/$TENANT_ID/agents/kill-all" \
+curl -X POST "$QEETID_BASE_URL/v1/tenants/$TENANT_ID/agents/kill-all" \
   -H "Authorization: Bearer $TOKEN"
 ```
 

@@ -1,33 +1,47 @@
-import { Marquee } from "@qeetrix/ui";
-import { QeetLogoMark } from "@qeetrix/ui/brand";
 import { Container } from "@/components/ui/container";
-import { suiteProducts } from "@/config/marketing";
+
+const standards = [
+  "WebAuthn",
+  "OAuth 2.1",
+  "OpenID Connect",
+  "SAML 2.0",
+  "SCIM 2.0",
+  "AuthZEN",
+  "JWT / JWKS",
+] as const;
 
 /**
- * TrustBar — a marquee of the Qeet Group products that authenticate through
- * Qeet ID, reinforcing the "identity backbone of the suite" positioning. Uses
- * the Qeetrix `Marquee` (pauses on hover and for reduced-motion).
+ * Static standards rail: scannable, honest, and safe at every viewport width.
  */
 export function TrustBar() {
   return (
-    <section className="border-y border-border/60 bg-card/30 py-10">
-      <Container className="flex flex-col items-center gap-6">
-        <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
-          The identity backbone of the Qeet Group suite
-        </p>
-        <div className="w-full mask-[linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
-          <Marquee pauseOnHover speed={42} gap={56}>
-            {suiteProducts.map((product) => (
-              <span
-                key={product}
-                className="flex items-center gap-2 text-lg font-semibold text-muted-foreground/80"
-              >
-                <QeetLogoMark className="size-5 opacity-70" />
-                {product}
-              </span>
-            ))}
-          </Marquee>
+    <section
+      aria-label="Supported identity standards"
+      className="border-b border-border/70 bg-muted/20"
+    >
+      <Container
+        size="full"
+        className="grid gap-5 py-5 lg:grid-cols-[13rem_1fr] lg:items-center"
+      >
+        <div>
+          <p className="text-xs font-semibold text-foreground">
+            Open by protocol
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            No proprietary identity dialect
+          </p>
         </div>
+        <ul className="flex flex-wrap gap-x-6 gap-y-3 lg:justify-end">
+          {standards.map((standard) => (
+            <li
+              key={standard}
+              className="flex items-center gap-2 text-xs font-medium text-muted-foreground"
+            >
+              <span className="size-1 bg-brand-500" aria-hidden />
+              {standard}
+            </li>
+          ))}
+        </ul>
       </Container>
     </section>
   );

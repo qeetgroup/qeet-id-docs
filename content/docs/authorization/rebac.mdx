@@ -29,12 +29,17 @@ Qeet ID's `Check` walks the relationship graph recursively — following userset
 and inherited relations — with a cycle guard and a maximum depth:
 
 ```ts title="server.ts"
-const allowed = await qeetid.relationships.check({
-  tenant: tenantId,
+const result = await qeetid.relationships.check(
+  tenantId,
+  {
   object: "document:readme",
   relation: "viewer",
-  subject: "user:ada",
-});
+    user_id: userId,
+  },
+  true,
+);
+
+if (!result.allowed) throw new Response("Forbidden", { status: 403 });
 ```
 
 <Callout type="info">
@@ -45,6 +50,6 @@ const allowed = await qeetid.relationships.check({
 
 ## Explanations
 
-Like RBAC, ReBAC checks accept `?explain=true` and return the **root-to-leaf
-chain** of relation tuples that produced the decision — invaluable for debugging
-"why can this user see this?" See [checking access](/docs/authorization/checking-access).
+The final boolean argument enables explanation and returns the **root-to-leaf
+chain** in `result.path` — invaluable for debugging "why can this user see
+this?" See [checking access](/docs/authorization/checking-access).

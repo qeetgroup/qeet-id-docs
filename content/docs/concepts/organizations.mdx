@@ -3,9 +3,9 @@ title: Organizations
 description: Organizations, groups, memberships, invitations, branding and domains.
 ---
 
-In Qeet ID, an **organization is the tenant** — the top-level container that
-owns users, groups, roles and settings. Teams and workspaces within an
-organization are modelled as **groups**.
+In Qeet ID, an **organization is the tenant** — the top-level isolation boundary
+that owns user records, groups, roles and settings. "Organization" is the
+SDK-facing product term; `tenant_id` is the API, token and storage field.
 
 ## Organization = tenant
 
@@ -25,9 +25,8 @@ also the unit of role inheritance and SCIM sync:
 
 ## Memberships & roles
 
-Membership is expressed through **role grants** rather than a separate members
-table: a user belongs to an organization by holding one or more of its roles
-(directly or via a group). See
+Access inside an organization is expressed through **role grants**: a user
+record holds one or more roles directly or through a group. See
 [roles & permissions](/docs/authorization/roles-and-permissions).
 
 ## Invitations
@@ -37,9 +36,9 @@ a status (`pending`, `accepted`, `revoked`, `expired`) and expire automatically.
 
 ```ts title="server.ts"
 await qeetid.invitations.create({
-  tenant: tenantId,
+  tenant_id: tenantId,
   email: "grace@example.com",
-  role: "member",
+  role_id: memberRoleId,
 });
 ```
 
@@ -61,6 +60,7 @@ domain**:
 
 ## Switching organizations
 
-A user who belongs to several organizations can switch the active one; the React
-SDK ships an `<OrganizationSwitcher />` and a `useOrganization` hook, and the
-backend verifies membership on every switch.
+A signed-in principal with access to several organizations can switch the active
+one. The React source preview includes `<OrganizationSwitcher />` and
+`useOrganization`; the resulting token is scoped to exactly one active
+organization and the backend verifies membership on every switch.

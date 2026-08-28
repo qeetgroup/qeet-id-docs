@@ -15,7 +15,7 @@ so users and groups stay in sync automatically — no manual account management.
 Generate a per-tenant bearer token. It's shown once; only a hash is stored.
 
 ```ts title="server.ts"
-const { token } = await qeetid.scim.createToken({ tenant: tenantId });
+const { token } = await qeetid.scim.rotateToken(tenantId);
 // Hand `token` to the customer's IdP admin securely.
 ```
 </Step>
@@ -43,7 +43,11 @@ Directory groups arrive as Qeet ID [groups](/docs/concepts/organizations). Grant
 each group a role so membership drives access:
 
 ```ts title="server.ts"
-await qeetid.groups.assignRole({ tenant: tenantId, group: groupId, role: "member" });
+const roles = await qeetid.roles.list(tenantId);
+const memberRole = roles.find((role) => role.name === "member");
+if (!memberRole) throw new Error("member role is not configured");
+
+await qeetid.groups.grantRole(tenantId, groupId, memberRole.id);
 ```
 </Step>
 

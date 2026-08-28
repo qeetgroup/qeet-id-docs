@@ -28,6 +28,21 @@ export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
   const markdownUrl = getPageMarkdownUrl(page).url;
   const githubUrl = `https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/content/docs/${page.path}`;
   const pageUrl = new URL(page.url, siteUrl).toString();
+  const breadcrumbTrail: [string, string][] = [
+    ["Docs", new URL("/docs", siteUrl).toString()],
+    ...page.slugs.map(
+      (slug, index) =>
+        [
+          index === page.slugs.length - 1
+            ? page.data.title
+            : formatSegment(slug),
+          new URL(
+            `/docs/${page.slugs.slice(0, index + 1).join("/")}`,
+            siteUrl,
+          ).toString(),
+        ] satisfies [string, string],
+    ),
+  ];
 
   return (
     <>
@@ -38,13 +53,12 @@ export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
             description: page.data.description,
             url: pageUrl,
           }),
-          breadcrumbSchema([
-            ["Docs", new URL("/docs", siteUrl).toString()],
-            [page.data.title, pageUrl],
-          ]),
+          breadcrumbSchema(breadcrumbTrail),
         ]}
       />
       <DocsPage
+        id="main-content"
+        tabIndex={-1}
         toc={page.data.toc}
         full={page.data.full}
         breadcrumb={{ enabled: true }}
@@ -55,9 +69,22 @@ export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
         <DocsDescription className="mb-0">
           {page.data.description}
         </DocsDescription>
-        <div className="flex flex-row items-center gap-2 border-b pb-6">
-          <MarkdownCopyButton markdownUrl={markdownUrl} />
-          <ViewOptionsPopover markdownUrl={markdownUrl} githubUrl={githubUrl} />
+        <div className="flex flex-wrap items-center gap-3 border-b py-5">
+          <div className="flex items-center gap-3 text-xs text-fd-muted-foreground">
+            <span className="inline-flex items-center gap-2 font-medium text-fd-foreground">
+              <span className="size-1.5 bg-amber-500" aria-hidden />
+              Developer preview
+            </span>
+            <span aria-hidden>·</span>
+            <span>{formatSegment(page.slugs[0] ?? "documentation")}</span>
+          </div>
+          <div className="ml-auto flex items-center gap-2">
+            <MarkdownCopyButton markdownUrl={markdownUrl} />
+            <ViewOptionsPopover
+              markdownUrl={markdownUrl}
+              githubUrl={githubUrl}
+            />
+          </div>
         </div>
         <DocsBody>
           <MDX
@@ -89,4 +116,11 @@ export async function generateMetadata(
     path: page.url,
     image: getPageImageUrl(page).url,
   });
+}
+
+function formatSegment(segment: string): string {
+  return segment
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }

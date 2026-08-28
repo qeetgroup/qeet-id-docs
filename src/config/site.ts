@@ -40,19 +40,23 @@ export const site = {
  */
 export const links = {
   /** Scalar-hosted OpenAPI reference (linked, never rebuilt in this portal). */
-  apiReference: "https://api.qeet.in",
+  apiReference: "https://api.qeet.in/reference#qeet-id",
   /** Qeet ID marketing site. */
   website: "https://id.qeet.in",
   /** Admin console. */
   console: "https://console.id.qeet.in",
   /** Hosted status page. */
-  status: "https://status.qeet.in",
+  status: "https://id.qeet.in/status",
   /** GitHub organisation. */
   githubOrg: "https://github.com/qeetgroup",
   /** Social. */
   x: "https://x.com/qeetgroup",
   /** Support / contact. */
   support: "mailto:support@qeet.in",
+  /** Legal and trust center pages shared with the API portal. */
+  privacy: "https://api.qeet.in/privacy",
+  terms: "https://api.qeet.in/terms",
+  security: "https://api.qeet.in/security",
 } as const;
 
 /**

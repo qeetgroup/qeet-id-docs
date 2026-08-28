@@ -1,321 +1,115 @@
-/**
- * Landing-page content model. All copy, feature data, code samples, SDK cards,
- * steps, testimonials and FAQ live here as data so the marketing components
- * stay presentational and the messaging is edited in one place.
- *
- * Code samples are illustrative usage taken from the local SDK repos
- * (`qeet-id-node`, `qeet-id-react`, `qeet-id-go`) — the SDKs are not yet
- * published; these show the intended developer experience.
- */
 import {
-  IconApiKey,
   IconAuditLog,
-  IconCrossDevice,
-  IconMfaShield,
-  IconOidcConnector,
   IconPasskey,
   IconSamlConnector,
-  IconScimSync,
 } from "@qeetrix/ui/brand";
-import {
-  Boxes,
-  Building2,
-  Fingerprint,
-  Globe,
-  Palette,
-  ShieldCheck,
-} from "lucide-react";
+import { Boxes, ShieldCheck } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
-import type { CodeLang } from "@/lib/highlight";
-import { links } from "./site";
+import { githubUrl, links } from "./site";
 
 type IconType = ComponentType<SVGProps<SVGSVGElement>>;
 
-/* -------------------------------------------------------------------------- */
-/* Hero trust strip                                                           */
-/* -------------------------------------------------------------------------- */
-
-export const trustChips: string[] = [
-  "Open source · MIT",
-  "Self-hostable",
-  "No per-MAU fee",
-  "No SSO tax",
-  "OAuth 2.1 · OIDC · SAML",
-];
-
-/** Products in the Qeet Group suite that authenticate through Qeet ID. */
-export const suiteProducts: string[] = [
-  "Qeet Pay",
-  "Qeet Notify",
-  "Qeet Logs",
-  "Qeet People",
-  "Qeet AI",
-  "Qeetrix",
-];
-
-/* -------------------------------------------------------------------------- */
-/* Quickstart showcase (tabbed code window in the hero)                       */
-/* -------------------------------------------------------------------------- */
-
-export interface CodeSample {
-  value: string;
-  label: string;
-  filename: string;
-  lang: CodeLang;
-  code: string;
-}
-
-export const quickstartSamples: CodeSample[] = [
-  {
-    value: "install",
-    label: "Install",
-    filename: "terminal",
-    lang: "bash",
-    code: `# Node / TypeScript
-bun add @qeet-id/node
-
-# React
-bun add @qeet-id/react
-
-# Go
-go get github.com/qeetgroup/qeet-id-go`,
-  },
-  {
-    value: "node",
-    label: "Node",
-    filename: "server.ts",
-    lang: "ts",
-    code: `import { QeetID } from "@qeet-id/node";
-
-const client = new QeetID({ apiKey: process.env.QEETID_API_KEY! });
-
-// Verify a session token locally against cached JWKS.
-const claims = await client.sessions.verify(token);
-
-// Ask an explainable authorization question.
-const allowed = await client.permissions.check({
-  user: claims.userId!,
-  tenant: claims.tenantId!,
-  permission: "billing:write",
-});`,
-  },
-  {
-    value: "react",
-    label: "React",
-    filename: "App.tsx",
-    lang: "tsx",
-    code: `import {
-  QeetIDProvider,
-  SignedIn,
-  SignedOut,
-  SignInButton,
-} from "@qeet-id/react";
-
-export function App() {
-  return (
-    <QeetIDProvider loginUrl="/api/auth/login" logoutUrl="/api/auth/logout">
-      <SignedIn>
-        <Dashboard />
-      </SignedIn>
-      <SignedOut>
-        <SignInButton />
-      </SignedOut>
-    </QeetIDProvider>
-  );
-}`,
-  },
-  {
-    value: "go",
-    label: "Go",
-    filename: "main.go",
-    lang: "go",
-    code: `client := qeetid.New(qeetid.Config{
-	APIKey: os.Getenv("QEETID_API_KEY"),
-})
-
-claims, err := client.Sessions.Verify(ctx, token)
-
-allowed, err := client.Permissions.Check(ctx, qeetid.PermissionCheck{
-	User:       claims.UserID,
-	Tenant:     claims.TenantID,
-	Permission: "billing:write",
-})`,
-  },
-];
-
-/* -------------------------------------------------------------------------- */
-/* Capabilities grid                                                          */
-/* -------------------------------------------------------------------------- */
-
-export interface Feature {
+export interface CapabilityGroup {
   icon: IconType;
   title: string;
   description: string;
+  details: string[];
+  href: string;
+  status: string;
 }
 
-export const features: Feature[] = [
+/** Grouped platform narrative used by the enterprise homepage. */
+export const capabilityGroups: CapabilityGroup[] = [
   {
     icon: IconPasskey,
-    title: "Passkeys & WebAuthn",
+    title: "Authentication",
     description:
-      "Phishing-resistant passkeys as a first-class credential, with cross-device sync support.",
+      "Passkeys, sessions, MFA and standards-based federation share one identity lifecycle.",
+    details: ["WebAuthn", "OAuth 2.1", "OIDC", "Session rotation"],
+    href: "/docs/authentication",
+    status: "Developer preview",
   },
   {
-    icon: IconMfaShield,
-    title: "Multi-factor auth",
+    icon: ShieldCheck,
+    title: "Authorization",
     description:
-      "TOTP, WebAuthn and recovery codes with per-tenant step-up policies.",
-  },
-  {
-    icon: IconOidcConnector,
-    title: "OAuth 2.1 & OIDC",
-    description:
-      "A conformant OpenID provider — every Qeet Group product is a relying party.",
+      "Answer whether access is allowed and return the exact path that produced the decision.",
+    details: ["RBAC", "ReBAC", "AuthZEN", "Grant-path explanations"],
+    href: "/docs/authorization",
+    status: "Explainable by design",
   },
   {
     icon: IconSamlConnector,
-    title: "Enterprise SSO (SAML)",
+    title: "Enterprise federation",
     description:
-      "SAML 2.0 SSO in the core, never behind an enterprise paywall.",
+      "Connect workforce identity and directory lifecycle without changing your application model.",
+    details: ["SAML 2.0", "SCIM 2.0", "LDAP", "Verified domains"],
+    href: "/docs/authentication/enterprise-sso",
+    status: "Enterprise surface",
   },
   {
-    icon: IconScimSync,
-    title: "SCIM provisioning",
+    icon: IconAuditLog,
+    title: "Audit & assurance",
     description:
-      "Automated user and group lifecycle sync from your customers' IdPs.",
-  },
-  {
-    icon: Building2,
-    title: "Organizations",
-    description:
-      "Model teams, memberships, invitations and per-org roles out of the box.",
+      "Hash-chain security events and inspect the controls Qeet ID can prove today.",
+    details: [
+      "SHA-256 chain",
+      "Public verification",
+      "Evidence snapshots",
+      "SIEM export",
+    ],
+    href: "/docs/audit-logs",
+    status: "Verifiable evidence",
   },
   {
     icon: Boxes,
-    title: "Multi-tenancy",
+    title: "Deployment control",
     description:
-      "Every record is tenant-scoped, with Postgres row-level isolation in progress.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "RBAC & permissions",
-    description:
-      "Roles, permissions and grant-path explanations you can trace with ?explain.",
-  },
-  {
-    icon: Fingerprint,
-    title: "Sessions & tokens",
-    description:
-      "Refresh rotation, device sessions and short-lived tokens for agents.",
-  },
-  {
-    icon: IconAuditLog,
-    title: "Audit logs",
-    description:
-      "A SHA-256 hash-chained log with a public endpoint to verify integrity.",
-  },
-  {
-    icon: Palette,
-    title: "Branding",
-    description:
-      "Themeable hosted login and emails via the shared Qeetrix design system.",
-  },
-  {
-    icon: Globe,
-    title: "Custom domains",
-    description: "Serve auth on your own domain with managed certificates.",
+      "Run the same modular Go service as a managed platform or inside infrastructure you control.",
+    details: [
+      "MIT core",
+      "PostgreSQL",
+      "Terraform reference",
+      "Optional Redis + NATS",
+    ],
+    href: "/docs/architecture/self-hosting",
+    status: "Managed or self-hosted",
   },
 ];
 
-/* -------------------------------------------------------------------------- */
-/* Security pillars                                                           */
-/* -------------------------------------------------------------------------- */
-
-export interface SecurityPoint {
-  icon: IconType;
-  title: string;
-  description: string;
-}
-
-export const securityPoints: SecurityPoint[] = [
-  {
-    icon: IconAuditLog,
-    title: "Provable audit trail",
-    description:
-      "Every security event is chained with SHA-256. A public /verify endpoint lets anyone prove the log was never altered — no peer ships this for CIAM.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Explainable authorization",
-    description:
-      "Ask why a decision was made. RBAC returns the exact grant path with ?explain=true, so access reviews and debugging stop being guesswork.",
-  },
-  {
-    icon: IconApiKey,
-    title: "Keys you control",
-    description:
-      "Bring-your-own-key encryption and per-tenant data residency for the managed tier; run the whole stack yourself under MIT.",
-  },
-  {
-    icon: IconCrossDevice,
-    title: "Agent & machine identity",
-    description:
-      "Ephemeral tokens, RFC 8693 delegation and a tenant-wide kill-switch for AI agents and service-to-service auth.",
-  },
-];
-
-/* -------------------------------------------------------------------------- */
-/* SDKs                                                                       */
-/* -------------------------------------------------------------------------- */
-
-export interface Sdk {
+export interface SdkRelease {
   name: string;
   pkg: string;
-  install: string;
-  lang: CodeLang;
-  snippet: string;
+  status: "available" | "source-preview";
+  install?: string;
+  repository: string;
   href: string;
 }
 
-export const sdks: Sdk[] = [
+export const sdkReleases: SdkRelease[] = [
+  {
+    name: "Go",
+    pkg: "qeet-id-go",
+    status: "available",
+    install: "go get github.com/qeetgroup/qeet-id-go",
+    repository: "https://github.com/qeetgroup/qeet-id-go",
+    href: "/docs/sdks/go",
+  },
   {
     name: "Node & TypeScript",
     pkg: "@qeet-id/node",
-    install: "bun add @qeet-id/node",
-    lang: "ts",
+    status: "source-preview",
+    repository: "https://github.com/qeetgroup/qeet-id-node",
     href: "/docs/sdks/node",
-    snippet: `import { QeetID } from "@qeet-id/node";
-
-const client = new QeetID({ apiKey: process.env.QEETID_API_KEY! });
-const claims = await client.sessions.verify(token);`,
   },
   {
     name: "React",
     pkg: "@qeet-id/react",
-    install: "bun add @qeet-id/react",
-    lang: "tsx",
+    status: "source-preview",
+    repository: "https://github.com/qeetgroup/qeet-id-react",
     href: "/docs/sdks/react",
-    snippet: `import { SignedIn, useUser } from "@qeet-id/react";
-
-const { user } = useUser();
-// <SignedIn>…</SignedIn> guards protected UI`,
-  },
-  {
-    name: "Go",
-    pkg: "qeet-id-go",
-    install: "go get github.com/qeetgroup/qeet-id-go",
-    lang: "go",
-    href: "/docs/sdks/go",
-    snippet: `client := qeetid.New(qeetid.Config{
-	APIKey: os.Getenv("QEETID_API_KEY"),
-})
-claims, err := client.Sessions.Verify(ctx, token)`,
   },
 ];
-
-/* -------------------------------------------------------------------------- */
-/* Integration steps                                                          */
-/* -------------------------------------------------------------------------- */
 
 export interface Step {
   title: string;
@@ -324,62 +118,69 @@ export interface Step {
 
 export const integrationSteps: Step[] = [
   {
-    title: "Install the SDK",
+    title: "Evaluate the boundaries",
     description:
-      "Add the client for your stack — Node, React or Go — with a single command.",
+      "Review the organization model, token lifecycle and deployment topology before choosing a flow.",
   },
   {
-    title: "Configure your tenant",
+    title: "Integrate the available path",
     description:
-      "Create an application in the console and drop your API key into the environment.",
+      "Use the Go module or the HTTP contract in Scalar, then verify sessions locally.",
   },
   {
-    title: "Authenticate users",
+    title: "Harden tenant controls",
     description:
-      "Redirect to hosted login or embed the flow. Passkeys, MFA and SSO work day one.",
+      "Configure federation, MFA, roles, key management and domain ownership for the organization.",
   },
   {
-    title: "Authorize every request",
+    title: "Operate with evidence",
     description:
-      "Verify sessions locally and check permissions with explainable RBAC.",
+      "Monitor decisions, verify the audit chain, export evidence and rehearse revocation before rollout.",
   },
 ];
 
-/* -------------------------------------------------------------------------- */
-/* Testimonials (placeholder data)                                            */
-/* -------------------------------------------------------------------------- */
-
-export interface Testimonial {
-  quote: string;
-  name: string;
-  role: string;
+export interface ReadinessGroup {
+  title: string;
+  description: string;
+  items: string[];
+  tone: "available" | "hardening" | "not-claimed";
 }
 
-/** Placeholder social proof — replace with real quotes before GA. */
-export const testimonials: Testimonial[] = [
+export const readinessGroups: ReadinessGroup[] = [
   {
-    quote:
-      "We replaced a per-MAU vendor and shipped SAML and SCIM for our first enterprise customer in a weekend. The no-SSO-tax model paid for itself immediately.",
-    name: "A. Rao",
-    role: "Staff Engineer, Platform",
+    title: "Available in preview",
+    description: "Capabilities with a documented implementation path today.",
+    items: [
+      "Go SDK",
+      "OIDC provider",
+      "Explainable RBAC",
+      "Hash-chained audit log",
+    ],
+    tone: "available",
   },
   {
-    quote:
-      "The explainable authorization is the feature I didn't know I needed. Access reviews used to take days of spelunking; now it's one query.",
-    name: "M. Fischer",
-    role: "Security Engineer",
+    title: "Hardening before GA",
+    description: "Tracked work required before a general-availability claim.",
+    items: [
+      "Database RLS",
+      "Passkey-first signup",
+      "External penetration test",
+      "OpenID conformance",
+    ],
+    tone: "hardening",
   },
   {
-    quote:
-      "Self-hosting was genuinely a single Terraform apply, and the audit-chain verification satisfied our compliance team on the first call.",
-    name: "J. Okafor",
-    role: "Head of Infrastructure",
+    title: "Not claimed",
+    description: "Assurances Qeet ID does not represent as complete today.",
+    items: [
+      "SOC 2 attestation",
+      "ISO 27001 certification",
+      "HIPAA BAA",
+      "FIPS validation",
+    ],
+    tone: "not-claimed",
   },
 ];
-
-/* -------------------------------------------------------------------------- */
-/* FAQ                                                                        */
-/* -------------------------------------------------------------------------- */
 
 export interface Faq {
   question: string;
@@ -390,38 +191,42 @@ export const faqs: Faq[] = [
   {
     question: "Is Qeet ID open source?",
     answer:
-      "Yes. The core is MIT-licensed and fully self-hostable. A managed cloud tier adds support, SLAs, BYOK and data-residency — but the identity engine itself is free forever.",
+      "Yes. The core is MIT-licensed and self-hostable. The reference architecture and required production configuration are documented in the self-hosting guide.",
   },
   {
-    question: "What does “no SSO tax” actually mean?",
+    question: "Which SDK can I install today?",
     answer:
-      "SAML SSO, SCIM provisioning, LDAP and RBAC are part of the core product, not an enterprise upsell. You are never charged a premium simply to connect an enterprise identity provider.",
+      "The Go module is available from GitHub. The Node and React clients are source previews and are not present in the public npm registry yet. Their documentation is labeled accordingly.",
   },
   {
-    question: "How is Qeet ID priced?",
+    question: "Is Qeet ID generally available?",
     answer:
-      "There is no per-monthly-active-user fee. The open-source core is free; the managed cloud uses flat-rate plans. You scale users without watching a meter.",
+      "No. Qeet ID is in developer preview. It is suitable for evaluation and design-partner work, but the roadmap still includes an external penetration test, OpenID conformance and database-level isolation hardening.",
   },
   {
-    question: "What makes the audit log “provable”?",
+    question: "What makes the audit log verifiable?",
     answer:
-      "Every event is linked into a SHA-256 hash chain, so any tampering breaks the chain. A public, unauthenticated /verify endpoint lets anyone confirm the log's integrity independently.",
+      "Every event is linked into a SHA-256 hash chain, so altering a stored event breaks verification. The platform exposes an endpoint that checks the chain's integrity independently.",
   },
   {
     question: "Where does the API reference live?",
     answer:
-      "The complete OpenAPI reference is served separately in Scalar and linked from the top navigation. This portal is the conceptual and how-to documentation.",
+      "The generated OpenAPI reference is served in Scalar and linked from the top navigation. This portal owns concepts, architecture, guides and SDK release status rather than duplicating endpoint schemas.",
   },
   {
-    question: "Is it production-ready today?",
+    question: "What compliance claims does Qeet ID make?",
     answer:
-      "Qeet ID is in active developer preview. The architecture, SDKs and console are usable now; follow the roadmap for the path to general availability.",
+      "The platform produces internal control evidence, but does not currently claim a SOC 2 or ISO 27001 attestation, FIPS validation or HIPAA BAA. The compliance page states the current posture explicitly.",
+  },
+  {
+    question: "Are organization and tenant different objects?",
+    answer:
+      "No. Organization is the SDK-facing product term; tenant is the API and storage term for the same isolation boundary. An active token is scoped to one organization at a time.",
   },
 ];
 
-/** Convenience: the primary outbound links used across CTAs. */
 export const marketingLinks = {
-  getStarted: "/docs",
+  getStarted: "/docs/getting-started/quickstart",
   apiReference: links.apiReference,
-  github: links.githubOrg,
+  github: githubUrl,
 } as const;
