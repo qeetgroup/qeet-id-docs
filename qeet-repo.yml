@@ -13,7 +13,9 @@ repository:
   visibility: public
   default_branch: main
   working_branch: develop
-  host: docs.qeet.in
+  host: docs.qeet.in            # PLANNED — docs.qeet.in is currently served by the
+                                # standalone qeetgroup/qeet-docs repo. This repo has
+                                # no Vercel project and has never been deployed.
 runtime:
   language: TypeScript
   framework: Next.js 16.2.12        # newer than login/website (16.2.6)
