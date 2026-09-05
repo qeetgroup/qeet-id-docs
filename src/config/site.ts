@@ -28,7 +28,7 @@ export const site = {
   tagline: "Identity You Can Own and Prove",
   /** Default meta description; individual pages override this. */
   description:
-    "Developer documentation for Qeet ID — the passkeys-first, open-source identity platform. Guides, concepts, SDKs and tutorials for authentication, authorization, organizations, SSO, SCIM and audit.",
+    "Developer documentation for Qeet ID — the passkeys-first identity platform. Guides, concepts, SDKs and tutorials for authentication, authorization, organizations, SSO, SCIM and audit.",
   /** OG locale. */
   locale: "en_US",
   url: siteUrl,

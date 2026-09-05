@@ -26,7 +26,7 @@ export function SiteFooter() {
               <Logo />
             </Link>
             <p className="max-w-xs text-sm text-pretty text-fd-muted-foreground">
-              {site.tagline}. The passkeys-first, open-source identity platform
+              {site.tagline}. The passkeys-first identity platform
               — documentation for developers.
             </p>
             <div className="mt-1 flex items-center gap-3">

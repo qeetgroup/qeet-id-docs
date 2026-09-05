@@ -67,8 +67,7 @@ export const capabilityGroups: CapabilityGroup[] = [
     description:
       "Run the same modular Go service as a managed platform or inside infrastructure you control.",
     details: [
-      "MIT core",
-      "PostgreSQL",
+            "PostgreSQL",
       "Terraform reference",
       "Optional Redis + NATS",
     ],
@@ -189,9 +188,9 @@ export interface Faq {
 
 export const faqs: Faq[] = [
   {
-    question: "Is Qeet ID open source?",
+    question: "Can I run Qeet ID myself?",
     answer:
-      "Yes. The core is MIT-licensed and self-hostable. The reference architecture and required production configuration are documented in the self-hosting guide.",
+      "Yes. Qeet ID is self-hostable. The reference architecture and required production configuration are documented in the self-hosting guide.",
   },
   {
     question: "Which SDK can I install today?",

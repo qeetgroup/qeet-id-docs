@@ -44,7 +44,6 @@ export const softwareApplicationSchema: Schema = {
   applicationCategory: "SecurityApplication",
   operatingSystem: "Web, Self-hosted",
   description: site.description,
-  license: "https://opensource.org/license/mit",
   url: links.website,
 };
 

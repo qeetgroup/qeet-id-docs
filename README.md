@@ -1,7 +1,6 @@
 # Qeet ID Docs
 
-The developer documentation portal for **Qeet ID** — the passkeys-first,
-open-source identity platform. Marketing landing page + full docs, built to
+The developer documentation portal for **Qeet ID** — the passkeys-first identity platform. Marketing landing page + full docs, built to
 match the rest of the Qeet ID suite.
 
 > This portal is the conceptual and how-to documentation. The complete **API
