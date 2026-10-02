@@ -41,7 +41,7 @@ commands:
   types: bun run types:check        # NOTE: not "typecheck"
   test:  bun run test               # node scripts/check-links.mjs — internal link integrity
 ci:
-  workflows: [ci.yml]
+  workflows: [ci.yml, release-tag.yml]   # release-tag: release/x.y.z merged into main -> tag vx.y.z
   job: verify                       # lint -> types:check -> test -> build (main, develop, release/**, PRs)
   image: "ci.yml `image` on release/**: ghcr.io/qeetgroup/qeet-id-docs:sha-<commit> for the qeet-id-deploy test kit"
   runner: ubuntu-latest
