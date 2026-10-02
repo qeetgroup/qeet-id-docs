@@ -59,6 +59,9 @@ const securityHeaders = [
 const config = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Self-contained server for the container image only (the Dockerfile sets
+  // NEXT_OUTPUT); other builds are unchanged.
+  output: process.env.NEXT_OUTPUT === "standalone" ? "standalone" : undefined,
   async headers() {
     // Static-asset caching is handled by the platform (Vercel serves hashed
     // `/_next/static` assets as immutable); a custom rule here would only warn
