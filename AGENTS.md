@@ -82,6 +82,9 @@ On `release/**` only, job `image` then publishes `ghcr.io/qeetgroup/qeet-id-docs
 (amd64 + arm64, `Dockerfile`) for the `qeet-id-deploy` test kit. The image changes no header: the CSP
 (including `upgrade-insecure-requests`) was verified to work on the kit's `http://*.localhost`.
 
+`.github/workflows/release-tag.yml` tags `vx.y.z` when a `release/x.y.z` pull request is merged
+into `main`, so the docs carry the same product version as the applications. It deploys nothing.
+
 ## Before you finish
 
 ```bash
