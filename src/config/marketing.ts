@@ -66,11 +66,7 @@ export const capabilityGroups: CapabilityGroup[] = [
     title: "Deployment control",
     description:
       "Run the same modular Go service as a managed platform or inside infrastructure you control.",
-    details: [
-            "PostgreSQL",
-      "Terraform reference",
-      "Optional Redis + NATS",
-    ],
+    details: ["PostgreSQL", "Terraform reference", "Optional Redis + NATS"],
     href: "/docs/architecture/self-hosting",
     status: "Managed or self-hosted",
   },
