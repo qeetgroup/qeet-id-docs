@@ -7,24 +7,28 @@ import { TypeTable } from "fumadocs-ui/components/type-table";
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import type { MDXComponents } from "mdx/types";
 import type { ComponentProps } from "react";
-import { IdentityModel } from "@/components/docs/identity-model";
+import { Callout } from "./docs/callout";
+import {
+  CodeBlock,
+  CodeTab,
+  CodeTabs,
+  CodeTabsList,
+  CodeTabsTrigger,
+} from "./docs/code-block";
+import { IdentityModel } from "./docs/identity-model";
+import { Sdk, SdkTab, SdkTabs } from "./sdk/sdk-tabs";
 
-/**
- * MDX component registry.
- *
- * `defaultMdxComponents` already supplies headings, links, tables, Cards,
- * Callout and the Shiki code blocks (with copy button + `title=`/line-highlight
- * support). We extend it with the rest of the Fumadocs authoring set so any
- * page can use them, and swap `img` for the zoomable variant.
- *
- * These are Fumadocs' docs-native components rather than the Qeetrix marketing
- * primitives: they integrate with the docs pipeline (TOC, code tabs, search)
- * and are already painted in the Qeet ID brand via the `--color-fd-*` → Qeetrix
- * token bridge in `global.css`, so they stay visually consistent.
- */
-export function getMDXComponents(components?: MDXComponents): MDXComponents {
+export function getMDXComponents(components?: MDXComponents) {
   return {
     ...defaultMdxComponents,
+    // Code, tabbed code and callouts in the site's own frames (src/components/docs).
+    pre: (props) => <CodeBlock {...props} />,
+    CodeBlockTabs: CodeTabs,
+    CodeBlockTabsList: CodeTabsList,
+    CodeBlockTabsTrigger: CodeTabsTrigger,
+    CodeBlockTab: CodeTab,
+    Callout,
+    // The rest of Fumadocs' authoring set, and a zoomable image.
     Tabs,
     Tab,
     Steps,
@@ -35,10 +39,14 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     File,
     Folder,
     TypeTable,
-    IdentityModel,
     img: (props) => (
       <ImageZoom {...(props as ComponentProps<typeof ImageZoom>)} />
     ),
+    IdentityModel,
+    // The chosen SDK's code and notes (src/components/sdk).
+    SdkTabs,
+    SdkTab,
+    Sdk,
     ...components,
   } satisfies MDXComponents;
 }

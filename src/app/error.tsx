@@ -1,49 +1,46 @@
 "use client";
 
-import { buttonVariants } from "@qeetrix/ui";
-import { RefreshCw } from "lucide-react";
+import { RefreshCwIcon } from "@qeetrix/icons";
+import { buttonVariants, cn } from "@qeetrix/ui";
 import Link from "next/link";
-import { cn } from "@/lib/cn";
+import { SiteHeader } from "@/components/layout/site-header";
+import { container } from "@/lib/layout.shared";
+import { links } from "@/lib/site-links";
 
+/** A route that failed to render: the not-found page's shell, with a retry. */
 export default function ErrorPage({ reset }: { reset: () => void }) {
   return (
-    <main
-      id="main-content"
-      tabIndex={-1}
-      className="flex flex-1 items-center justify-center px-4 py-20"
-    >
-      <div className="w-full max-w-2xl border-y border-border py-10">
-        <p className="text-xs font-semibold text-fd-error">RENDERING FAILED</p>
-        <h1 className="mt-4 text-balance font-display text-4xl font-semibold tracking-tight">
-          The documentation view could not be completed.
+    <div className="docs-shell flex flex-1 flex-col">
+      <SiteHeader />
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className={cn(
+          container,
+          "flex flex-1 flex-col items-center justify-center gap-6 py-24 text-center",
+        )}
+      >
+        <p className="font-mono text-label text-muted-foreground">Error</p>
+        <h1 className="font-display text-title font-bold text-balance text-foreground">
+          This page couldn&apos;t be shown
         </h1>
-        <p className="mt-5 max-w-xl text-pretty leading-relaxed text-muted-foreground">
-          Retry the route once. If it fails again, return to the documentation
-          index and report the URL through support.
+        <p className="max-w-md text-body text-muted-foreground">
+          Try it once more. If it fails again, start from the documentation and
+          report the URL to support.
         </p>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <button
-            type="button"
-            onClick={reset}
-            className={cn(
-              buttonVariants({ variant: "default", size: "lg" }),
-              "qid-button-primary min-h-11 rounded-md",
-            )}
-          >
-            <RefreshCw className="size-4" aria-hidden />
-            Retry this route
+        <div className="flex flex-wrap justify-center gap-3">
+          <button type="button" onClick={reset} className={buttonVariants()}>
+            <RefreshCwIcon data-icon="inline-start" aria-hidden />
+            Try again
           </button>
           <Link
-            href="/docs"
-            className={cn(
-              buttonVariants({ variant: "outline", size: "lg" }),
-              "qid-button-secondary min-h-11 rounded-md",
-            )}
+            href={links.docs}
+            className={buttonVariants({ variant: "outline" })}
           >
-            Documentation index
+            Documentation
           </Link>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

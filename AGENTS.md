@@ -6,8 +6,10 @@ here and add nothing architectural.
 
 ## What this repository is
 
-The **developer documentation portal for Qeet ID** — `docs.qeet.in`. Next.js 16.2.12 + **Fumadocs**,
-React 19, Tailwind v4, `@qeetrix/ui`, Biome, bun. 69 source files plus MDX content.
+The **developer documentation portal for Qeet ID** — `docs.qeet.in`. Next.js 16.3.8 +
+**Fumadocs 16.16.2** (`fumadocs-ui` aliased to `@fumadocs/base-ui`; `fumadocs-mdx` 15.4.6, Macro
+API), React 19.3, TypeScript 7, Tailwind v4, `@qeetrix/ui` 2.1 + `@qeetrix/icons` 1.0, Biome 2.5.15,
+bun. 68 source files under `src/` plus MDX content.
 
 **It documents a product it does not own.** Every technical claim here describes `qeet-id-server`'s
 behaviour, and the source of truth is that repository — not this one.
@@ -56,9 +58,41 @@ A broken cross-reference fails the build.
 exist so agents can consume the docs as Markdown. Changing the content shape affects them.
 
 ### 6. The type-check script has a different name
-It is **`bun run types:check`**, not `typecheck` — it cleans generated types, runs `next typegen`,
-regenerates the Fumadocs source, then `tsc --noEmit`. There is no `typecheck` script in this
+It is **`bun run types:check`**, not `typecheck` — it cleans stale generated route types
+(`scripts/clean-generated-types.mjs`), runs `next typegen`, then `tsc --noEmit`. Nothing else is
+generated: collections are defined with the Fumadocs Macro API in `src/lib/source.ts`, so there is no
+`source.config.ts`, `.source` directory or `postinstall`. There is no `typecheck` script in this
 repository — that name belongs to the sibling Next.js repos.
+
+### 7. The docs pages follow qeetrix-docs
+The docs shell is rebuilt from **qeetrix-docs** (`qeetgroup/qeetrix-docs`, `ui.qeet.in`), so every
+Qeet product's docs look and work the same: `src/app/docs/`, the site header
+(`src/components/layout/site-header.tsx`, `mobile-menu.tsx`), `src/components/docs/`,
+`src/components/mdx.tsx`, `src/lib/{source,code-theme,icons,layout.shared,site-links}` and the docs
+rules in `src/app/global.css`. **Change the shared shell in qeetrix-docs first, or in the same step,
+and keep the two consistent** — do not let it drift here alone. The landing page (`src/app/(home)`,
+`src/components/marketing`, `src/config/{marketing,navigation}.ts`, `site-footer.tsx`) keeps its own
+design until it is redesigned; its styles are scoped to `.qid-home`.
+
+**One deliberate addition is Qeet ID's own: the SDK menu.** It takes the sidebar's search slot
+(search stays in the site header), and pages show the chosen SDK's code and notes
+(`src/components/sdk/`, the list in `src/lib/sdks.ts`). It is not part of the shared shell — keep it
+out of qeetrix-docs, and keep the rest of the shell identical around it.
+
+### 8. Every top-level page belongs to a section
+`content/docs` is split into sidebar sections — one root folder each (`root: true` in its
+`meta.json`). Folder groups such as `(platform)` do not appear in URLs. A page's section comes from
+its **first slug** via `sectionOfSlug` in `src/lib/site-links.ts`: a **new top-level page or folder
+must be added there**, or it silently falls into Getting started.
+
+### 9. SDK content is per SDK, and honest about each one
+`src/lib/sdks.ts` lists the SDKs and their release state: Go installs from GitHub (no tagged
+release), Node.js and React build from source (not on npm), Python, Java, .NET, PHP and Ruby are
+**planned placeholders** — no package and no code exists, so never write code for them. Each SDK's own
+pages live in `content/docs/sdks/<id>/` (Go and Node.js share slugs, so the menu can move between the
+same page of each). Shared pages put per-SDK code in `<SdkTabs>`/`<SdkTab sdk>` and per-SDK prose in
+`<Sdk only>`; an SDK without code for a step gets an automatic placeholder. **No headings inside
+them** — the table of contents lists every heading whichever SDK is chosen.
 
 ## Commands
 
@@ -72,8 +106,6 @@ bun run test           # internal link integrity
 bun run format
 ```
 
-`postinstall` runs `fumadocs-mdx`.
-
 ## What CI enforces
 
 `.github/workflows/ci.yml`, job `verify` (push to `main`, `develop`, `release/**`; every PR):
@@ -84,6 +116,8 @@ On `release/**` only, job `image` then publishes `ghcr.io/qeetgroup/qeet-id-docs
 
 `.github/workflows/release-tag.yml` tags `vx.y.z` when a `release/x.y.z` pull request is merged
 into `main`, so the docs carry the same product version as the applications. It deploys nothing.
+qeetrix-docs' Vercel release pipeline (`version.yml` / `release.yml` / `rollback.yml`) is
+deliberately **not** adopted: Qeet ID releases through `release/x.y.z` branches owned by `qeet-id-kit`.
 
 ## Before you finish
 
@@ -95,5 +129,5 @@ git diff
 ## Escalate rather than proceed
 
 Documenting an unverified behaviour · presenting a `planned` capability as shipped · weakening a
-security header · changing the content shape without checking the AI surfaces · anything requiring
-another repository.
+security header · changing the content shape without checking the AI surfaces · letting the docs
+shell drift from qeetrix-docs · anything requiring another repository.

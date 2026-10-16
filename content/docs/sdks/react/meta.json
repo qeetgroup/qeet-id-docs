@@ -1,0 +1,5 @@
+{
+  "title": "React SDK",
+  "icon": "React",
+  "pages": ["index", "..."]
+}

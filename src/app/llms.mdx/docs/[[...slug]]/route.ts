@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { getLLMText, getPageMarkdownUrl, source } from "@/lib/source";
+import { getPageMarkdownUrl, siteUrl } from "@/lib/shared";
+import { docsLlms, source } from "@/lib/source";
 
 export const revalidate = false;
 
@@ -11,9 +12,11 @@ export async function GET(
   const page = source.getPage(slug?.slice(0, -1));
   if (!page) notFound();
 
-  return new Response(await getLLMText(page), {
+  return new Response(await docsLlms.page(page), {
     headers: {
       "Content-Type": "text/markdown; charset=utf-8",
+      // The same content as the HTML page; search engines should credit that one.
+      Link: `<${new URL(page.url, siteUrl)}>; rel="canonical"`,
     },
   });
 }

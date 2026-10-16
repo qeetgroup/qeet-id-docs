@@ -13,11 +13,14 @@ import {
   TrustBar,
 } from "@/components/marketing";
 import { JsonLd, softwareApplicationSchema } from "@/components/seo/json-ld";
-import { buildMetadata } from "@/lib/metadata";
+import { defaultOgImage, pageMetadata } from "@/lib/metadata";
+import { appDescription } from "@/lib/shared";
 
-export const metadata: Metadata = buildMetadata({
+export const metadata: Metadata = pageMetadata({
   title: "Developer Documentation",
+  description: appDescription,
   path: "/",
+  image: defaultOgImage,
 });
 
 /**

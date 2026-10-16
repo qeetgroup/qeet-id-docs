@@ -1,0 +1,13 @@
+{
+  "title": "Platform",
+  "description": "Authentication, authorization, provisioning and audit.",
+  "icon": "Layers",
+  "root": true,
+  "pages": [
+    "authentication",
+    "authorization",
+    "provisioning",
+    "agents",
+    "audit-logs"
+  ]
+}

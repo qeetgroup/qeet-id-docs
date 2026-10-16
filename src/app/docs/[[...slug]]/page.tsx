@@ -1,23 +1,29 @@
 import {
   DocsBody,
-  DocsDescription,
   DocsPage,
-  DocsTitle,
   MarkdownCopyButton,
   ViewOptionsPopover,
-} from "fumadocs-ui/layouts/docs/page";
+} from "fumadocs-ui/layouts/spacious/page";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { DocsPageHeader } from "@/components/docs/page-header";
 import { getMDXComponents } from "@/components/mdx";
 import {
   breadcrumbSchema,
   JsonLd,
   techArticleSchema,
 } from "@/components/seo/json-ld";
-import { gitConfig, siteUrl } from "@/config/site";
-import { buildMetadata } from "@/lib/metadata";
-import { getPageImageUrl, getPageMarkdownUrl, source } from "@/lib/source";
+import { pageMetadata } from "@/lib/metadata";
+import {
+  appDescription,
+  getPageImageUrl,
+  getPageMarkdownUrl,
+  gitConfig,
+  siteUrl,
+} from "@/lib/shared";
+import { links, sectionIdOf, sections } from "@/lib/site-links";
+import { source } from "@/lib/source";
 
 export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
   const params = await props.params;
@@ -26,26 +32,21 @@ export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
 
   const MDX = page.data.body;
   const markdownUrl = getPageMarkdownUrl(page).url;
-  const githubUrl = `https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/content/docs/${page.path}`;
+  const section = sections[sectionIdOf(page.slugs)];
   const pageUrl = new URL(page.url, siteUrl).toString();
-  const breadcrumbTrail: [string, string][] = [
-    ["Docs", new URL("/docs", siteUrl).toString()],
-    ...page.slugs.map(
-      (slug, index) =>
-        [
-          index === page.slugs.length - 1
-            ? page.data.title
-            : formatSegment(slug),
-          new URL(
-            `/docs/${page.slugs.slice(0, index + 1).join("/")}`,
-            siteUrl,
-          ).toString(),
-        ] satisfies [string, string],
-    ),
-  ];
 
   return (
-    <>
+    <DocsPage
+      // The skip link's target (src/app/layout.tsx).
+      id="main-content"
+      tabIndex={-1}
+      toc={page.data.toc}
+      full={page.data.full}
+      breadcrumb={{ enabled: false }}
+      // The "clerk" outline: a line that follows heading depth, lighting only the current section.
+      tableOfContent={{ style: "clerk", single: true }}
+      tableOfContentPopover={{ style: "clerk" }}
+    >
       <JsonLd
         schema={[
           techArticleSchema({
@@ -53,50 +54,53 @@ export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
             description: page.data.description,
             url: pageUrl,
           }),
-          breadcrumbSchema(breadcrumbTrail),
+          breadcrumbSchema(
+            trail([
+              ["Docs", links.docs],
+              [section.name, section.url],
+              [page.data.title, page.url],
+            ]),
+          ),
         ]}
       />
-      <DocsPage
-        id="main-content"
-        tabIndex={-1}
-        toc={page.data.toc}
-        full={page.data.full}
-        breadcrumb={{ enabled: true }}
-        footer={{ enabled: true }}
-        tableOfContent={{ single: false }}
-      >
-        <DocsTitle>{page.data.title}</DocsTitle>
-        <DocsDescription className="mb-0">
-          {page.data.description}
-        </DocsDescription>
-        <div className="flex flex-wrap items-center gap-3 border-b py-5">
-          <div className="flex items-center gap-3 text-xs text-fd-muted-foreground">
-            <span className="inline-flex items-center gap-2 font-medium text-fd-foreground">
-              <span className="size-1.5 bg-amber-500" aria-hidden />
-              Developer preview
-            </span>
-            <span aria-hidden>·</span>
-            <span>{formatSegment(page.slugs[0] ?? "documentation")}</span>
-          </div>
-          <div className="ml-auto flex items-center gap-2">
+      <DocsPageHeader
+        section={section}
+        title={page.data.title}
+        description={page.data.description}
+        actions={
+          <>
             <MarkdownCopyButton markdownUrl={markdownUrl} />
             <ViewOptionsPopover
               markdownUrl={markdownUrl}
-              githubUrl={githubUrl}
+              githubUrl={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/content/docs/${page.path}`}
             />
-          </div>
-        </div>
-        <DocsBody>
-          <MDX
-            components={getMDXComponents({
-              // Allow linking to other pages via relative file paths in MDX.
-              a: createRelativeLink(source, page),
-            })}
-          />
-        </DocsBody>
-      </DocsPage>
-    </>
+          </>
+        }
+      />
+      <DocsBody>
+        <MDX
+          components={getMDXComponents({
+            // this allows you to link to other pages with relative file paths
+            a: createRelativeLink(source, page),
+          })}
+        />
+      </DocsBody>
+    </DocsPage>
   );
+}
+
+/**
+ * A breadcrumb trail in absolute URLs, each URL once: a section's own page is the section, and the
+ * docs index is the Getting started section, so the later, more specific name wins.
+ */
+function trail(items: [name: string, path: string][]): [string, string][] {
+  const byUrl = new Map<string, string>();
+  for (const [name, path] of items) {
+    const url = new URL(path, siteUrl).toString();
+    byUrl.delete(url);
+    byUrl.set(url, name);
+  }
+  return Array.from(byUrl, ([url, name]) => [name, url]);
 }
 
 export async function generateStaticParams() {
@@ -110,17 +114,10 @@ export async function generateMetadata(
   const page = source.getPage(params.slug);
   if (!page) notFound();
 
-  return buildMetadata({
+  return pageMetadata({
     title: page.data.title,
-    description: page.data.description,
+    description: page.data.description ?? appDescription,
     path: page.url,
     image: getPageImageUrl(page).url,
   });
-}
-
-function formatSegment(segment: string): string {
-  return segment
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
 }

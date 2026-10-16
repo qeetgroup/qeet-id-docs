@@ -1,9 +1,10 @@
 import {
-  IconAuditLog,
-  IconPasskey,
-  IconSamlConnector,
-} from "@qeetrix/ui/brand";
-import { Boxes, ShieldCheck } from "lucide-react";
+  Boxes,
+  Building2,
+  FingerprintPattern,
+  ScrollText,
+  ShieldCheck,
+} from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 import { githubUrl, links } from "./site";
 
@@ -21,7 +22,7 @@ export interface CapabilityGroup {
 /** Grouped platform narrative used by the enterprise homepage. */
 export const capabilityGroups: CapabilityGroup[] = [
   {
-    icon: IconPasskey,
+    icon: FingerprintPattern,
     title: "Authentication",
     description:
       "Passkeys, sessions, MFA and standards-based federation share one identity lifecycle.",
@@ -39,7 +40,7 @@ export const capabilityGroups: CapabilityGroup[] = [
     status: "Explainable by design",
   },
   {
-    icon: IconSamlConnector,
+    icon: Building2,
     title: "Enterprise federation",
     description:
       "Connect workforce identity and directory lifecycle without changing your application model.",
@@ -48,7 +49,7 @@ export const capabilityGroups: CapabilityGroup[] = [
     status: "Enterprise surface",
   },
   {
-    icon: IconAuditLog,
+    icon: ScrollText,
     title: "Audit & assurance",
     description:
       "Hash-chain security events and inspect the controls Qeet ID can prove today.",

@@ -8,8 +8,9 @@
 
 # Dependencies are installed by Bun in its own image (Bun fails to extract
 # packages when run inside the Node image under BuildKit), natively on the build
-# platform. --ignore-scripts skips this repository's postinstall (fumadocs-mdx),
-# which needs the content that is not copied yet; `next build` generates it.
+# platform. --ignore-scripts skips package lifecycle scripts, which the build
+# does not need: `next build` compiles the content (Fumadocs Macro API), and
+# sharp's native binary is installed for the target architecture below.
 FROM --platform=$BUILDPLATFORM oven/bun:1.3.14@sha256:e10577f0db68676a7024391c6e5cb4b879ebd17188ab750cf10024a6d700e5c4 AS deps
 WORKDIR /app
 COPY package.json bun.lock ./
