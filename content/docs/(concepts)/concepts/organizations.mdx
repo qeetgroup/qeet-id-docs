@@ -1,0 +1,88 @@
+---
+title: Organizations
+description: Organizations, groups, memberships, invitations, branding and domains.
+---
+
+In Qeet ID, an **organization is the tenant** — the top-level isolation boundary
+that owns user records, groups, roles and settings. "Organization" is the
+SDK-facing product term; `tenant_id` is the API, token and storage field.
+
+## Organization = tenant
+
+Each organization has a `slug`, `name`, `status`, `plan`, `region` and an open
+JSONB metadata bag. Every other object (users, groups, roles, audit entries)
+belongs to exactly one organization, which is how [multi-tenancy](/docs/concepts/tenancy)
+isolation works.
+
+## Groups (teams & workspaces)
+
+Groups partition users within an organization and can be **nested** (a group can
+have a parent), so you can model departments, teams and sub-teams. Groups are
+also the unit of role inheritance and SCIM sync:
+
+- Grant a role to a group and every member inherits it.
+- SCIM keeps group membership in sync with a customer's directory.
+
+## Memberships & roles
+
+Access inside an organization is expressed through **role grants**: a user
+record holds one or more roles directly or through a group. See
+[roles & permissions](/docs/authorization/roles-and-permissions).
+
+## Invitations
+
+Invite a user by email with a target role. Invitations carry a hashed token and
+a status (`pending`, `accepted`, `revoked`, `expired`) and expire automatically.
+
+```ts title="server.ts"
+await qeetid.invitations.create({
+  tenant_id: tenantId,
+  email: "grace@example.com",
+  role_id: memberRoleId,
+});
+```
+
+## Branding & custom domains
+
+Each organization can theme its hosted login and emails — logo, primary and
+secondary colors, from-name/address and email templates — and claim a **custom
+domain**:
+
+- Domain claims are verified by **DNS TXT record**, and only one tenant may hold
+  a verified claim for a given domain.
+- A verified domain gates organization SSO and JIT provisioning.
+
+<Callout type="warn">
+  Qeet ID stores and DNS-verifies custom domains, but TLS certificates for them
+  are issued at the deployment edge (the reverse proxy), not by the application.
+  See [self-hosting](/docs/architecture/self-hosting).
+</Callout>
+
+## Switching organizations
+
+A user who belongs to several organizations works in one at a time: every token is scoped to
+exactly one. Switching replaces the current session with a new one scoped to the target
+organization. The console's organization switcher does this; through the API, call it with the
+user's own access token:
+
+```http title="Request"
+POST /v1/auth/switch-tenant
+Authorization: Bearer <the user's access token>
+Content-Type: application/json
+
+{ "tenant_id": "<the organization to switch to>" }
+```
+
+The response is a new token pair — `access_token`, `token_type`, `expires_at`, `refresh_token`,
+`session_id`, `user_id` and `tenant_id` — and from then on the client uses it instead of the old one.
+
+- **The new token is scoped to the target organization**, and the organization's sign-in hooks
+  run again, so any custom claims they add reflect it.
+- **The session being left ends** in the same step: its refresh token can no longer renew it, its
+  access token keeps working only until it expires (ten minutes at most by default), and
+  `session.revoked` subscribers are told with reason `tenant_switch` (see
+  [Manage sessions](/docs/authentication/sessions#what-ending-a-session-does)).
+- **Switching never extends a sign-in**: the new session ends when the old one would have.
+- **A non-member is refused** with `auth.not_tenant_member` (403) — the user must hold a role in the
+  target organization. A request made with an ended session's token is refused with
+  `unauthorized` (401).

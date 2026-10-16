@@ -12,7 +12,7 @@ repository → source.
 
 ## Structure
 
-MDX content under `content/docs/{getting-started,concepts,authentication,authorization,provisioning,security,architecture,guides,sdks}`. App routes in `src/app/`, including the **AI surfaces** `/llms.txt`, `/llms-full.txt`, `/llms.mdx/docs/*` and the content-negotiation proxy `src/proxy.ts`. Local search at `/api/search`.
+MDX content under `content/docs/`, one root folder per sidebar section: `(getting-started)`, `(concepts)`, `(platform)`, `security`, `guides`, `sdks`, `(resources)` — folder groups in parentheses do not appear in URLs, and a new top-level page or folder is mapped to its section in `src/lib/site-links.ts`. App routes in `src/app/`, including the **AI surfaces** `/llms.txt`, `/llms-full.txt`, `/llms.mdx/docs/*` and the content-negotiation proxy `src/proxy.ts`. Local search at `/api/search`.
 
 ## Rules
 

@@ -1,5 +1,7 @@
 {
   "title": "Security",
+  "description": "Isolation, encryption, keys and compliance.",
   "icon": "Lock",
+  "root": true,
   "pages": ["index", "data-isolation", "encryption-and-keys", "compliance"]
 }

@@ -1,7 +1,18 @@
 {
   "title": "SDKs",
-  "description": "Client libraries",
+  "description": "Go, Node.js and React — and the SDKs that are planned.",
   "icon": "Code",
   "root": true,
-  "pages": ["index", "node", "react", "go"]
+  "pages": [
+    "index",
+    "go",
+    "node",
+    "react",
+    "---Planned---",
+    "python",
+    "java",
+    "dotnet",
+    "php",
+    "ruby"
+  ]
 }

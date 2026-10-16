@@ -25,11 +25,17 @@ function collectMdx(dir) {
   return out;
 }
 
-/** Map a file path to its public URL (mirrors Fumadocs slug rules). */
+/**
+ * Map a file path to its public URL (mirrors Fumadocs slug rules). A folder group such as
+ * `(platform)` arranges the sidebar's sections and leaves no trace in the URL.
+ */
 function fileToUrl(file) {
   let slug = relative(DOCS_DIR, file)
     .replace(/\\/g, "/")
-    .replace(/\.mdx$/, "");
+    .replace(/\.mdx$/, "")
+    .split("/")
+    .filter((segment) => !/^\(.+\)$/.test(segment))
+    .join("/");
   if (slug === "index") return "/docs";
   if (slug.endsWith("/index")) slug = slug.slice(0, -"/index".length);
   return `/docs/${slug}`;

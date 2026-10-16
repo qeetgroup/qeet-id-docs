@@ -1,110 +1,36 @@
-import { DocsLayout } from "fumadocs-ui/layouts/docs";
-import type { LayoutTab } from "fumadocs-ui/layouts/shared";
-import { ArrowUpRight, BookOpen, Code, FileText, Sparkles } from "lucide-react";
-import { GithubIcon } from "@/components/brand/icons";
-import { KeyboardShortcutsHint } from "@/components/layout/keyboard-shortcuts-hint";
-import { BackToTop } from "@/components/ui/back-to-top";
-import { ReadingProgress } from "@/components/ui/reading-progress";
-import { links } from "@/config/site";
+// Spacious: the full-width layout fumadocs.dev uses — the page sits in an inset panel beside the
+// sidebar, which collapses, and the sidebar's menu switches between the docs sections (the layout
+// tabs, one per root folder in content/docs). The site header sits above it; `--fd-banner-height`
+// is how Fumadocs layouts make room for a bar above them, so the layout's height and sticky offsets
+// account for the header. The same shell as Qeetrix's docs (ui.qeet.in), with one addition: the
+// SDK menu takes the sidebar's search slot (search stays in the site header), and the pages show
+// the chosen SDK's code (src/components/sdk).
+import { SearchTrigger } from "fumadocs-ui/layouts/shared/slots/search-trigger";
+import { DocsLayout } from "fumadocs-ui/layouts/spacious";
+import { SiteHeader } from "@/components/layout/site-header";
+import { SdkMenu, SdkProvider } from "@/components/sdk/sdk-menu";
 import { baseOptions } from "@/lib/layout.shared";
 import { source } from "@/lib/source";
 
-/**
- * Sidebar tabs — switch the sidebar between the major documentation areas.
- * `Guides` and `SDKs` are marked `root: true` in their `meta.json`, so their
- * trees are scoped to their own tab; everything else lives under Documentation.
- */
-const sidebarTabs: LayoutTab[] = [
-  {
-    title: "Documentation",
-    description: "Concepts, auth & platform",
-    url: "/docs",
-    icon: <BookOpen className="size-4" />,
-  },
-  {
-    title: "Guides",
-    description: "How-to walkthroughs",
-    url: "/docs/guides",
-    icon: <Sparkles className="size-4" />,
-  },
-  {
-    title: "SDKs",
-    description: "Client libraries",
-    url: "/docs/sdks",
-    icon: <Code className="size-4" />,
-  },
-];
+/** The SDKs' own pages, for the menu's move to the same page of another SDK. */
+const sdkPages = source
+  .getPages()
+  .map((page) => page.url)
+  .filter((url) => url.startsWith("/docs/sdks/"));
 
-/**
- * Docs layout — the Fumadocs docs shell (sidebar tabs + tree + TOC + content).
- * The sidebar gets a branded footer linking out to the Scalar API reference and
- * GitHub; the tree, nav and links are shared with the site via `baseOptions()`.
- */
 export default function Layout({ children }: LayoutProps<"/docs">) {
   return (
-    <>
-      <ReadingProgress />
-      <DocsLayout
-        {...baseOptions()}
-        tree={source.getPageTree()}
-        tabs={sidebarTabs}
-        sidebar={{
-          collapsible: true,
-          // Key required: Fumadocs renders `footer` inside a children array
-          // (see its sidebar slot), so the element we pass needs a stable key.
-          // NOTE: the version selector was removed for now — Qeetrix's Base UI
-          // DropdownMenu throws a MenuGroupContext error in this app (likely a
-          // duplicate @base-ui/react between Qeetrix and Fumadocs). Revisit with
-          // a deduped Base UI or a custom dropdown.
-          footer: <SidebarFooter key="qid-sidebar-footer" />,
-        }}
-      >
-        {children}
-      </DocsLayout>
-      <BackToTop />
-    </>
-  );
-}
-
-function SidebarFooter() {
-  return (
-    <div className="flex flex-col gap-1 border-t border-fd-border pt-3">
-      <KeyboardShortcutsHint />
-      <SidebarFooterLink
-        href={links.apiReference}
-        icon={<FileText className="size-4" />}
-      >
-        API Reference
-      </SidebarFooterLink>
-      <SidebarFooterLink
-        href={links.githubOrg}
-        icon={<GithubIcon className="size-4" />}
-      >
-        GitHub
-      </SidebarFooterLink>
+    <div className="docs-shell flex flex-1 flex-col [--fd-banner-height:var(--site-header-height)]">
+      <SiteHeader />
+      <SdkProvider pages={sdkPages}>
+        <DocsLayout
+          tree={source.getPageTree()}
+          {...baseOptions()}
+          slots={{ searchTrigger: { full: SdkMenu, sm: SearchTrigger } }}
+        >
+          {children}
+        </DocsLayout>
+      </SdkProvider>
     </div>
-  );
-}
-
-function SidebarFooterLink({
-  href,
-  icon,
-  children,
-}: {
-  href: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer noopener"
-      className="flex min-h-11 items-center gap-2 rounded-md px-2 py-1.5 text-sm text-fd-muted-foreground transition-colors hover:bg-fd-accent hover:text-fd-foreground"
-    >
-      {icon}
-      <span className="flex-1">{children}</span>
-      <ArrowUpRight className="size-3.5 opacity-60" />
-    </a>
   );
 }

@@ -1,6 +1,6 @@
 # Boundaries — qeet-id-docs
 
-**Level:** L2 · **Last verified:** 2026-08-28
+**Level:** L2 · **Last verified:** 2026-10-17
 **Verification scope:** ownership from `qeet-id-context/REPOSITORIES.md`; absence of an API client
 verified against the tree.
 
@@ -19,14 +19,15 @@ artifacts, the machine-readable AI surfaces, and the security-header configurati
 | SDK behaviour | `qeet-id-{go,node,react}` |
 | Marketing claims | `qeet-id-website` |
 | Org-wide docs | `qeet-docs` — a **different** repository at `docs.qeet.in`'s sibling scope |
-| The design system | `qeetrix-ui` |
+| The design system and icons | `qeetrix-ui` (`@qeetrix/ui`), `qeetrix-icons` (`@qeetrix/icons`) |
+| **The shared docs shell** (layout, header, page header, MDX components, code theme) | `qeetrix-docs` (`ui.qeet.in`) — this site follows it |
 
 **This repository renders truth. It never holds it.**
 
 ## Consumes
 
-`@qeetrix/ui` and Fumadocs at build time. **Nothing at runtime** — no API, no external search, no
-secret.
+`@qeetrix/ui`, `@qeetrix/icons`, `@thesvg/react` and Fumadocs at build time; the docs shell's design
+from `qeetrix-docs`. **Nothing at runtime** — no API, no external search, no secret.
 
 ## Provides
 
@@ -59,14 +60,17 @@ qeet-id-server         ──is documented by──►  qeet-id-docs
 qeet-id-context        ──capability status──►  qeet-id-docs
 qeet-id-{go,node,react} ──SDK behaviour────►  qeet-id-docs
 qeetrix-ui             ──@qeetrix/ui───────►  qeet-id-docs
+qeetrix-icons          ──@qeetrix/icons────►  qeet-id-docs
+qeetrix-docs           ──docs shell design─►  qeet-id-docs
 ```
 
 Downstream of everything. Upstream of nothing.
 
 ## Safe to change without coordination
 
-Layout, styling, navigation ordering · prose clarity on already-verified behaviour · new examples of
-**existing, verified** behaviour · SEO metadata · accessibility · component refactors.
+Landing-page layout, styling and components · navigation ordering within a section · prose clarity
+on already-verified behaviour · new examples of **existing, verified** behaviour · SEO metadata ·
+accessibility.
 
 ## Requires verification or coordination
 
@@ -78,7 +82,9 @@ Layout, styling, navigation ordering · prose clarity on already-verified behavi
 | An auth or crypto example | Readers copy it into production |
 | Security headers or CSP | A deliberate, strong posture |
 | Content shape or slugs | Breaks the AI surfaces and inbound links |
-| `@qeetrix/ui` major upgrade | `qeetrix-ui` — pinned `^1.0.2` against npm `2.0.0` |
+| The docs shell — `src/app/docs/`, site header, `src/components/docs/`, `mdx.tsx`, the docs rules in `global.css` | Keep it consistent with `qeetrix-docs`: change it there first, or in the same step |
+| A new section or top-level page | `sectionOfSlug` in `src/lib/site-links.ts`, or it is placed in Getting started |
+| `@qeetrix/ui` / `@qeetrix/icons` major upgrade | Owned by `qeetrix-ui` / `qeetrix-icons`; keep in step with `qeetrix-docs` |
 
 Product-level fan-out: `qeet-id-context/CHANGE-MATRIX.md`.
 

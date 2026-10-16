@@ -1,22 +1,12 @@
 {
+  "title": "Qeet ID",
   "pages": [
-    "index",
-    "---Getting Started---",
-    "getting-started",
-    "---Core Concepts---",
-    "concepts",
-    "---Authentication & Access---",
-    "authentication",
-    "authorization",
-    "provisioning",
-    "---Platform---",
-    "agents",
-    "audit-logs",
+    "(getting-started)",
+    "(concepts)",
+    "(platform)",
     "security",
-    "architecture",
-    "---Resources---",
-    "roadmap",
-    "faq",
-    "support"
+    "guides",
+    "sdks",
+    "(resources)"
   ]
 }

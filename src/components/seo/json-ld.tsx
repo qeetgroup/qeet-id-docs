@@ -10,8 +10,10 @@ export function JsonLd({ schema }: { schema: Schema | Schema[] }) {
   return (
     <script
       type="application/ld+json"
-      // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD from our own trusted, serialized data.
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD is a script element; `<` is escaped.
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(schema).replace(/</g, "\\u003c"),
+      }}
     />
   );
 }

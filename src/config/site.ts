@@ -1,25 +1,15 @@
 /**
- * Single source of truth for global site metadata, canonical URLs and outbound
- * links used across layouts, SEO, structured data and the footer.
- *
- * Everything that is environment- or brand-specific lives here so the rest of
- * the codebase never hard-codes a URL or product string. When the Qeet ID docs
- * repo is split to its own domain, only this file changes.
+ * Site metadata and outbound links for the landing page (src/components/marketing,
+ * src/components/layout/site-footer.tsx) and the structured data. The documentation pages take
+ * theirs from src/lib/shared.ts and src/lib/site-links.ts, which build on the same values.
  */
+import { appDescription, gitConfig, productName, siteUrl } from "@/lib/shared";
 
-/**
- * Canonical origin for the documentation portal.
- *
- * Overridable at build time via `NEXT_PUBLIC_SITE_URL` (e.g. Vercel preview
- * deployments) and falls back to the production docs domain.
- */
-export const siteUrl = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://docs.qeet.in"
-).replace(/\/$/, "");
+export { gitConfig, siteUrl };
 
 export const site = {
   /** Product this portal documents. */
-  name: "Qeet ID",
+  name: productName,
   /** Legal / umbrella entity. */
   company: "Qeet Group",
   /** Short domain-style label used in nav and footer. */
@@ -27,8 +17,7 @@ export const site = {
   /** Product tagline — kept in sync with the marketing site. */
   tagline: "Identity You Can Own and Prove",
   /** Default meta description; individual pages override this. */
-  description:
-    "Developer documentation for Qeet ID — the passkeys-first identity platform. Guides, concepts, SDKs and tutorials for authentication, authorization, organizations, SSO, SCIM and audit.",
+  description: appDescription,
   /** OG locale. */
   locale: "en_US",
   url: siteUrl,
@@ -59,21 +48,4 @@ export const links = {
   security: "https://api.qeet.in/security",
 } as const;
 
-/**
- * GitHub coordinates for "edit this page" / "view source" links and the nav
- * repository button.
- */
-export const gitConfig = {
-  user: "qeetgroup",
-  repo: "qeet-id-docs",
-  branch: "main",
-} as const;
-
 export const githubUrl = `https://github.com/${gitConfig.user}/${gitConfig.repo}`;
-
-/** Route prefixes. Kept as constants so the proxy/OG/LLM routes agree. */
-export const routes = {
-  docs: "/docs",
-  docsImage: "/og/docs",
-  docsContent: "/llms.mdx/docs",
-} as const;
