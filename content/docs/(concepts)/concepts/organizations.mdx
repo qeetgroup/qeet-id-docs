@@ -60,7 +60,29 @@ domain**:
 
 ## Switching organizations
 
-A signed-in principal with access to several organizations can switch the active
-one. The React source preview includes `<OrganizationSwitcher />` and
-`useOrganization`; the resulting token is scoped to exactly one active
-organization and the backend verifies membership on every switch.
+A user who belongs to several organizations works in one at a time: every token is scoped to
+exactly one. Switching replaces the current session with a new one scoped to the target
+organization. The console's organization switcher does this; through the API, call it with the
+user's own access token:
+
+```http title="Request"
+POST /v1/auth/switch-tenant
+Authorization: Bearer <the user's access token>
+Content-Type: application/json
+
+{ "tenant_id": "<the organization to switch to>" }
+```
+
+The response is a new token pair — `access_token`, `token_type`, `expires_at`, `refresh_token`,
+`session_id`, `user_id` and `tenant_id` — and from then on the client uses it instead of the old one.
+
+- **The new token is scoped to the target organization**, and the organization's sign-in hooks
+  run again, so any custom claims they add reflect it.
+- **The session being left ends** in the same step: its refresh token can no longer renew it, its
+  access token keeps working only until it expires (ten minutes at most by default), and
+  `session.revoked` subscribers are told with reason `tenant_switch` (see
+  [Manage sessions](/docs/authentication/sessions#what-ending-a-session-does)).
+- **Switching never extends a sign-in**: the new session ends when the old one would have.
+- **A non-member is refused** with `auth.not_tenant_member` (403) — the user must hold a role in the
+  target organization. A request made with an ended session's token is refused with
+  `unauthorized` (401).

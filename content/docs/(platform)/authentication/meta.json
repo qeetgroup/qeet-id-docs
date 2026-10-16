@@ -4,10 +4,15 @@
   "pages": [
     "index",
     "passkeys",
+    "magic-links",
     "mfa",
+    "trusted-devices",
     "oauth-and-oidc",
     "enterprise-sso",
     "social-logins",
-    "hosted-login"
+    "hosted-login",
+    "password-reset",
+    "email-verification",
+    "sessions"
   ]
 }

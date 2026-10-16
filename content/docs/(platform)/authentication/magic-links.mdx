@@ -1,0 +1,223 @@
+---
+title: Magic links
+description: Passwordless sign-in through a one-time link emailed to the user — configuration, request, completion, expiry and single use.
+---
+
+A magic link signs a user in from their inbox: they enter their email address, Qeet ID emails a
+link, and following it opens a session. There is no password to remember or leak, which suits
+people who sign in rarely. In exchange, **the inbox becomes the credential**: whoever can read the
+email can sign in.
+
+Magic links are **on by default** for every organization, with a one-hour link lifetime.
+
+<Callout type="warn" title="A magic link does not ask for a second factor">
+  Completing a magic link opens a session without the account's second factor, even when the user
+  has enrolled one — unlike password sign-in, which asks for it. If your organization relies on
+  multi-factor authentication, switch magic links off (below) or accept that inbox access alone
+  signs a user in.
+</Callout>
+
+## Where it is available
+
+| Surface | What it offers |
+| --- | --- |
+| [Hosted login](/docs/authentication/hosted-login) | **Email me a sign-in link** on the organization's sign-in page, while magic links are on. The link opens hosted login again and the sign-in journey continues where it started. |
+| Qeet ID console | **Email me a sign-in link** on the console's sign-in page. The link opens the console. |
+| HTTP API | Four endpoints — request, two exchanges and resend — described below. |
+| SDKs | No SDK completes a magic link in your own application: a link always opens a Qeet ID page (hosted login or the console). To start one from your own UI, call the API with `app: "hosted_login"` and let hosted login finish the journey. |
+
+## Configure
+
+In the console, open **Authentication → Sign-in → Magic links**:
+
+| Setting | What it changes |
+| --- | --- |
+| **Magic-link sign-in** — *Enabled* / *Disabled* | Whether members may sign in with an emailed link. |
+| **Link lifetime** — 5 minutes, 15 minutes, 30 minutes, 1 hour, 4 hours or 24 hours | How long a link stays valid after it is sent. Shorter is safer. |
+
+The same switch also appears as **Magic links** on **Authentication → Sign-in → Passwordless**.
+Through the API, both are fields of the organization's authentication policy,
+`PUT /v1/tenants/{tenantID}/auth-policy`:
+
+<TypeTable
+  type={{
+    magic_link_enabled: {
+      description: "Whether the organization allows magic-link sign-in.",
+      type: "boolean",
+      default: "true",
+    },
+    magic_link_ttl_minutes: {
+      description: "Link lifetime in minutes. A value below 5 is saved as 5, above 1440 as 1440.",
+      type: "integer",
+      default: "60",
+    },
+  }}
+/>
+
+### What switching it off does
+
+- Hosted login stops offering **Email me a sign-in link**.
+- A request made from the organization's sign-in page is refused with `auth.method_disabled`
+  (403). A request from the console's sign-in page for an account in that organization answers as
+  usual but sends nothing.
+- **Links already sent stop working** at once: exchanging one is refused with
+  `auth.method_disabled` (403), and it stays unused — if you switch magic links back on before it
+  expires, it works again.
+
+## How a sign-in works
+
+<Steps>
+
+<Step>
+
+**Request a link.** The user enters their address and the page calls the request endpoint. The
+answer is the same whether or not the address belongs to an account.
+
+</Step>
+
+<Step>
+
+**Qeet ID emails the link** — subject "Your sign-in link" — to the address, if it holds an account
+that is neither suspended nor deleted. Nothing is sent otherwise.
+
+</Step>
+
+<Step>
+
+**The user follows the link.** It opens where it was asked for: hosted login's `/magic` page
+(carrying the journey's `return_to`) or the console's `/magic` page.
+
+</Step>
+
+<Step>
+
+**That page exchanges the token.** Hosted login opens its own sign-in session and continues the
+journey — for an application, back to the OAuth authorization that started it. The console
+receives a token pair.
+
+</Step>
+
+</Steps>
+
+### Request a link
+
+```http title="Request"
+POST /v1/auth/magic-link/start
+Content-Type: application/json
+
+{
+  "email": "ada@example.com",
+  "tenant_id": "3f6c2d0e-…",
+  "app": "hosted_login",
+  "return_to": "https://api.id.qeet.in/oauth/authorize?client_id=…"
+}
+```
+
+<TypeTable
+  type={{
+    email: {
+      description: "The address to send the link to. Missing: auth.email_required (422).",
+      type: "string",
+      required: true,
+    },
+    tenant_id: {
+      description: "The organization whose sign-in page is asking. Its policy decides whether links are allowed and how long they live. Omit it for the console's own sign-in page; the account's organization then decides.",
+      type: "string (UUID)",
+    },
+    app: {
+      description: "\"hosted_login\" makes the link open hosted login. Anything else, or nothing, makes it open the console.",
+      type: "string",
+    },
+    return_to: {
+      description: "Hosted login only: where the sign-in journey continues after the link. Kept only when it is this Qeet ID's own /oauth/authorize URL; anything else is dropped, so an emailed link can never send the user to a site the caller chose.",
+      type: "string (URL)",
+    },
+  }}
+/>
+
+```json title="Response — 200, whatever the address"
+{ "message": "If an account exists for that email, we've sent a sign-in link." }
+```
+
+The request also takes at least the same minimum time either way, so neither the answer nor its
+timing reveals whether an account exists.
+
+**Rate limits.** Requests are bounded per address — three at once, then one more every five
+minutes — and per caller (by IP address) — ten at once, then one more a minute. Past either bound
+the request is refused with `too_many_requests` (429). Requests count whether or not the address
+has an account, so the limit reveals nothing either.
+
+### Exchange the link
+
+The token arrives as the `token` query parameter of the page the link opens. That page posts it
+to the exchange for its place — a link is exchanged **only where it was issued for**:
+
+```http title="Hosted login — opens the hosted-login session"
+POST /v1/auth/magic-link/session
+Content-Type: application/json
+
+{ "token": "…" }
+```
+
+```json title="Response — 200"
+{ "user_id": "9b1d…", "return_to": "https://api.id.qeet.in/oauth/authorize?client_id=…" }
+```
+
+The response also sets hosted login's sign-in session cookie; hosted login then continues at
+`return_to`. That session lasts as long as any hosted-login sign-in (see
+[Manage sessions](/docs/authentication/sessions#how-long-each-lasts)).
+
+```http title="Console — returns a token pair"
+POST /v1/auth/magic-link/consume
+Content-Type: application/json
+
+{ "token": "…" }
+```
+
+The response is the same token pair a password sign-in returns: `access_token`, `token_type`,
+`expires_at`, `refresh_token`, `session_id`, `user_id`, `tenant_id`, `session_expires_at` and
+`idle_expires_at`. The session it opens follows the organization's session policy like any other.
+
+### Expiry, single use and refusals
+
+A link works **once** and only until its lifetime runs out. Qeet ID stores only a hash of the token.
+
+| Situation | Answer |
+| --- | --- |
+| The link was already used | `recovery.link_used` (400) |
+| The link has expired | `recovery.link_expired` (400) |
+| Unknown token, a link exchanged in the wrong place (a hosted-login link at the console's exchange or the reverse), or an account that has since been suspended or deleted | `recovery.magic_link_invalid` (400) |
+| The organization has switched magic links off | `auth.method_disabled` (403) |
+| Too many requests | `too_many_requests` (429) |
+
+Each successful exchange is recorded in the audit log as `auth.magic_link_consumed`.
+
+### Send a new link
+
+When a link has been used or has expired, the page can ask for a replacement without the user
+typing their address again — hosted login and the console both offer **Send a new link**:
+
+```http title="Request"
+POST /v1/auth/magic-link/resend
+Content-Type: application/json
+
+{ "token": "<the used or expired token>" }
+```
+
+The new link goes to the same address, opens in the same place and continues the same journey.
+The answer is the same whatever the token names, and resends count against the same rate limits.
+
+## Security notes
+
+- **Inbox access is enough to sign in.** Treat magic links as single-factor sign-in, and keep the
+  lifetime short — five or fifteen minutes is plenty for most people.
+- **Following a link does not verify the address.** It proves the user could read that email once,
+  but the account's [verified state](/docs/authentication/email-verification) is unchanged.
+- **Ending sessions.** A magic-link session ends like any other — see
+  [Manage sessions](/docs/authentication/sessions).
+
+<Cards>
+  <Card title="Hosted login" href="/docs/authentication/hosted-login" description="The managed sign-in pages that complete hosted magic links." />
+  <Card title="Multi-factor authentication" href="/docs/authentication/mfa" description="Second factors, and where they are asked for." />
+  <Card title="Password reset" href="/docs/authentication/password-reset" description="The other emailed, single-use link." />
+</Cards>
