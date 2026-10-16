@@ -1,0 +1,38 @@
+---
+title: Trusted devices
+description: Letting a user skip the second factor on a device they have verified before — the setting, when the skip applies, and the trade-off.
+---
+
+A trusted device lets someone who completed two-factor verification in a browser skip the second
+factor there for the next 30 days. It is **off by default**: until an organization switches it on,
+every sign-in that asks for a second factor asks every time.
+
+Turn it on in the console under **Authentication → Sign-in → Passwordless**, **Trusted devices
+(adaptive MFA)** — the `remember_device_enabled` field of the organization's authentication policy.
+
+## When the second factor is skipped
+
+A user who has enrolled a second factor sees **Remember this device** on hosted login's
+two-factor step while the setting is on. Choosing it stores an HttpOnly cookie in that browser —
+Qeet ID keeps only a hash of it, bound to that one user. A later sign-in skips the second factor
+only when **all** of these hold:
+
+- it is a **hosted-login password sign-in** — the setting does not apply to direct API sign-in or to
+  the console;
+- the setting is **still on** — switching it off makes every remembered device ask again at once;
+- the cookie is live, belongs to the same user, and is **less than 30 days old** — using it does not
+  extend it;
+- the organization's risk settings (**Security → Threats → Risk**) do not force the second factor
+  for this sign-in — one whose risk score (bot-likeness, plus **Impossible travel** and **Device
+  reputation** where those are on) reaches the **Force MFA at level** threshold is challenged anyway.
+
+## The trade-off
+
+Trusting a device trades the second factor for convenience on that device: for up to 30 days,
+whoever holds the browser and the password can sign in without the second factor. Keep it off
+where every sign-in must prove both factors; switch it on where repeated prompts on a known device
+cost more than they protect, and keep the risk settings on.
+
+A user ends all of their trusted devices with **Sign out everywhere** (see
+[Manage sessions](/docs/authentication/sessions#sign-out-everywhere)). A
+[password reset](/docs/authentication/password-reset) does not end them.

@@ -3,13 +3,15 @@ import { RootProvider } from "fumadocs-ui/provider/next";
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@/components/analytics";
 import { KeyboardShortcuts } from "@/components/layout/keyboard-shortcuts";
+import { sdkScript } from "@/components/sdk/sdk-script";
+import { SdkStyles } from "@/components/sdk/sdk-styles";
 import {
   JsonLd,
   organizationSchema,
   websiteSchema,
 } from "@/components/seo/json-ld";
-import { site, siteUrl } from "@/config/site";
-import { defaultOgImage } from "@/lib/metadata";
+import { defaultOgImage, openGraphBase } from "@/lib/metadata";
+import { appDescription, appName, siteUrl } from "@/lib/shared";
 
 /** Quick links surfaced in the ⌘K command palette when the query is empty. */
 const searchLinks: [name: string, href: string][] = [
@@ -23,37 +25,18 @@ const searchLinks: [name: string, href: string][] = [
   ["Roadmap", "/docs/roadmap"],
 ];
 
-/**
- * Root metadata. Page- and doc-level metadata is composed via
- * `buildMetadata()` (see `@/lib/metadata`); this establishes the site-wide
- * defaults, the `%s — Qeet ID Docs` title template and the theme-adaptive
- * favicon shared with the marketing site.
- */
+// The manifest, the sitemap and robots.txt are file conventions in this directory; the icons are
+// in public/. No canonical URL here: every page sets its own (lib/metadata.ts), and one set on the
+// layout would be inherited by any page that forgot to.
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: `${site.name} Docs — ${site.tagline}`,
-    template: `%s — ${site.name} Docs`,
+    default: appName,
+    template: `%s | ${appName}`,
   },
-  description: site.description,
-  applicationName: `${site.name} Docs`,
-  authors: [{ name: site.company, url: "https://qeet.in" }],
-  creator: site.company,
-  publisher: site.company,
-  keywords: [
-    "Qeet ID",
-    "identity platform",
-    "authentication",
-    "authorization",
-    "passkeys",
-    "WebAuthn",
-    "SSO",
-    "SAML",
-    "SCIM",
-    "OIDC",
-    "RBAC",
-    "developer documentation",
-  ],
+  description: appDescription,
+  applicationName: appName,
+  publisher: "Qeet Group",
   icons: {
     icon: [
       {
@@ -71,46 +54,32 @@ export const metadata: Metadata = {
     shortcut: ["/favicon.ico"],
     apple: [{ url: "/icon.png" }],
   },
-  openGraph: {
-    type: "website",
-    siteName: `${site.name} Docs`,
-    title: `${site.name} Docs — ${site.tagline}`,
-    description: site.description,
-    url: siteUrl,
-    locale: site.locale,
-    images: [
-      {
-        url: defaultOgImage,
-        width: 1200,
-        height: 630,
-        alt: `${site.name} Docs`,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${site.name} Docs — ${site.tagline}`,
-    description: site.description,
-    images: [defaultOgImage],
-  },
+  openGraph: { ...openGraphBase, images: defaultOgImage },
+  twitter: { card: "summary_large_image", images: defaultOgImage },
 };
 
-/** Brand-tinted browser chrome, per theme. */
+/** The canvas colour of each theme (`color.surface.canvas`), for the browser's own UI. */
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { media: "(prefers-color-scheme: light)", color: "#fbfaf9" },
+    { media: "(prefers-color-scheme: dark)", color: "#0e0d0d" },
   ],
-  colorScheme: "light dark",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function Layout({ children }: LayoutProps<"/">) {
   return (
-    // `data-qx-brand="qeet-id"` selects the Qeet ID palette from the Qeetrix
-    // token set; fonts (Qeet Display / Qeet Text / Fira Code) are self-hosted
-    // by `@qeetrix/ui/styles.css`, so no `next/font` loader is needed.
-    <html lang="en" data-qx-brand="qeet-id" suppressHydrationWarning>
-      <body className="flex min-h-screen flex-col font-sans antialiased">
+    // Fonts (Qeet Display / Qeet Text / Fira Code) are self-hosted by `@qeetrix/ui/styles.css`, so
+    // no `next/font` loader is needed.
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* The reader's SDK, on <html data-sdk> before the first paint (src/components/sdk). */}
+        <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: a fixed script built from the SDK list, no user input.
+          dangerouslySetInnerHTML={{ __html: sdkScript }}
+        />
+        <SdkStyles />
+      </head>
+      <body className="flex min-h-screen flex-col">
         <a href="#main-content" className="qid-skip-link">
           Skip to main content
         </a>

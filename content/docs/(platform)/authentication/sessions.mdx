@@ -1,0 +1,206 @@
+---
+title: Manage sessions
+description: List a user's sessions, end one or all of them, and know what that does to tokens already issued — the building blocks of an account-security screen.
+---
+
+A user can see where they are signed in and end any of those sign-ins themselves. This page
+describes the self-service endpoints an account-security screen is built on, the fields they
+return, how long each kind of sign-in lasts, and exactly what ending one does to tokens that have
+already been issued.
+
+In the console, the same controls are on **Account → Sessions**: **Active sessions** (with **This
+device** marking the current one), **Revoke** on each row, **Sign out other sessions** and **Sign out
+everywhere**.
+
+## Three kinds of sign-in
+
+A person can be signed in to Qeet ID in three ways at once, and they end differently:
+
+| Kind | What it is | Ended by |
+| --- | --- | --- |
+| **Qeet ID session** | A sign-in through the Qeet ID API — the console, or an application using the SDKs or the API directly. Carries an access token and a refresh token. These are what the session list shows. | Revoking it, signing out other sessions, signing out everywhere, a password reset, switching organization, its timeouts |
+| **Hosted-login session** | The [hosted login](/docs/authentication/hosted-login) page's own sign-in, in that browser's cookie, so the user is not asked again during a sign-in journey. | Signing out everywhere, its lifetime |
+| **Application grant** | What an application holds after a user signs in to it through OAuth / OpenID Connect: its own access and refresh tokens. | Signing out everywhere, its maximum age |
+
+### How long each lasts
+
+- A **Qeet ID session** ends at its **maximum age**, however active it is, and earlier if it goes
+  longer than its **idle timeout** without being renewed — each renewal restarts the idle clock.
+  Both come from the organization's session policy when the session opens: **Settings → Security →
+  Session policy** in the console, fields **Maximum session age** (default 720h, between 1h and
+  8760h) and **Idle timeout** (default 24h, at least 15m and no longer than the maximum age). A
+  change applies to new sessions only; existing ones keep the lifetime they started with.
+  Switching organization never extends a session.
+- An **access token** lives ten minutes by default (the server's `ACCESS_TOKEN_TTL`, which must be
+  shorter than 15 minutes) and never outlives its session.
+- A **hosted-login session** lasts 30 minutes, or less when the organization's idle timeout or
+  maximum age is shorter.
+- An **application grant** ends at the same maximum age, however often the application renews it.
+
+A renewal after a session's maximum age or idle timeout is refused with `auth.session_timed_out`
+(401); the session ends, and the audit log records `auth.session_expired` with the bound that was
+reached. Sign-in and renewal responses carry `session_expires_at` and `idle_expires_at`, so a
+client can warn its user before either.
+
+## Authenticate as the user
+
+These endpoints act on the caller's own account. Call them with the **user's own Qeet ID access
+token** (`Authorization: Bearer …`). An access token an application received on the user's behalf
+through OAuth is refused with `auth.application_token` (403) — it may read who the user is, not
+manage their account.
+
+## List sessions
+
+```http title="Request"
+GET /v1/auth/sessions?limit=50
+Authorization: Bearer <the user's access token>
+```
+
+```json title="Response — 200"
+{
+  "items": [
+    {
+      "id": "6c1e…",
+      "user_id": "9b1d…",
+      "tenant_id": "3f6c…",
+      "ip": "203.0.113.24",
+      "user_agent": "Mozilla/5.0 (Macintosh; …)",
+      "device": "Chrome on macOS",
+      "device_kind": "desktop",
+      "country": "IN",
+      "created_at": "2026-10-16T09:12:44Z",
+      "last_seen_at": "2026-10-17T07:58:02Z",
+      "expires_at": "2026-11-15T09:12:44Z",
+      "idle_expires_at": "2026-10-18T07:58:02Z",
+      "revoked_at": null,
+      "status": "active",
+      "current": true
+    }
+  ],
+  "has_more": false,
+  "total": 1
+}
+```
+
+Sessions are listed newest first. `limit` defaults to 50 and is capped at 100. While `has_more`
+is true the response also carries `next_cursor`; pass it as `cursor` to get the next page.
+
+<TypeTable
+  type={{
+    id: { description: "The session's id — what you pass to end it.", type: "string (UUID)" },
+    tenant_id: { description: "The organization the session is scoped to.", type: "string (UUID)" },
+    ip: { description: "The address the session was opened from.", type: "string | null" },
+    user_agent: { description: "The raw user agent, for support.", type: "string | null" },
+    device: { description: "The device and browser in words, read from the user agent on the server: \"Chrome on macOS\", \"Unknown device\".", type: "string" },
+    device_kind: { description: "desktop, mobile, tablet or unknown.", type: "string" },
+    country: { description: "Where the session was opened, approximately (ISO 3166-1 alpha-2). Present only when the deployment supplies it.", type: "string" },
+    created_at: { description: "When the session was opened.", type: "string (RFC 3339)" },
+    last_seen_at: { description: "When the session was last used.", type: "string (RFC 3339)" },
+    expires_at: { description: "When the session ends however active it is — its maximum age.", type: "string (RFC 3339)" },
+    idle_expires_at: { description: "When it ends unless it is renewed before then.", type: "string (RFC 3339)" },
+    revoked_at: { description: "When it was ended by sign-out or revocation; null otherwise.", type: "string | null" },
+    status: { description: "active; revoked (ended by sign-out or revocation); or expired (reached its maximum age or idle timeout first).", type: "string" },
+    current: { description: "true for the session the list was requested with.", type: "boolean" },
+  }}
+/>
+
+The list shows Qeet ID sessions. Hosted-login sessions and application grants are not listed;
+**Sign out everywhere** ends them too.
+
+## End one session
+
+```http title="Request"
+DELETE /v1/auth/sessions/{id}
+Authorization: Bearer <the user's access token>
+```
+
+```json title="Response — 200"
+{ "message": "Session revoked." }
+```
+
+Only the caller's own sessions can be ended: an id that is not theirs is quietly ignored, with the
+same answer. To end the session in use, sign out instead (`POST /v1/auth/logout`).
+
+## Sign out other sessions
+
+```http title="Request"
+POST /v1/auth/sessions/revoke-others
+Authorization: Bearer <the user's access token>
+```
+
+```json title="Response — 200"
+{ "revoked": 3 }
+```
+
+Ends every Qeet ID session of the user except the one making the call, including any not on the
+current page of the list. The calling session must still be live — a request made with the access
+token of a session that has already ended is refused with `auth.session_revoked` (401). Recorded
+in the audit log as `auth.other_sessions_revoked`.
+
+## Sign out everywhere
+
+For a lost device or a suspected compromise: ends every way the account is signed in, the calling
+session included.
+
+```http title="Request"
+POST /v1/auth/sessions/revoke-all
+Authorization: Bearer <the user's access token>
+```
+
+```json title="Response — 200"
+{
+  "revoked": 7,
+  "sessions": 3,
+  "hosted_login_sessions": 1,
+  "app_grants": 2,
+  "trusted_devices": 1,
+  "pending_authorizations": 0
+}
+```
+
+| Field | What ended |
+| --- | --- |
+| `sessions` | Qeet ID sessions, this one included |
+| `hosted_login_sessions` | Hosted-login sessions, in whichever browser holds them (a browser calling directly also drops its cookie) |
+| `app_grants` | Applications' sign-ins through OAuth / OpenID Connect |
+| `trusted_devices` | [Trusted devices](/docs/authentication/trusted-devices) — the next sign-in asks for the second factor again |
+| `pending_authorizations` | Authorization requests still waiting for the user's approval |
+| `revoked` | The total |
+
+The user signs in again afterwards.
+
+## What ending a session does
+
+Ending a session — by any of the calls above, a [password reset](/docs/authentication/password-reset),
+an [organization switch](/docs/concepts/organizations#switching-organizations) or a timeout — takes
+effect in two steps:
+
+1. **Renewal stops at once.** The session's refresh token is refused (`auth.session_revoked`, 401),
+   so no new access token can be issued for it.
+2. **An access token already issued keeps working until it expires** — at most the access-token
+   lifetime, ten minutes by default. Access tokens are verified offline, against the signing keys,
+   by Qeet ID's own API as much as by your services, so nothing recalls one early.
+
+To act sooner than the token's expiry, subscribe to the **`session.revoked`** webhook. It is sent,
+signed, for every session that ends, to the session's organization — or, for a session with no
+organization, to every organization the user belongs to. Its payload carries `event_id`, `user_id`,
+`session_id`, `tenant_id`, `reason` and `revoked_at`; deny requests that carry that `session_id`.
+
+| `reason` | Why the session ended |
+| --- | --- |
+| `logout` | The user signed out, or revoked that session |
+| `other_sessions_revoked` | The user signed out their other sessions |
+| `all_sessions_revoked` | The user signed out everywhere |
+| `admin_revoked_all` | An administrator ended all of the user's sessions |
+| `password_changed` / `password_reset` / `admin_password_set` | The password was changed, reset, or set by an administrator |
+| `tenant_switch` | The user switched organization; a new session replaced this one |
+| `suspended` / `deprovisioned` / `deleted` | The account was suspended, deactivated by SCIM provisioning, or erased |
+| `reactivated` | The account was reactivated; sessions from before its suspension stay ended |
+| `expired` | The session timed out |
+| `reuse_detected` | A refresh token was used twice — a sign of theft — so the session was ended |
+
+<Cards>
+  <Card title="Sessions & tokens" href="/docs/concepts/sessions-and-tokens" description="What tokens carry, and verifying them locally." />
+  <Card title="Trusted devices" href="/docs/authentication/trusted-devices" description="Skipping the second factor on a remembered device." />
+  <Card title="Organizations" href="/docs/concepts/organizations" description="Switching the active organization." />
+</Cards>

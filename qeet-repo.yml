@@ -1,6 +1,6 @@
 # qeet-id-docs — repository context metadata (Level 2).
 schema_version: 1
-context: {type: repository, level: L2, canonical: true, last_verified: "2026-08-28"}
+context: {type: repository, level: L2, canonical: true, last_verified: "2026-10-17"}
 inheritance:
   organization: {repository: qeetgroup/qeet-context, level: L0}
   product:      {repository: qeetgroup/qeet-id-context, level: L1}
@@ -18,18 +18,21 @@ repository:
                                 # no Vercel project and has never been deployed.
 runtime:
   language: TypeScript
-  framework: Next.js 16.2.12        # newer than login/website (16.2.6)
-  docs_engine: "fumadocs 16.13.0"   # fumadocs-ui aliased to @fumadocs/base-ui
-  react: "^19.2.8"
+  framework: Next.js 16.3.8         # newer than login/website (16.2.6)
+  docs_engine: "fumadocs 16.16.2"   # fumadocs-ui aliased to @fumadocs/base-ui; fumadocs-mdx 15.4.6 Macro API (no .source)
+  react: "^19.3.0"
   package_manager: bun@1.3.14
-  design_system: "@qeetrix/ui ^1.0.2"
+  design_system: "@qeetrix/ui ^2.1.5"
+  icons: "@qeetrix/icons ^1.0.11"   # third-party brand logos: @thesvg/react
   dev_port: 3000
 architecture:
   style: static-docs-site
+  docs_shell: qeetrix-docs          # ui.qeet.in — the docs pages follow it (Spacious layout); the landing page keeps its own design
   backend_calls: none               # VERIFIED — no API client
   content_root: content/docs
-  sections: [architecture, authentication, authorization, concepts, getting-started, guides, provisioning, sdks, security]
-  ai_surfaces: [/llms.txt, /llms-full.txt, /llms.mdx/docs, /api/search, /og]
+  sections: [getting-started, concepts, platform, security, guides, sdks, resources]   # sidebar tabs; (group) folders, URLs unchanged
+  section_map: src/lib/site-links.ts   # sectionOfSlug — a new top-level page or folder is added here
+  ai_surfaces: [/llms.txt, /llms-full.txt, /llms.mdx/docs, /api/search, /og/image.png, /og/docs]
   content_negotiation: src/proxy.ts # serves Markdown when Accept prefers it
 contracts:
   consumes: {}
@@ -38,12 +41,12 @@ commands:
   dev:   bun run dev
   build: bun run build
   lint:  bun run lint               # biome check
-  types: bun run types:check        # NOTE: not "typecheck"
+  types: bun run types:check        # NOTE: not "typecheck" — clean types -> next typegen -> tsc --noEmit
   test:  bun run test               # node scripts/check-links.mjs — internal link integrity
 ci:
   workflows: [ci.yml, release-tag.yml]   # release-tag: release/x.y.z merged into main -> tag vx.y.z
   job: verify                       # lint -> types:check -> test -> build (main, develop, release/**, PRs)
-  image: "ci.yml `image` on release/**: ghcr.io/qeetgroup/qeet-id-docs:sha-<commit> for the qeet-id-deploy test kit"
+  image: "ci.yml `image` on release/**: ghcr.io/qeetgroup/qeet-id-docs:sha-<commit> for the Qeet ID Kit (qeet-id-kit)"
   runner: ubuntu-latest
 container:
   dockerfile: Dockerfile            # test kit only (output: standalone only when NEXT_OUTPUT=standalone)

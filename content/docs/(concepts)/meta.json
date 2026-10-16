@@ -1,0 +1,7 @@
+{
+  "title": "Concepts",
+  "description": "The identity model, and how Qeet ID is built and run.",
+  "icon": "Boxes",
+  "root": true,
+  "pages": ["...concepts", "architecture"]
+}

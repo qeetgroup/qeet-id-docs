@@ -1,0 +1,7 @@
+{
+  "title": "Getting Started",
+  "description": "What Qeet ID is, and the path to an authenticated user.",
+  "icon": "Rocket",
+  "root": true,
+  "pages": ["index", "...getting-started"]
+}

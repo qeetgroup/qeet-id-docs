@@ -1,0 +1,50 @@
+---
+title: Email verification
+description: When an account's email address counts as verified, how a user verifies or re-verifies it, and which decisions depend on it.
+---
+
+An account's address is **verified** once Qeet ID has evidence the account holder controls it. The
+user record shows it as `email_verified_at` (null until then).
+
+## When an address becomes verified
+
+- The account holder confirms a code emailed to the address (below).
+- The user changes their address and confirms the code sent to the new one.
+- The user accepts an [invitation](/docs/concepts/organizations) — the invitation reached that address.
+- The account is created by enterprise SSO (SAML) or LDAP, or by a social sign-in whose provider
+  reports the address as verified.
+
+Signing up with a password or a passkey, hosted-login self-registration, following a
+[magic link](/docs/authentication/magic-links) and completing a
+[password reset](/docs/authentication/password-reset) **do not** verify the address.
+
+## Verify, or ask again
+
+The account holder — and only they, with their own access token — asks for a code and confirms it:
+
+```http
+POST /v1/users/{their user id}/verify/email/start
+POST /v1/users/{their user id}/verify/email/confirm    { "code": "…" }
+```
+
+The code goes to the address on file, never to one in the request. It is valid for **10 minutes**,
+works once, and allows **5 wrong guesses**; after that, ask for a new code by calling `start` again
+(the sending route is rate-limited). Another user's id is refused with `forbidden` (403). Refusals:
+`verification.code_invalid`, `verification.code_used`, `verification.code_expired` (400) and
+`verification.attempts_exceeded` (429).
+
+In the console, a new account waits on **Verify your email** until its address is verified: sign-up
+sends the first code, and resending is the user's choice. Hosted login has no verification step.
+
+## What depends on it
+
+- **Creating an organization** requires a verified address — otherwise
+  `verification.email_not_verified` (403) — because it becomes the owner's address for billing,
+  recovery and notices.
+- **Using the console** requires it.
+- **Sending a test of an email template** goes only to the administrator's verified address.
+
+The trade-off: **magic links and password resets do not check it.** Both are sent to the address
+on file whether or not it is verified, so for an unverified account the inbox already works as a
+credential. And when a social sign-in would adopt an existing account, Qeet ID relies on the
+**provider's** statement that the address is verified, not on this flag.

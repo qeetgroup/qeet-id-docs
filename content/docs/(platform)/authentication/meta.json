@@ -1,0 +1,18 @@
+{
+  "title": "Authentication",
+  "icon": "ShieldCheck",
+  "pages": [
+    "index",
+    "passkeys",
+    "magic-links",
+    "mfa",
+    "trusted-devices",
+    "oauth-and-oidc",
+    "enterprise-sso",
+    "social-logins",
+    "hosted-login",
+    "password-reset",
+    "email-verification",
+    "sessions"
+  ]
+}

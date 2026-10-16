@@ -1,0 +1,58 @@
+---
+title: Ruby SDK
+description: A Qeet ID SDK for Ruby is planned. Until it ships, integrate through OpenID Connect and the HTTP API.
+icon: Ruby
+---
+
+<Callout type="warn" title="Planned — not available yet">
+  There is no Ruby SDK: no package to install and no Ruby code in these docs. This page holds
+  its place in the SDK menu and will become the Ruby guide when the SDK ships. Nothing here is a
+  release date.
+</Callout>
+
+While Ruby is chosen in the SDK menu, code examples show a placeholder with the SDKs that do have
+code for that step.
+
+## Integrate without an SDK
+
+Qeet ID is a standards-based OpenID Provider with an HTTP API, so a Ruby application — Rails and Rack
+included — can integrate today with general-purpose libraries:
+
+<Steps>
+
+<Step>
+
+**Sign users in with OpenID Connect.** Point a certified OpenID Connect client library at your
+Qeet ID issuer. It reads the endpoints from the discovery document at
+`/.well-known/openid-configuration`.
+
+</Step>
+
+<Step>
+
+**Verify session tokens locally.** Fetch the signing keys from `/.well-known/jwks.json` (the
+discovery document's `jwks_uri`) and check each token's signature, issuer, audience and expiry with
+a JOSE library. To ask the server instead, call `/oauth/introspect` (RFC 7662).
+
+</Step>
+
+<Step>
+
+**Call the management API.** Send a secret API key — prefixed `qk_` — as
+`Authorization: ApiKey qk_…` from your server, never the browser. Every endpoint is in the
+[API reference](https://api.qeet.in/reference#qeet-id).
+
+</Step>
+
+</Steps>
+
+See [Sessions & tokens](/docs/concepts/sessions-and-tokens) for what a token carries, and
+[OAuth & OIDC](/docs/authentication/oauth-and-oidc) for the flows Qeet ID supports.
+
+## SDKs you can use today
+
+<Cards>
+  <Card title="Go SDK · available" href="/docs/sdks/go" description="Install from GitHub; the backend client for Go services." />
+  <Card title="Node.js SDK · source preview" href="/docs/sdks/node" description="The server-side TypeScript client, built from source." />
+  <Card title="React SDK · source preview" href="/docs/sdks/react" description="Hooks and components for the browser, built from source." />
+</Cards>
