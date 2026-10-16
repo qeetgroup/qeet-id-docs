@@ -3,7 +3,7 @@ name: release-tag
 # Tags vX.Y.Z when a release/x.y.z pull request is merged into main, so this
 # repository carries the same product version as the applications (which tag in
 # their deploy.yml). Nothing is deployed from this workflow.
-# Release process: qeet-id-deploy docs/test-kit/release-process.md.
+# Release process: qeet-id-kit docs/release-process.md.
 on:
   push:
     branches: [main]

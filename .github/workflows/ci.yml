@@ -40,9 +40,9 @@ jobs:
 
   # Release branches only: publish one immutable, commit-addressed image
   # (ghcr.io/qeetgroup/qeet-id-docs:sha-<commit>) after Verify passes, for the
-  # qeet-id-deploy test kit. No rc.N is computed here — qeet-id-deploy assembles
-  # the product release candidate (qeet-id-deploy:
-  # docs/test-kit/application-contract.md).
+  # Qeet ID Kit (qeet-id-kit). No rc.N is computed here — qeet-id-kit assembles
+  # the product release candidate (qeet-id-kit:
+  # docs/application-contract.md).
   image:
     name: Release image
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')
@@ -125,5 +125,5 @@ jobs:
             echo "| Digest | \`$digest\` |"
             echo "| Release | \`$RELEASE\` |"
             echo
-            echo "Assemble a product RC in qeet-id-deploy → Actions → **publish-candidate** with docs = \`$GITHUB_SHA\`."
+            echo "Assemble a product RC in qeet-id-kit → Actions → **publish-candidate** with docs = \`$GITHUB_SHA\`."
           } >> "$GITHUB_STEP_SUMMARY"

@@ -43,7 +43,7 @@ commands:
 ci:
   workflows: [ci.yml, release-tag.yml]   # release-tag: release/x.y.z merged into main -> tag vx.y.z
   job: verify                       # lint -> types:check -> test -> build (main, develop, release/**, PRs)
-  image: "ci.yml `image` on release/**: ghcr.io/qeetgroup/qeet-id-docs:sha-<commit> for the qeet-id-deploy test kit"
+  image: "ci.yml `image` on release/**: ghcr.io/qeetgroup/qeet-id-docs:sha-<commit> for the Qeet ID Kit (qeet-id-kit)"
   runner: ubuntu-latest
 container:
   dockerfile: Dockerfile            # test kit only (output: standalone only when NEXT_OUTPUT=standalone)

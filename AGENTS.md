@@ -79,7 +79,7 @@ bun run format
 `.github/workflows/ci.yml`, job `verify` (push to `main`, `develop`, `release/**`; every PR):
 checkout → bun 1.3.14 → `install --frozen-lockfile` → `lint` → `types:check` → `test` → `build`.
 On `release/**` only, job `image` then publishes `ghcr.io/qeetgroup/qeet-id-docs:sha-<commit>`
-(amd64 + arm64, `Dockerfile`) for the `qeet-id-deploy` test kit. The image changes no header: the CSP
+(amd64 + arm64, `Dockerfile`) for the Qeet ID Kit (`qeet-id-kit`). The image changes no header: the CSP
 (including `upgrade-insecure-requests`) was verified to work on the kit's `http://*.localhost`.
 
 `.github/workflows/release-tag.yml` tags `vx.y.z` when a `release/x.y.z` pull request is merged

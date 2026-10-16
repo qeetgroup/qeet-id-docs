@@ -1,7 +1,7 @@
 # Container image for the documentation portal (Next.js standalone server).
 #
 # The image is built by ci.yml on release/** branches and run by the
-# qeet-id-deploy test kit (DEV / TEST / STAGING). It needs no runtime
+# Qeet ID Kit (qeet-id-kit; DEV / TEST / STAGING). It needs no runtime
 # configuration beyond the listen address:
 #   PORT / HOSTNAME  (defaults 3000 / 0.0.0.0)
 # Health: GET /healthz -> 200.
