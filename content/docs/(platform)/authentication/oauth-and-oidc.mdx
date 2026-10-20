@@ -1,6 +1,6 @@
 ---
 title: OAuth & OIDC
-description: Qeet ID is a full OpenID Provider — discovery, PKCE, device flow, CIBA and token exchange.
+description: Qeet ID is a full OpenID Provider — discovery, PKCE for every application, device flow, CIBA and token exchange.
 ---
 
 Qeet ID is a standards-based **OpenID Provider (OP)** and OAuth 2.0 authorization
@@ -37,9 +37,10 @@ curl "$QEETID_BASE_URL/.well-known/jwks.json"
 
 ## Flows and grants
 
-- **Authorization Code + PKCE** is the primary flow. Only the `S256` PKCE method
-  is accepted — `plain` is rejected — and only `response_type=code` is supported
-  (no implicit flow).
+- **Authorization Code + PKCE** is the sign-in flow, and every application sends a
+  proof key — see [proof key and nonce](#proof-key-and-nonce). Only the `S256`
+  PKCE method is accepted — `plain` is rejected — and only `response_type=code` is
+  supported (no implicit flow).
 - **Grant types:** `authorization_code`, `refresh_token`, `client_credentials`,
   the **device code** grant, **CIBA**, and **token exchange**
   (`urn:ietf:params:oauth:grant-type:token-exchange`, RFC 8693).
@@ -50,6 +51,54 @@ curl "$QEETID_BASE_URL/.well-known/jwks.json"
   Token exchange is the foundation for delegation and on-behalf-of flows — see
   [machine & agent identity](/docs/agents).
 </Callout>
+
+## Proof key and nonce
+
+Every application, confidential ones included, proves each sign-in:
+
+- **A PKCE proof key.** Send `code_challenge` (the base64url SHA-256 of a fresh
+  `code_verifier`, 43 characters) with `code_challenge_method=S256` to
+  `/v1/oauth/authorize`, and the `code_verifier` when you redeem the code at
+  `/v1/oauth/token-code`.
+- **A nonce whenever you request `openid`** (at most 255 characters). It comes
+  back in the ID token's `nonce` claim; check that it matches the one you sent.
+
+A request without them is refused before the person is asked for consent: the
+browser returns to your redirect URI with `error=invalid_request`, and the API
+codes are `oidc.code_challenge_required` and `oidc.nonce_required`.
+
+Most OIDC libraries do both for you: turn on their PKCE and nonce checks (for
+example `checks: ["pkce", "state", "nonce"]` in Auth.js).
+
+### Exempting an existing integration
+
+A **confidential** application that can't send them yet can be exempted until a
+date at most 90 days ahead, by setting `pkce_exempt_until` when you update the
+application (`PATCH /v1/tenants/{tenantID}/oidc/clients/{id}`; `null` removes
+it). Until then its sign-ins may leave out the proof key and the nonce. The
+application shows the exemption and its end in the console, and the
+applications list marks an exemption ending within a week. Once it ends, the
+application must send both, and a code issued during the exemption can no
+longer be redeemed. A public application can't be exempted.
+
+### Authorization codes
+
+A code redeems once, with the `code_verifier` of its challenge, within 10
+minutes. A code presented a second time is refused (`oidc.auth_code_used`), and
+the refresh grant its first redemption issued is revoked, every renewal of it
+included, since someone else has seen the code.
+
+## Client authentication
+
+- **Confidential applications** authenticate with their client secret, by HTTP
+  Basic (`client_secret_basic`) or in the form body (`client_secret_post`).
+- **Public applications** (single-page and native apps) have no secret and send
+  only their `client_id`, so their client id proves nothing. They can sign people
+  in (with the proof key), renew and revoke their own tokens, but can't call
+  **introspection**, **token exchange** or **CIBA**: those answer `401`
+  `oidc.client_auth_failed`, and a public application can't be registered for
+  token exchange or CIBA. Register the server side of your application as a
+  confidential client for those.
 
 ## Tokens
 
