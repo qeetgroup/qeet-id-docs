@@ -22,16 +22,28 @@ tokens locally with no call back to Qeet ID:
 curl "$QEETID_BASE_URL/.well-known/jwks.json"
 ```
 
+An OAuth-only client finds the same metadata at the RFC 8414 address. Both
+documents are built from one source, so they never disagree:
+
+```bash title="Terminal"
+curl "$QEETID_BASE_URL/.well-known/oauth-authorization-server"
+```
+
+Discovery lists only what is honoured: `response_types_supported` is `code`,
+`response_modes_supported` is `query`, `prompt_values_supported` is `none`,
+`login` and `consent`, and `claims_supported` names every claim the
+[user information](#user-information) endpoint and the ID token can return.
+
 ## Endpoints
 
 | Endpoint | Purpose |
 | --- | --- |
 | `/v1/oauth/authorize` | Authorization (auth-code flow) |
 | `/v1/oauth/token-code` | Token exchange for the code |
-| `/v1/oauth/userinfo` | UserInfo |
+| `/v1/oauth/userinfo` | User information (GET or POST) |
 | `/oauth/introspect` | Token introspection (RFC 7662) |
 | `/oauth/revoke` | Token revocation (RFC 7009) |
-| `/v1/oauth/logout` | RP-initiated logout |
+| `/v1/oauth/logout` | Sign-out (RP-initiated logout) |
 | `/oauth/device_authorization` | Device authorization grant (RFC 8628) |
 | `/v1/oauth/bc-authorize` | CIBA backchannel auth (poll mode) |
 
@@ -45,7 +57,8 @@ curl "$QEETID_BASE_URL/.well-known/jwks.json"
   the **device code** grant, **CIBA**, and **token exchange**
   (`urn:ietf:params:oauth:grant-type:token-exchange`, RFC 8693).
 - Authorize responses carry the RFC 9207 `iss` parameter, and RFC 8707 resource
-  indicators bind tokens to a specific audience.
+  indicators confine a token to one registered service — see
+  [audiences and resources](#audiences-and-resources).
 
 <Callout type="info">
   Token exchange is the foundation for delegation and on-behalf-of flows — see
@@ -88,6 +101,28 @@ minutes. A code presented a second time is refused (`oidc.auth_code_used`), and
 the refresh grant its first redemption issued is revoked, every renewal of it
 included, since someone else has seen the code.
 
+## Authorization request
+
+`/v1/oauth/authorize` takes the standard parameters, and refuses what it doesn't
+do instead of ignoring it. Errors return to your redirect URI as `error=…`,
+with your `state`.
+
+- **`response_type=code` is required.** Without it the answer is
+  `invalid_request`; any other value is `unsupported_response_type`.
+- **`prompt`:**
+  - `none` never shows a page. With no sign-in, or one that must be renewed,
+    the answer is `login_required`; when consent is missing, `consent_required`.
+  - `login` asks the person to sign in again, even when they're signed in. The
+    request then completes.
+  - `consent` asks for consent again, even when it was given before.
+- **`max_age`** (seconds): when the sign-in is older than that, the person signs
+  in again first. It must be a non-negative number (`invalid_request`
+  otherwise). The ID token's `auth_time` is when they last signed in, and its
+  `sid` names the sign-in session.
+- **Refused, not ignored:** request objects (`request`, `request_not_supported`;
+  `request_uri`, `request_uri_not_supported`) and any `response_mode` but
+  `query` (`invalid_request`).
+
 ## Client authentication
 
 - **Confidential applications** authenticate with their client secret, by HTTP
@@ -128,10 +163,190 @@ If your application is locked out, check that it uses its current secret, then
 let the lockout end at `locked_until`. If the attempts come from an address you
 don't recognise, rotate the secret: someone else has been trying it.
 
+## Audiences and resources
+
+An access token's `aud` is Qeet ID's own API unless you ask for a token for one
+of your services. To do that, register the service as a **resource** of your
+organization, then name it when you sign the person in.
+
+1. **Register it** with `POST /v1/tenants/{tenantID}/oidc/resources`
+   (permission `connection.write`):
+
+   ```json title="Request body"
+   {
+     "identifier": "https://reports.example.com",
+     "name": "Reports API",
+     "server_client_id": "<the confidential application that serves it>"
+   }
+   ```
+
+   `identifier` is an absolute URI without a fragment. `server_client_id` is
+   optional; the application it names may [introspect](#introspection) and
+   [exchange](#token-exchange) tokens issued for the resource. List resources
+   with `GET` on the same path (`connection.read`) and remove one with
+   `DELETE /v1/tenants/{tenantID}/oidc/resources/{id}`.
+2. **Ask for it** with `resource=https://reports.example.com` (RFC 8707) on the
+   authorization request. Token exchange takes `resource` too.
+
+The token's `aud` is then that resource **alone**, so Qeet ID's API and every
+other service refuse it. A resource that isn't registered, or isn't a valid
+URI, is refused with `invalid_target`, and so is redeeming the code for a
+different resource than the one it was issued for. A refresh keeps the
+resource. The device and CIBA flows don't take a resource and refuse one.
+
+The service checks that a token names it. With the Go library:
+
+```go title="reports.go"
+claims, err := client.Sessions.Verify(ctx, token, qeetid.VerifyOptions{
+    Audience: "https://reports.example.com",
+})
+```
+
+With the Node library (a source preview):
+
+```ts title="reports.ts"
+const claims = await qeetid.sessions.verify(token, {
+  audience: "https://reports.example.com",
+});
+```
+
+A token for any other audience fails with `invalid_token` (audience mismatch).
+
+## Introspection
+
+`/oauth/introspect` (RFC 7662) is for confidential applications only, and it
+answers for a token only to:
+
+- the application the token was issued to, or
+- for a token issued for a registered resource, the application that serves it
+  (the resource's `server_client_id`).
+
+Every other caller — another application of the same organization included —
+gets only `{"active": false}`, exactly as for an invalid token, and the attempt
+is recorded in the audit log as `oidc.introspection_refused`. A token from
+another organization is always inactive. A refresh token answers only to the
+application it was issued to.
+
+For an active access token the answer carries `active`, `token_type`
+(`Bearer`), `sub`, `scope`, `iss`, `aud` (the token's real audience),
+`client_id`, `resource` (when it was issued for one), `exp`, `iat`,
+`tenant_id`, `sid`, and `actor_type`, `agent_id` and `act` when present.
+
+## Token exchange
+
+Token exchange (RFC 8693, `grant_type=urn:ietf:params:oauth:grant-type:token-exchange`)
+turns an access token into a narrower one. The calling application must be
+confidential, hold the `token_exchange` grant, and be entitled to the subject
+token: it was issued to that application, or issued for a resource the
+application serves, or the person has consented to the application. Otherwise
+the subject token is refused (`oidc.subject_token_invalid`), as it is when it
+comes from another organization.
+
+The new token:
+
+- carries at most the subject token's scopes (`oidc.scope_exceeds_subject` if
+  you ask for more);
+- **never outlives the subject token**, so an exchange can't extend a
+  credential;
+- is issued to the calling application, with a session of its own;
+- names the acting party in an `act` claim when you send an `actor_token`.
+
+A person who has since been suspended or removed gets nothing
+(`auth.account_suspended`). **An exchange can be chained at most two deep**: a
+token that was already exchanged can be exchanged once more, and the result
+can't be (`oidc.exchange_depth_exceeded`). Each exchange is recorded in the
+audit log as `oidc.token_exchanged`, linked to the session it came from.
+
+## User information
+
+`/v1/oauth/userinfo` answers `GET` and `POST` with the access token as a bearer
+token, and returns the OpenID Connect standard claims the token's scopes grant —
+nothing without its scope:
+
+| Scope | Claims |
+| --- | --- |
+| `openid` | `sub`, `tenant_id` |
+| `email` | `email`, `email_verified` |
+| `profile` | `name` and `picture` (when set), `locale` (when known), `updated_at` |
+| `phone` | `phone_number`, `phone_number_verified` (when the account has a phone) |
+
+The ID token carries the same claims for the scopes granted. A token without
+`openid` is refused with `403` and `WWW-Authenticate: Bearer
+error="insufficient_scope", scope="openid"`. An invalid token, or one for an
+account that has since been suspended or deleted, gets `401` with
+`error="invalid_token"`.
+
+## Revocation
+
+`/oauth/revoke` (RFC 7009) takes the application's credentials (a public
+application sends its `client_id`) and the token.
+
+- **A refresh token ends its whole grant:** every refresh token rotated from
+  the same sign-in stops working, so no earlier copy stays usable. Recorded in
+  the audit log as `oidc.grant_revoked`.
+- **An access token is refused** with `unsupported_token_type`. Access tokens
+  are short-lived and expire on their own (see
+  [sessions & tokens](/docs/concepts/sessions-and-tokens)); revoke the refresh
+  token to stop new ones.
+- An unknown token, or one issued to another application, gets a `200` and
+  nothing happens (RFC 7009).
+
+## Sign-out
+
+### Registering
+
+Each application can register, when you create or update it:
+
+- `post_logout_uris` — where you may send people after sign-out;
+- `backchannel_logout_uri` — where Qeet ID posts a logout token, server to
+  server (OpenID Connect Back-Channel Logout);
+- `frontchannel_logout_uri` — a page the hosted signed-out page loads in a
+  hidden frame (OpenID Connect Front-Channel Logout).
+
+The two logout addresses are absolute `http(s)` URLs without a fragment.
+
+### Signing someone out
+
+Send the browser to `/v1/oauth/logout` with:
+
+- `id_token_hint` — the ID token you received for this sign-in (it may have
+  expired);
+- optionally `post_logout_redirect_uri` (one of your `post_logout_uris`) and
+  `state`, which comes back with it.
+
+A hint for another sign-in is refused (`400` `invalid_request`), and nothing
+ends. **Without a hint, Qeet ID asks the person to confirm** on the hosted
+sign-out page before ending anything, so a plain link or image can't sign
+anyone out.
+
+### What applications receive
+
+When the hosted sign-in session ends, every application that received a code or
+tokens in it is told:
+
+- **Back-channel:** a `POST` to its `backchannel_logout_uri` with a form field
+  `logout_token`, a JWT signed with the same keys as every token (verify it
+  against the JWKS). It carries `iss`, `aud` (your `client_id`), `iat`, `exp`
+  (two minutes), `jti`, `sub`, `sid` and
+  `events: {"http://schemas.openid.net/event/backchannel-logout": {}}`. End your
+  own session for that `sid` — ID tokens carry the same `sid`. A failed
+  delivery is retried, up to five attempts with growing waits; a final failure
+  is recorded in the audit log as `oidc.backchannel_logout_failed`.
+- **Front-channel:** the hosted signed-out page loads its
+  `frontchannel_logout_uri` with `iss` and `sid` query parameters, waits for
+  the pages briefly (at most three seconds), then continues. The page must
+  allow being framed by the hosted sign-in.
+
+The person then reaches your `post_logout_redirect_uri` (with `state`), or the
+hosted signed-out page. Each sign-out is recorded in the audit log as
+`oidc.sign_out_notified`.
+
 ## Tokens
 
 Access and ID tokens are signed with **ES256** (ECDSA P-256) and carry standard
-claims plus `uid`, `tid` (tenant), `sid`, `scp` and actor claims. See
+claims plus `uid`, `tid` (tenant), `sid`, `scp` and actor claims. ID tokens also
+carry `auth_time` and the [user information](#user-information) claims their
+scopes grant. See
 [sessions & tokens](/docs/concepts/sessions-and-tokens) for lifetimes and
 verification.
 
