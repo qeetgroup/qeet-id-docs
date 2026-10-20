@@ -30,11 +30,11 @@ const journeys = [
     role: "Security reviewer",
     icon: ShieldCheck,
     description:
-      "Inspect controls, evidence, current limits and deployment ownership.",
+      "Inspect controls, evidence, current limits and the architecture.",
     links: [
       ["Security posture", "/docs/security"],
       ["Compliance evidence", "/docs/security/compliance"],
-      ["Self-hosting boundary", "/docs/architecture/self-hosting"],
+      ["Architecture", "/docs/architecture"],
     ],
   },
 ] as const;

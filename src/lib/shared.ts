@@ -26,12 +26,6 @@ export const docsRoute = "/docs";
 export const docsImageRoute = "/og/docs";
 export const docsContentRoute = "/llms.mdx/docs";
 
-export const gitConfig = {
-  user: "qeetgroup",
-  repo: "qeet-id-docs",
-  branch: "main",
-};
-
 const getContentUrl = createGetUrl(docsContentRoute);
 
 export function getPageMarkdownUrl(page: { slugs: string[]; locale?: string }) {

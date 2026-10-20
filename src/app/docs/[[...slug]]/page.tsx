@@ -19,7 +19,6 @@ import {
   appDescription,
   getPageImageUrl,
   getPageMarkdownUrl,
-  gitConfig,
   siteUrl,
 } from "@/lib/shared";
 import { links, sectionIdOf, sections } from "@/lib/site-links";
@@ -70,10 +69,7 @@ export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
         actions={
           <>
             <MarkdownCopyButton markdownUrl={markdownUrl} />
-            <ViewOptionsPopover
-              markdownUrl={markdownUrl}
-              githubUrl={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/content/docs/${page.path}`}
-            />
+            <ViewOptionsPopover markdownUrl={markdownUrl} />
           </>
         }
       />

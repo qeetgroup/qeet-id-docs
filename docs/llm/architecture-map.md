@@ -11,7 +11,7 @@
 | **Sections, `sectionOfSlug`, header navigation, docs links** | `src/lib/site-links.ts` |
 | Icon registry for `icon:` | `src/lib/icons.ts` |
 | Code colours | `src/lib/code-theme.ts` (+ the `--code-*` variables in `src/app/global.css`) |
-| App name, `siteUrl`, `productStatus`, routes, `gitConfig` | `src/lib/shared.ts` |
+| App name, `siteUrl`, `productStatus`, routes | `src/lib/shared.ts` |
 | Page metadata, default share image | `src/lib/metadata.ts` |
 | Share-image renderer | `src/lib/og.tsx` |
 | Layout options (`baseOptions`, `homeOptions`, `container`) | `src/lib/layout.shared.tsx` |
