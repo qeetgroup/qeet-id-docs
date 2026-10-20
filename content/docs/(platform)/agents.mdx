@@ -51,9 +51,10 @@ It emits an `agent.kill_switch` event and writes an audit row.
 
 ## Delegation (on-behalf-of)
 
-Using OIDC **token exchange** (RFC 8693), a service can exchange a user's token
-for a downscoped token that carries an `act` claim identifying the acting
-service — the basis for agents acting on a user's behalf without impersonating
+Using OIDC **token exchange** (RFC 8693), a service the person's token was
+issued to, or that the person has consented to, can exchange it for a
+downscoped token that carries an `act` claim identifying the acting
+service ([limits](/docs/authentication/oauth-and-oidc#token-exchange)) — the basis for agents acting on a user's behalf without impersonating
 them. Token introspection (`/oauth/introspect`) exposes `actor_type`, `agent_id`
 and `act`, so an MCP gateway or API can make agent-aware decisions.
 
