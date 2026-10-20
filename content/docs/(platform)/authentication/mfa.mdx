@@ -40,7 +40,7 @@ Two additive signals can automatically trigger step-up or force MFA. Both are
 <Callout type="warn">
   The impossible-travel signal derives geography from a trusted upstream proxy
   header (for example Cloudflare's `CF-IPCountry`). Qeet ID does **not** ship a
-  GeoIP database — self-hosters without such a proxy get the code path but no
+  GeoIP database — without such a header the code path runs but there is no
   live geo signal.
 </Callout>
 

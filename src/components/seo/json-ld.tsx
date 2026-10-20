@@ -44,7 +44,7 @@ export const softwareApplicationSchema: Schema = {
   "@type": "SoftwareApplication",
   name: site.name,
   applicationCategory: "SecurityApplication",
-  operatingSystem: "Web, Self-hosted",
+  operatingSystem: "Web",
   description: site.description,
   url: links.website,
 };

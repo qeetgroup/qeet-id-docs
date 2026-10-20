@@ -123,7 +123,7 @@ export function Hero() {
         </div>
 
         <div className="mt-9 grid grid-cols-3 border-y border-border/70 bg-background/65 sm:mt-12 lg:mt-16">
-          <HeroFact label="Deployment" value="Managed or self-hosted" />
+          <HeroFact label="Deployment" value="Managed service" />
           <HeroFact label="Standards" value="OAuth 2.1 · OIDC · SAML · SCIM" />
           <HeroFact label="Audit" value="Tamper-evident chain" />
         </div>

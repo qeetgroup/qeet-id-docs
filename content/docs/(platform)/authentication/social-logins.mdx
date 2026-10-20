@@ -28,9 +28,8 @@ a password can later add "Sign in with Google" and reach the same account.
 
 ## Configuration
 
-Provider credentials are supplied to the server via environment variables (for
-example `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`), then enabled per tenant.
-See [self-hosting](/docs/architecture/self-hosting) for the full list.
+Provider credentials are part of the service's configuration; each tenant then
+enables the providers it wants.
 
 <Callout type="info">
   Social login is convenience authentication. For workforce identity, prefer

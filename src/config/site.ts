@@ -3,9 +3,9 @@
  * src/components/layout/site-footer.tsx) and the structured data. The documentation pages take
  * theirs from src/lib/shared.ts and src/lib/site-links.ts, which build on the same values.
  */
-import { appDescription, gitConfig, productName, siteUrl } from "@/lib/shared";
+import { appDescription, productName, siteUrl } from "@/lib/shared";
 
-export { gitConfig, siteUrl };
+export { siteUrl };
 
 export const site = {
   /** Product this portal documents. */
@@ -48,4 +48,5 @@ export const links = {
   security: "https://api.qeet.in/security",
 } as const;
 
-export const githubUrl = `https://github.com/${gitConfig.user}/${gitConfig.repo}`;
+/** Where "GitHub" links go: the public organisation (this site's own source is private). */
+export const githubUrl = links.githubOrg;

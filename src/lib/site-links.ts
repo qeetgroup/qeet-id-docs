@@ -1,13 +1,11 @@
 import { links as siteLinks } from "@/config/site";
-import { gitConfig } from "./shared";
 
 /**
  * Every destination the documentation's header, page header and error pages link to, in one
- * place. Each one is real: a route in this site, the public qeetgroup/qeet-id-docs repository, or
- * a Qeet property (src/config/site.ts). Nothing here is a placeholder.
+ * place. Each one is real: a route in this site, the public Qeet Group GitHub organisation, or a
+ * Qeet property (src/config/site.ts). Nothing here is a placeholder, and nothing points into a
+ * private repository (this site's own source is private).
  */
-
-export const docsRepo = `https://github.com/${gitConfig.user}/${gitConfig.repo}`;
 
 export const links = {
   home: "/",
@@ -23,7 +21,7 @@ export const links = {
   roadmap: "/docs/roadmap",
 
   apiReference: siteLinks.apiReference,
-  github: docsRepo,
+  github: siteLinks.githubOrg,
   githubOrg: siteLinks.githubOrg,
 } as const;
 
