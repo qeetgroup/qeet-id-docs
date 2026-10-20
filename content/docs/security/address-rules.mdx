@@ -44,11 +44,9 @@ When your application redeems an authorization code or refreshes a token from
 its own server, that server's address isn't judged: the person's address was
 already checked when they signed in.
 
-<Callout type="warn">
-  The console signs people in from its own server, so for sign-ins to the
-  console the rules see that server's address, not the person's. Keep it
-  allowed. Judging console sign-ins by each person's own address is planned.
-</Callout>
+The console and the hosted login reach Qeet ID from their own servers, and pass
+on the address of the person they're serving, so console sign-ins are judged by
+the person's own address, like every other sign-in.
 
 ## Setting up an office-only allow list
 
@@ -97,3 +95,10 @@ Every refusal is recorded in the audit log as `auth.address_refused`, with:
 
 The IP rules screen lists the most recent ones under **Recent refusals**, each
 linked to the rule that refused it.
+
+## Applications
+
+Address rules judge people. An application that authenticates with a client
+secret is protected by its own lockout instead: repeated wrong secrets lock it
+out for a while — see
+[wrong secrets and lockout](/docs/authentication/oauth-and-oidc#wrong-secrets-and-lockout).

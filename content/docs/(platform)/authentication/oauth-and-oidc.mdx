@@ -100,6 +100,34 @@ included, since someone else has seen the code.
   token exchange or CIBA. Register the server side of your application as a
   confidential client for those.
 
+### Wrong secrets and lockout
+
+Qeet ID counts every wrong client secret against the application, on every
+endpoint that takes one. **Ten wrong secrets within 15 minutes lock the
+application out for 15 minutes**: until then every request authenticating as
+it is refused, even with the right secret. The right secret outside a lockout
+clears the count.
+
+The refusal is the same — `401` `oidc.client_auth_failed` — whether the
+application is unknown, locked out or presented a wrong secret, so a caller
+guessing secrets learns nothing from it.
+
+Where to look:
+
+- **In the console**, the application's page has a **Secret attempts** card:
+  recent wrong secrets, newest first, with the time and the address each came
+  from, and when a lockout ends.
+- **Through the API**, `GET /v1/tenants/{tenantID}/oidc/clients/{id}/auth-failures`
+  (permission `connection.read`) returns `locked_until` (`null` when not locked
+  out) and the last 20 failures (`at`, `ip`, `reason`). No secret is ever
+  recorded.
+- **In the audit log**, each wrong secret is `oidc.client_auth_failed` (with the
+  address) and each lockout `oidc.client_locked_out`.
+
+If your application is locked out, check that it uses its current secret, then
+let the lockout end at `locked_until`. If the attempts come from an address you
+don't recognise, rotate the secret: someone else has been trying it.
+
 ## Tokens
 
 Access and ID tokens are signed with **ES256** (ECDSA P-256) and carry standard
