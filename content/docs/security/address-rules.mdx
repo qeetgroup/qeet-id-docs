@@ -1,0 +1,99 @@
+---
+title: Address Rules
+description: Restrict the networks people can sign in to your organization from, and block an address during an incident.
+---
+
+Address rules decide which networks people may sign in to your organization
+from. Each rule is an IP range (a CIDR such as `203.0.113.0/24`, or a single
+address) that either **allows** or **denies**. Manage them in the console under
+**Security → Threats → IP rules**.
+
+## How an address is judged
+
+- **A deny rule always wins.** An address that matches a deny rule is refused,
+  even if an allow rule matches it too.
+- **An allow list refuses everything outside it.** As soon as one allow rule
+  exists, an address must match an allow rule to sign in.
+- **With only deny rules,** every address that isn't denied may sign in.
+- **An address that can't be determined is refused** while the rules are on.
+
+Use **Test an address** on the IP rules screen to see how a given address would
+be judged before you rely on it.
+
+## Turning the rules on and off
+
+Rules do nothing until you switch **Enforcement** on. While it is off they are
+stored but not applied, and sign-in works exactly as if there were no rules.
+Switching it off again restores that at once.
+
+## What the rules cover
+
+While enforcement is on, the rules are checked before any session is opened, on
+every way of signing in to your organization:
+
+- password, passkey and magic-link sign-in
+- social and enterprise (SAML, LDAP) sign-in
+- accepting an invitation, and signing up
+- switching into the organization from another one
+- signing in to your applications through the hosted login, the device flow and
+  approving a device
+- every renewal of a session: a session that renews from a refused address is
+  refused, and renews again once the person is back on an allowed network
+
+When your application redeems an authorization code or refreshes a token from
+its own server, that server's address isn't judged: the person's address was
+already checked when they signed in.
+
+<Callout type="warn">
+  The console signs people in from its own server, so for sign-ins to the
+  console the rules see that server's address, not the person's. Keep it
+  allowed. Judging console sign-ins by each person's own address is planned.
+</Callout>
+
+## Setting up an office-only allow list
+
+1. Add an **allow** rule for each network your people sign in from, for example
+   your office range.
+2. Use **Test an address** on an address from each network, and on one from
+   outside, to confirm the result.
+3. Switch **Enforcement** on.
+
+You can't lock yourself out: switching enforcement on, or adding or removing a
+rule while it is on, is refused when the result would block the address you're
+making the change from. Add an allow rule that covers it first. Switching
+enforcement off always works.
+
+## Blocking an address during an incident
+
+1. Add a **deny** rule for the address or range.
+2. Make sure **Enforcement** is on. With only deny rules, nobody else is
+   affected.
+3. Confirm the block under **Recent refusals** on the IP rules screen (below).
+
+Sessions already open from that address stop renewing, so they end when their
+current access token expires (within 15 minutes).
+
+## What a refused person sees
+
+Every sign-in method shows the same message, naming no rule or range:
+
+> Your organisation doesn't allow sign-in from this network. Contact your
+> administrator.
+
+The API answers `403` with the code `auth.address_not_allowed`, and the hosted
+login shows the message on whichever method was used. If the person was already
+signed in to the hosted login, an application they sign in to receives
+`error=access_denied` at its redirect URI instead. A device collecting its tokens
+receives `access_denied` with the description `address_not_allowed`.
+
+## Finding each refusal
+
+Every refusal is recorded in the audit log as `auth.address_refused`, with:
+
+- the address,
+- the sign-in method (`path`),
+- the reason (`deny_rule`, `not_in_allow_rules` or `address_unknown`),
+- and, for a deny rule, the rule responsible (`rule_id` and its range).
+
+The IP rules screen lists the most recent ones under **Recent refusals**, each
+linked to the rule that refused it.
