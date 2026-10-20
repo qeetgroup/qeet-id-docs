@@ -96,7 +96,7 @@ export function SiteHeader() {
           <ThemeSwitch className="hidden sm:flex" />
           <a
             href={links.github}
-            aria-label={`${productName} docs on GitHub`}
+            aria-label="Qeet Group on GitHub"
             className="inline-flex size-9 items-center justify-center rounded-md text-foreground transition-colors duration-fast hover:bg-surface-interactive focus-visible:focus-ring"
           >
             <Github variant="mono" aria-hidden className="size-6" />

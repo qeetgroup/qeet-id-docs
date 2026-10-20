@@ -64,12 +64,12 @@ export const capabilityGroups: CapabilityGroup[] = [
   },
   {
     icon: Boxes,
-    title: "Deployment control",
+    title: "Architecture",
     description:
-      "Run the same modular Go service as a managed platform or inside infrastructure you control.",
-    details: ["PostgreSQL", "Terraform reference", "Optional Redis + NATS"],
-    href: "/docs/architecture/self-hosting",
-    status: "Managed or self-hosted",
+      "One modular Go service on PostgreSQL, operated by Qeet Group.",
+    details: ["Go", "PostgreSQL", "Optional Redis + NATS"],
+    href: "/docs/architecture",
+    status: "Managed service",
   },
 ];
 
@@ -185,9 +185,9 @@ export interface Faq {
 
 export const faqs: Faq[] = [
   {
-    question: "Can I run Qeet ID myself?",
+    question: "How is Qeet ID delivered?",
     answer:
-      "Yes. Qeet ID is self-hostable. The reference architecture and required production configuration are documented in the self-hosting guide.",
+      "As a service operated by Qeet Group. Your applications use its API, hosted sign-in pages and SDKs.",
   },
   {
     question: "Which SDK can I install today?",
