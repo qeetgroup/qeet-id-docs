@@ -51,16 +51,20 @@ Three separate apps share the `@qeetrix/ui` design system: the **console**
 (admin control plane, TanStack Start), the **hosted login** app (Next.js), and
 the **marketing site** (Next.js). This documentation portal is a fourth.
 
-## AI Copilot
+## Qeet AI assistant
 
-An optional, admin-facing AI copilot can be enabled in the console. Its defining
-constraint: it **never executes a domain mutation server-side**. Tool calls are
-emitted to the browser and executed under the operator's own token, so RBAC and
-audit are always inherited — the copilot can never do something the operator
-couldn't.
+An optional, admin-facing assistant can be enabled in the console. **In 1.0 the
+assistant reads and explains. It can't create, change or delete anything.** When
+you ask for a change, it tells you the steps and names the console screen where
+you make it.
+
+The tools it uses run in your browser under your own sign-in, so it sees only
+what your role lets you see.
+
+Actions that make changes will come after 1.0, with the limit on what the
+assistant may do enforced by the server.
 
 <Callout type="warn">
   A low-frequency maintenance **scheduler** (audit-chain verification, session
-  and DLQ cleanup) exists in the codebase but is **not deployed** in the current
-  reference infrastructure. See [self-hosting](/docs/architecture/self-hosting).
+  and DLQ cleanup) exists in the codebase but is **not deployed** yet.
 </Callout>

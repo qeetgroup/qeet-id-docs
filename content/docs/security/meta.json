@@ -3,5 +3,11 @@
   "description": "Isolation, encryption, keys and compliance.",
   "icon": "Lock",
   "root": true,
-  "pages": ["index", "data-isolation", "encryption-and-keys", "compliance"]
+  "pages": [
+    "index",
+    "data-isolation",
+    "address-rules",
+    "encryption-and-keys",
+    "compliance"
+  ]
 }

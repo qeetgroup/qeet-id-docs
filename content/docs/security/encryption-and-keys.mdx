@@ -44,6 +44,5 @@ root key.
 ## Transport & CSRF
 
 TLS is terminated at the deployment edge (a reverse proxy), so the application
-server itself never handles certificates — see
-[self-hosting](/docs/architecture/self-hosting). Browser flows are protected by a
+server itself never handles certificates. Browser flows are protected by a
 double-submit HMAC CSRF scheme, which production refuses to run without.

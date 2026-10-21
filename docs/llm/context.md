@@ -100,9 +100,11 @@ page's own styles under `.qid-home`.
 ### Metadata and share images
 
 `src/lib/shared.ts` is the source of `appName` ("Qeet ID Docs"), `productName`, `appDescription`,
-`siteUrl` (`NEXT_PUBLIC_SITE_URL` overrides it), `productStatus`, the route constants, `gitConfig`,
-`getPageMarkdownUrl` and `getPageImageUrl`. `src/config/site.ts` re-exports `siteUrl` / `gitConfig`
-and keeps `site`, `links` and `githubUrl` for the landing page and the structured data.
+`siteUrl` (`NEXT_PUBLIC_SITE_URL` overrides it), `productStatus`, the route constants,
+`getPageMarkdownUrl` and `getPageImageUrl`. `src/config/site.ts` re-exports `siteUrl` and keeps
+`site`, `links` and `githubUrl` for the landing page and the structured data. This site's source
+repository is private, so nothing links into it: `githubUrl` and the header's GitHub icon open the
+public Qeet Group organisation, and pages have no "open on GitHub" action.
 `src/lib/metadata.ts` exports `pageMetadata`, `plainText`, `openGraphBase` and `defaultOgImage`.
 The title template is `%s | Qeet ID Docs`. Share images: `/og/image.png` (the default) and
 `/og/docs/<slug>/image.png`, both drawn by `src/lib/og.tsx` with the Qeet logo.
